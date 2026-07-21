@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="kpT kpD">
+<title id="kpT">Kalsa Pay — tap the wristband to pay at the school canteen</title>
+<desc id="kpD">An NFC wristband worn by a student tapping a canteen reader, with the parent's phone showing the purchase appearing instantly.</desc>
+<style>
+.h{font:600 40px Georgia,'Source Serif 4',serif;fill:#fff}
+.s{font:400 17px system-ui,sans-serif;fill:#9dc9ce}
+.k{font:600 11px system-ui,sans-serif;fill:#0e9aa3;letter-spacing:.16em}
+.t{font:600 13px system-ui,sans-serif;fill:#0a2540}
+.tm{font:400 11px system-ui,sans-serif;fill:#7b8b98}
+.amt{font:600 15px system-ui,sans-serif;fill:#0a2540}
+.lbl{font:600 12px system-ui,sans-serif;fill:#fff;letter-spacing:.05em}
+</style>
+<rect width="800" height="600" fill="#0a2540"/>
+<circle cx="640" cy="90" r="200" fill="#0d2e4e"/>
+<text x="56" y="86" class="k">KALSA PAY</text>
+<text x="56" y="140" class="h">Tap. Eat. Done.</text>
+<text x="56" y="176" class="s">Worn on the wrist. Nothing to lose.</text>
+
+<g transform="translate(196 356)">
+  <ellipse cx="0" cy="0" rx="118" ry="76" fill="#0e9aa3"/>
+  <ellipse cx="0" cy="6" rx="84" ry="46" fill="#0a2540"/>
+  <ellipse cx="0" cy="0" rx="118" ry="76" fill="none" stroke="#13b3bd" stroke-width="2"/>
+  <g opacity=".35" stroke="#0a7880" stroke-width="2">
+    <path d="M-104 -30 A 118 76 0 0 1 -70 -62"/><path d="M70 62 A 118 76 0 0 1 104 30"/>
+  </g>
+  <g transform="translate(0 -66)">
+    <rect x="-34" y="-22" width="68" height="46" rx="12" fill="#f2f7f8"/>
+    <rect x="-34" y="-22" width="68" height="46" rx="12" fill="none" stroke="#c9d8dd" stroke-width="1.5"/>
+    <text x="0" y="7" text-anchor="middle" font="600 17px Georgia,serif" font-family="Georgia,serif" font-size="17" font-weight="600" fill="#0a2540">KD</text>
+  </g>
+  <g stroke="#fff" fill="none" stroke-width="3.5" stroke-linecap="round" opacity=".9" transform="translate(64 -84)">
+    <path d="M0 0a24 24 0 0 1 0 34"/>
+    <path d="M16 -12a42 42 0 0 1 0 58"/>
+    <path d="M32 -24a60 60 0 0 1 0 82"/>
+  </g>
+  <text x="0" y="126" class="lbl" text-anchor="middle">NFC WRISTBAND · WATERPROOF</text>
+</g>
+
+<g transform="translate(430 210)">
+  <rect x="-6" y="-6" width="252" height="360" rx="26" fill="#08203a"/>
+  <rect width="240" height="348" rx="22" fill="#fff"/>
+  <rect x="88" y="12" width="64" height="7" rx="3.5" fill="#dfe6ea"/>
+  <text x="20" y="56" class="k">PARENT APP</text>
+  <text x="20" y="86" class="amt" font-size="26">RM 18.50</text>
+  <text x="20" y="106" class="tm">Balance · Aiman, Year 4</text>
+  <rect x="20" y="120" width="200" height="1" fill="#e8eef1"/>
+  <g transform="translate(0 138)">
+    <circle cx="34" cy="16" r="13" fill="#e6f7f7"/>
+    <path d="M29 16l4 4 7-8" stroke="#0e9aa3" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <text x="56" y="13" class="t">Nasi lemak</text><text x="56" y="29" class="tm">10:42 AM · Canteen A</text>
+    <text x="220" y="20" class="amt" text-anchor="end">−2.00</text>
+  </g>
+  <g transform="translate(0 190)">
+    <circle cx="34" cy="16" r="13" fill="#e6f7f7"/>
+    <path d="M29 16l4 4 7-8" stroke="#0e9aa3" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <text x="56" y="13" class="t">Air bandung</text><text x="56" y="29" class="tm">10:43 AM · Canteen A</text>
+    <text x="220" y="20" class="amt" text-anchor="end">−1.50</text>
+  </g>
+  <rect x="20" y="238" width="200" height="44" rx="6" fill="#f2f7f8"/>
+  <text x="34" y="256" class="tm">Daily limit</text><text x="34" y="274" class="t">RM 10.00 · enforced at tap</text>
+  <rect x="20" y="294" width="200" height="36" rx="4" fill="#0a2540"/>
+  <text x="120" y="317" class="lbl" text-anchor="middle">FREEZE WRISTBAND</text>
+</g>
+</svg>

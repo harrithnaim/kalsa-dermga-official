@@ -109,20 +109,13 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: var(--font-headi
   background-image:radial-gradient(circle,rgba(0,0,0,0.22) 30%,transparent 32%);
   background-size:3px 3px;mix-blend-mode:multiply}
 .cmyk{position:relative;overflow:hidden;background:var(--color-bg)}
-.cmyk img:first-child{opacity:0} 
+
 .cmyk img+img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply}
-.cmyk .sep-c{filter:url(#sep-c)}
-.cmyk .sep-m{filter:url(#sep-m)}
-.cmyk .sep-y{filter:url(#sep-y)}
-.cmyk .sep-k{filter:url(#sep-k)}
 .cmyk::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background-image:radial-gradient(circle,rgba(0,0,0,0.22) 30%,transparent 32%);
+  background-image:radial-gradient(circle,rgba(0,0,0,0.10) 30%,transparent 32%);
   background-size:3px 3px;mix-blend-mode:multiply}
-.cmyk .print{position:relative;width:100%;filter:url(#sep-all)}
-@media (prefers-reduced-motion: reduce), (hover: none), (pointer: coarse) {
-  .cmyk .print:hover{filter:none} 
-}
-.cmyk .print image-slot{width:100%;height:100%;display:block}
+.cmyk .print{position:relative;width:100%}
+.cmyk .print img{width:100%;height:100%;object-fit:cover;display:block}
 .cmyk-num{--cmyk-num-ground:var(--color-bg);
   position:relative;width:fit-content;line-height:0.9;
   font-feature-settings:"pnum" 1;

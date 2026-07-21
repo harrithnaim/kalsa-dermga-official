@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-labelledby="kcT kcD">
+<title id="kcT">Parent controls in the Kalsa Pay app</title>
+<desc id="kcD">The parent app showing a daily spending limit, this week's spending, and a control to freeze the wristband.</desc>
+<style>
+.k{font:600 11px system-ui,sans-serif;fill:#0a7880;letter-spacing:.14em}
+.h{font:600 15px system-ui,sans-serif;fill:#0a2540}
+.t{font:600 13px system-ui,sans-serif;fill:#0a2540}
+.sm{font:400 11px system-ui,sans-serif;fill:#7b8b98}
+.b{font:600 12px system-ui,sans-serif;fill:#fff;letter-spacing:.05em}
+.d{font:400 10px system-ui,sans-serif;fill:#9aa8b2}
+</style>
+<rect width="600" height="800" fill="#f2f7f8"/>
+<rect x="150" y="40" width="300" height="720" rx="34" fill="#0a2540"/>
+<rect x="162" y="52" width="276" height="696" rx="26" fill="#fff"/>
+<rect x="266" y="70" width="68" height="8" rx="4" fill="#dfe6ea"/>
+
+<text x="188" y="120" class="k">CONTROLS</text>
+<text x="188" y="150" class="h">Aiman · Year 4</text>
+<text x="188" y="172" class="sm">NFC wristband · active</text>
+<rect x="188" y="188" width="224" height="1" fill="#eef3f5"/>
+
+<rect x="188" y="206" width="224" height="96" rx="6" fill="#f2f7f8"/>
+<text x="204" y="230" class="sm">Daily spending limit</text>
+<text x="204" y="258" class="h" font-size="22">RM 10.00</text>
+<rect x="204" y="272" width="192" height="6" rx="3" fill="#dfe6ea"/>
+<rect x="204" y="272" width="118" height="6" rx="3" fill="#0e9aa3"/>
+<circle cx="322" cy="275" r="10" fill="#0e9aa3" stroke="#fff" stroke-width="3"/>
+<text x="204" y="294" class="d">Checked at the moment of the tap</text>
+
+<text x="188" y="336" class="k">THIS WEEK</text>
+<g>
+ <rect x="190" y="386" width="22" height="34" rx="2" fill="#9fd7da"/><text x="201" y="436" class="d" text-anchor="middle">M</text>
+ <rect x="226" y="368" width="22" height="52" rx="2" fill="#9fd7da"/><text x="237" y="436" class="d" text-anchor="middle">T</text>
+ <rect x="262" y="378" width="22" height="42" rx="2" fill="#9fd7da"/><text x="273" y="436" class="d" text-anchor="middle">W</text>
+ <rect x="298" y="356" width="22" height="64" rx="2" fill="#0e9aa3"/><text x="309" y="436" class="d" text-anchor="middle">T</text>
+ <rect x="334" y="394" width="22" height="26" rx="2" fill="#9fd7da"/><text x="345" y="436" class="d" text-anchor="middle">F</text>
+ <line x1="188" y1="420" x2="412" y2="420" stroke="#e2eaee"/>
+</g>
+<text x="188" y="466" class="sm">Spent this week</text><text x="412" y="466" class="t" text-anchor="end">RM 31.50</text>
+
+<rect x="188" y="490" width="224" height="1" fill="#eef3f5"/>
+<g transform="translate(188 512)">
+ <text x="0" y="16" class="t">Wristband active</text>
+ <text x="0" y="34" class="d">Tap to disable immediately</text>
+ <rect x="164" y="2" width="60" height="30" rx="15" fill="#0e9aa3"/>
+ <circle cx="209" cy="17" r="12" fill="#fff"/>
+</g>
+<g transform="translate(188 570)">
+ <text x="0" y="16" class="t">Tap alerts</text>
+ <text x="0" y="34" class="d">Notify me on every purchase</text>
+ <rect x="164" y="2" width="60" height="30" rx="15" fill="#0e9aa3"/>
+ <circle cx="209" cy="17" r="12" fill="#fff"/>
+</g>
+
+<rect x="188" y="636" width="224" height="44" rx="4" fill="#0a2540"/>
+<text x="300" y="664" class="b" text-anchor="middle">FREEZE WRISTBAND</text>
+<text x="300" y="702" class="d" text-anchor="middle">Takes effect at once. No admin needed.</text>
+</svg>

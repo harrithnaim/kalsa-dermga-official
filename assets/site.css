@@ -358,3 +358,61 @@ header[style*="--color-accent-2"] a{color:#fff}
 header[style*="--color-accent-2"] .navtoggle{color:#fff;border-color:rgba(255,255,255,.4)}
 header:not([style*="--color-accent-2"]) .navtoggle{color:var(--color-text);border-color:var(--color-divider)}
 .mobilenav a{display:block;padding:6px 0;font-size:15px}
+
+/* ---- card grids collapse on small screens (all pages) ---- */
+@media (max-width:1000px){
+  section div[style*="repeat(4,1fr)"]{grid-template-columns:1fr 1fr!important}
+}
+@media (max-width:760px){
+  section div[style*="repeat(3,1fr)"],
+  section div[style*="repeat(2,1fr)"]{grid-template-columns:1fr!important}
+  section > div[style*="grid-template-columns"]{grid-template-columns:1fr!important}
+}
+@media (max-width:640px){
+  section div[style*="repeat(4,1fr)"]{grid-template-columns:1fr!important}
+  section div[style*="1fr 1fr"]{grid-template-columns:1fr!important}
+  .grid2{grid-template-columns:1fr!important}
+  section div[style*="repeat(3,auto)"]{grid-template-columns:1fr 1fr!important;gap:var(--space-4)!important}
+}
+
+/* ================= navigation fit + mobile comfort (added) ================= */
+/* desktop: tighten nav gap so all items fit comfortably as the menu grows */
+.navlinks{gap:var(--space-4)!important;flex-wrap:wrap;row-gap:6px}
+
+@media (max-width:768px){
+  body{font-size:16px}                                   /* comfortable base, stops phones zooming */
+  h1{font-size:30px!important;line-height:1.18}
+  h2{font-size:23px!important}
+  h3{font-size:19px}
+  /* everything single-column on a phone */
+  section[style*="grid-template-columns"]{grid-template-columns:1fr!important}
+  section div[style*="grid-template-columns"]{grid-template-columns:1fr!important}
+  .grid2{grid-template-columns:1fr!important}
+  section div[style*="repeat(3,auto)"]{grid-template-columns:1fr 1fr!important;gap:var(--space-4)!important}
+  /* a little less vertical air so pages don't feel endless */
+  section{padding-top:30px!important;padding-bottom:30px!important}
+  /* comfortable, tappable buttons */
+  .btn{min-height:46px;font-size:15px;padding:12px 18px}
+  /* bigger, clearer mobile menu */
+  header .nav{padding-top:14px!important;padding-bottom:14px!important}
+  .navtoggle{min-height:44px;font-size:15px}
+  .mobilenav{padding:8px 0 16px}
+  .mobilenav a{display:block;padding:13px 4px!important;font-size:17px!important;
+    border-bottom:1px solid var(--color-divider);text-decoration:none}
+  /* forms comfortable, no zoom-jump on focus */
+  .input{font-size:16px;min-height:46px}
+  /* footer stacks cleanly */
+  footer div[style*="grid-template-columns"]{grid-template-columns:1fr!important;gap:var(--space-4)!important}
+  /* homepage top "group companies" rail: wrap and left-align instead of squashing */
+  header div[style*="justify-content:flex-end"]{justify-content:flex-start!important;gap:12px 14px!important;flex-wrap:wrap}
+  /* cards a touch more inner room */
+  .card{padding:var(--space-4)}
+}
+@media (max-width:480px){
+  h1{font-size:26px!important}
+  h2{font-size:21px!important}
+  section div[style*="repeat(3,auto)"]{grid-template-columns:1fr!important}
+  /* full-width buttons are easiest to tap one-handed — but never the Menu toggle */
+  .btn:not(.navtoggle){width:100%;justify-content:center}
+  .navtoggle{width:auto}
+}

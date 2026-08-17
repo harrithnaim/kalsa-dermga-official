@@ -414,6 +414,28 @@
           <div class="field"><label for="p-phone">Phone (WhatsApp preferred) *</label>
             <input class="input" id="p-phone" type="tel" name="Parent phone" placeholder="012-3456789" required></div>
         </div>
+
+        <!-- ─── DURING THE SESSION ──────────────────────────────────────
+             Asked here rather than under preferences because it changes
+             the adult-to-child ratio the team has to plan for, and that
+             is a safety number, not a preference. "Decide later" is a
+             real answer — most parents genuinely do not know weeks out —
+             and it routes to a confirmation in the app nearer the date.
+             ─────────────────────────────────────────────────────────── -->
+        <div class="field stayfield" style="margin-top:var(--space-3);">
+          <label>During the session, will you *</label>
+          <div class="seg" role="group" aria-label="Will you stay during the session">
+            <label class="seg-opt"><input type="radio" name="Parent during session" value="Staying for the whole session" required><span>Stay with my child</span></label>
+            <label class="seg-opt"><input type="radio" name="Parent during session" value="Drop off and collect"><span>Drop off &amp; collect</span></label>
+            <label class="seg-opt"><input type="radio" name="Parent during session" value="Deciding later — to confirm in the app"><span>Decide later</span></label>
+          </div>
+        </div>
+        <p class="staynote formnote">
+          No problem — we will send you a reminder to confirm in the
+          <a href="app.html">Kalsa Dermaga app</a> once the session date is
+          fixed. Please confirm at least three days before, so we can set the
+          right number of facilitators.
+        </p>
       </fieldset>
 
       <fieldset>

@@ -119,18 +119,107 @@
     </div>
   </section>
 
-    <section id="gallery" style="max-width:1200px;margin:0 auto;padding-left:20px;padding-right:20px;padding:var(--space-8) 0;">
-    <div style="max-width:600px;margin:0 0 var(--space-6);">
-      <div style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--color-accent-700);font-weight:600;margin-bottom:var(--space-3);">From the shoreline</div>
-      <h2 style="margin:0;">Sessions in progress</h2>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4);">
-      <figure class="halftone" style="margin:0;border-radius:20px;overflow:hidden;"><div style="aspect-ratio:4/3;">
-        <div class="img-slot" role="img" aria-label="Session photograph coming soon"><span>photo coming soon<br><b>assets/lms-1.jpg</b></span></div></div></figure>
-      <figure class="halftone" style="margin:0;border-radius:20px;overflow:hidden;"><div style="aspect-ratio:4/3;">
-        <div class="img-slot" role="img" aria-label="Session photograph coming soon"><span>photo coming soon<br><b>assets/lms-2.jpg</b></span></div></div></figure>
-      <figure class="halftone" style="margin:0;border-radius:20px;overflow:hidden;"><div style="aspect-ratio:4/3;">
-        <div class="img-slot" role="img" aria-label="Session photograph coming soon"><span>photo coming soon<br><b>assets/lms-3.jpg</b></span></div></div></figure>
+  <!-- ═══════════════════════════════════════════════════════════════════
+       PROGRAMME RECAP — most recent session
+       ───────────────────────────────────────────────────────────────────
+       TO ADD A NEW SESSION LATER: copy this whole <section> block, change
+       the date, place, numbers and photos, and put the newer one above
+       this one. Nothing else on the page needs touching.
+
+       TO SWAP IN REAL PHOTOS: drop your files into /assets/ and change the
+       src on each <img>. Recommended 1600x1200px, JPG, under 350KB each.
+       Copy one <button> block to add another photo — the lightbox picks
+       up new photos automatically, no code changes needed.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section id="recap" class="sec recap">
+    <div class="wrapx">
+
+      <div class="recap-head">
+        <div style="max-width:640px;">
+          <div class="eyebrow">Latest session</div>
+          <div class="recap-meta">
+            <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg>15 August 2026</span>
+            <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>Pantai Tembeling, Pahang</span>
+            <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="3.5"/><path d="M22 20v-2a4 4 0 0 0-3-3.9"/></svg>22 children</span>
+          </div>
+          <h2 style="margin:0 0 16px;">A morning at Pantai Tembeling</h2>
+          <p class="lede" style="margin:0;">
+            On 15 August we ran a Little Marine Scientists session at Pantai Tembeling with
+            22 children. They spent the morning on the shoreline — looking closely at what
+            the tide had left behind, asking a great many questions, and thoroughly enjoying
+            themselves. Here is how it went.
+          </p>
+        </div>
+      </div>
+
+      <div class="recap-stats">
+        <div class="rs"><b>22</b><span>Children took part</span></div>
+        <div class="rs"><b>15 Aug</b><span>Session date, 2026</span></div>
+        <div class="rs"><b>Tembeling</b><span>Pantai Tembeling, Pahang</span></div>
+        <div class="rs"><b>1st</b><span>Session at this shoreline</span></div>
+      </div>
+
+      <!-- ─── SESSION FILM ───────────────────────────────────────────────
+           Replacing the video: swap assets/lms-150826.mp4 and the
+           poster image. Keep the file well under 100MB — GitHub refuses
+           anything larger. preload="none" means the video is only
+           downloaded once someone presses play, so it costs nothing to
+           visitors who scroll past.
+           ──────────────────────────────────────────────────────────── -->
+      <div class="vplayer reveal">
+        <video controls playsinline preload="none"
+               poster="assets/lms-poster.jpg"
+               width="1280" height="720">
+          <source src="assets/lms-150826.mp4" type="video/mp4">
+          <p style="color:#fff;padding:20px;">
+            Your browser cannot play this video.
+            <a href="assets/lms-150826.mp4" style="color:#7cc4f5;">Download it instead</a>.
+          </p>
+        </video>
+      </div>
+      <p class="vnote">Little Marine Scientists at Pantai Tembeling, 15 August 2026 · 3 min 36 s</p>
+
+      <!-- ─── PHOTOS ─────────────────────────────────────────────────── -->
+      <h3 style="margin:clamp(36px,4vw,56px) 0 18px;">From the shoreline</h3>
+      <div class="pgrid" data-stagger="70">
+
+        <button type="button">
+          <img src="assets/lms-150826-01.jpg" alt="Low tide at Pantai Tembeling, looking out across the flats" loading="lazy">
+          <figcaption>Low tide at Pantai Tembeling</figcaption>
+        </button>
+
+        <button type="button">
+          <img src="assets/lms-150826-02.jpg" alt="The shaded base camp under the trees, with families arriving" loading="lazy">
+          <figcaption>Base camp under the trees</figcaption>
+        </button>
+
+        <button type="button">
+          <img src="assets/lms-150826-03.jpg" alt="Children and a facilitator crouching over a find on the sand" loading="lazy">
+          <figcaption>Down at the shoreline</figcaption>
+        </button>
+
+        <button type="button">
+          <img src="assets/lms-150826-04.jpg" alt="The group spread along the rock pools at low tide" loading="lazy">
+          <figcaption>Out at the rock pools</figcaption>
+        </button>
+
+        <button type="button">
+          <img src="assets/lms-150826-05.jpg" alt="Children gathered together among the rocks" loading="lazy">
+          <figcaption>Regrouping on the rocks</figcaption>
+        </button>
+
+        <button type="button">
+          <img src="assets/lms-150826-06.jpg" alt="Children crouching in a circle to examine something found on the beach" loading="lazy">
+          <figcaption>A closer look</figcaption>
+        </button>
+
+      </div>
+
+      <p class="vnote" style="margin-top:14px;">These frames are taken from the session film. To use your own photos from Google Drive, drop them into <b>/assets/</b> and change the <code>src</code> on each image above.</p>
+      <div style="margin-top:clamp(28px,3vw,40px);">
+        <a href="#enrol" class="btn btn-primary">Register for the next session</a>
+      </div>
+
     </div>
   </section>
 

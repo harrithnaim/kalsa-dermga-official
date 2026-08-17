@@ -770,3 +770,20 @@ footer .nav-brand{color:#fff}
   .lbox .lprev{left:10px}.lbox .lnext{right:10px}
   .lbox img{max-height:70vh}
 }
+
+/* ---------- click-to-play video facade (YouTube or Google Drive) ---------- */
+.vfacade{position:relative;cursor:pointer;background:#04121f}
+.vfacade .vposter{width:100%;height:100%;object-fit:cover;display:block}
+.vfacade .vplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:82px;height:82px;border-radius:50%;border:0;cursor:pointer;
+  display:grid;place-items:center;padding-left:5px;
+  background:rgba(10,37,64,.72);color:#fff;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  box-shadow:0 10px 34px rgba(0,0,0,.42);
+  transition:transform .3s var(--ease), background-color .3s var(--ease)}
+.vfacade:hover .vplay{transform:translate(-50%,-50%) scale(1.09);background:var(--color-accent)}
+.vfacade .vplay:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.vfacade iframe{width:100%;height:100%;display:block;border:0}
+.vfacade.playing{cursor:default}
+.vfacade.playing .vposter,.vfacade.playing .vplay{display:none}
+@media (max-width:640px){.vfacade .vplay{width:64px;height:64px}}

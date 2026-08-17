@@ -263,7 +263,63 @@
     });
   }
 
+  /* ---------------------------------------------------------------
+     9. Click-to-play video facade
+     Shows a poster until pressed, then swaps in the real player.
+     Supports YouTube (data-yt) and Google Drive (data-drive). Nothing
+     is requested from either service until someone actually presses
+     play — which keeps the page fast, avoids third-party tracking of
+     visitors who never watch, and with Drive avoids spending the
+     file's daily bandwidth quota on people who just scroll past.
+     --------------------------------------------------------------- */
+  function initVideoFacade() {
+    var wraps = document.querySelectorAll('.vfacade');
+    for (var i = 0; i < wraps.length; i++) {
+      (function (w) {
+        var yt = w.getAttribute('data-yt');
+        var dr = w.getAttribute('data-drive');
+        var btn = w.querySelector('.vplay');
+        if (!btn) return;
+
+        // no id filled in yet — hide the play button rather than
+        // giving the visitor a control that does nothing
+        var unset = function (v) { return !v || v.indexOf('PASTE_') === 0; };
+        if (unset(yt) && unset(dr)) { btn.style.display = 'none'; return; }
+
+        function play() {
+          if (w.classList.contains('playing')) return;
+          var src, allow;
+          if (!unset(yt)) {
+            src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(yt) +
+                  '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+            allow = 'accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen';
+          } else {
+            src = 'https://drive.google.com/file/d/' + encodeURIComponent(dr) + '/preview';
+            allow = 'autoplay; fullscreen';
+          }
+          var f = document.createElement('iframe');
+          f.setAttribute('src', src);
+          f.setAttribute('title', w.getAttribute('data-title') || 'Video');
+          f.setAttribute('allow', allow);
+          f.setAttribute('allowfullscreen', '');
+          f.setAttribute('loading', 'lazy');
+          f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+          w.classList.add('playing');
+          w.appendChild(f);
+          f.focus();
+        }
+
+        btn.addEventListener('click', play);
+        w.addEventListener('click', function (e) {
+          if (e.target === btn || btn.contains(e.target)) return;
+          play();
+        });
+      })(wraps[i]);
+    }
+  }
+
   function boot() {
+    initVideoFacade();
     initLightbox();
     initAutoReveal();
     initReveal();

@@ -134,6 +134,11 @@
   <section id="recap" class="sec recap">
     <div class="wrapx">
 
+      <!-- KD:LMS-SESSIONS:START -->
+      <!-- Everything between these two markers is written by the admin console
+           (Website tab). Edit it here if you like, but the next Publish will
+           overwrite it. The markers themselves must stay exactly as they are —
+           publishing fails loudly if either goes missing. -->
       <div class="recap-head">
         <div style="max-width:640px;">
           <div class="eyebrow">Latest session</div>
@@ -160,18 +165,18 @@
       </div>
 
       <!-- ─── SESSION FILM ───────────────────────────────────────────────
-           Click-to-play. The poster loads with the page; the video player
-           is only fetched when someone presses play. That keeps the page
-           fast and — with Google Drive — stops every casual visitor
-           burning the file's daily bandwidth quota.
+           Click-to-play. The poster loads with the page; the player is
+           only fetched when someone presses play. That keeps the page
+           fast and means visitors who scroll past are never handed to
+           YouTube's trackers.
 
-           SWITCHING TO YOUTUBE LATER: delete the data-drive attribute and
-           put data-yt="YOUR_VIDEO_ID" in its place. From a link like
-           https://www.youtube.com/watch?v=dQw4w9WgXcQ the ID is the part
-           after "v=". Nothing else changes.
+           Now on YouTube: watch?v=afFWmTQ9k5o. Served from
+           youtube-nocookie.com, so no cookie is set until play.
+           To change the film later, replace the data-yt value with the
+           part of the YouTube link after "v=". Nothing else changes.
            ──────────────────────────────────────────────────────────── -->
       <div class="vplayer vfacade reveal"
-           data-drive="1yOp0-HFF1kyiVTqL-wmkahzjsSVwuwqj"
+           data-yt="afFWmTQ9k5o"
            data-title="Little Marine Scientists at Pantai Tembeling, 15 August 2026">
         <img src="assets/lms-poster.jpg"
              alt="Title card of the Little Marine Scientists session film"
@@ -181,7 +186,7 @@
         </button>
       </div>
       <p class="vnote">Little Marine Scientists at Pantai Tembeling, 15 August 2026 · 3 min 36 s ·
-        <a href="https://drive.google.com/file/d/1yOp0-HFF1kyiVTqL-wmkahzjsSVwuwqj/view" target="_blank" rel="noopener noreferrer">open in Google Drive ↗</a></p>
+        <a href="https://www.youtube.com/watch?v=afFWmTQ9k5o" target="_blank" rel="noopener noreferrer">watch on YouTube ↗</a></p>
 
       <!-- ─── PHOTOS ─────────────────────────────────────────────────── -->
       <h3 style="margin:clamp(36px,4vw,56px) 0 18px;">From the shoreline</h3>
@@ -224,65 +229,21 @@
         <a href="#enrol" class="btn btn-primary">Register for the next session</a>
         <a href="#feedback" class="btn btn-secondary" style="margin-left:10px;">Already joined? Tell us how it went</a>
       </div>
+      <!-- KD:LMS-SESSIONS:END -->
 
     </div>
   </section>
 
-  <!--
-    /*  ===================================================================
-        PUBLISHED FEEDBACK
-  
-        Nothing shows here until you paste in real quotes - deliberately.
-        Invented testimonials on a children's programme page would be a
-        bad look if anyone ever checked.
-  
-        TO PUBLISH A QUOTE:
-          1. Check the submission said YES to "happy for us to publish".
-             The email shows this as:
-                Publish permission: Yes, you may publish this
-          2. Find the line just below marked TESTIMONIALS-START and the
-             one marked TESTIMONIALS-END. Delete both of those lines.
-             That un-hides the section.
-          3. Fill in the cards. Copy a whole figure block to add another
-             quote; delete any spare cards you do not need.
-          4. Credit them exactly as they asked in "How should we credit
-             you". If they left it blank, use something neutral such as
-             "A parent, Kuantan".
-        ===================================================================  */
-  -->
+  <!-- ═══════════════════════════════════════════════════════════════════
+       PUBLISHED FEEDBACK
+       Written by the admin console (Website tab → Testimonials). While
+       there are no published quotes this renders nothing at all, so the
+       page has no empty section. Do not hand-edit between the markers —
+       the next Publish overwrites it.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <!-- KD:TESTIMONIALS:START -->
+  <!-- KD:TESTIMONIALS:END -->
 
-  <!-- TESTIMONIALS-START
-  <section id="voices" class="sec">
-    <div class="wrapx">
-      <div style="max-width:620px;margin:0 0 clamp(28px,3.5vw,44px);">
-        <div class="eyebrow">In their words</div>
-        <h2 style="margin:0 0 14px;">What families said</h2>
-        <p class="lede" style="margin:0;">Feedback from parents whose children joined a session.</p>
-      </div>
-      <div class="fbgrid" data-stagger="90">
-
-        <figure class="fbcard reveal">
-          <div class="fbstars" aria-label="5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <blockquote>PASTE WHAT THE PARENT WROTE HERE.</blockquote>
-          <figcaption><b>NAME AS THEY ASKED TO BE CREDITED</b><span>Pantai Tembeling, August 2026</span></figcaption>
-        </figure>
-
-        <figure class="fbcard reveal">
-          <div class="fbstars" aria-label="5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <blockquote>PASTE WHAT THE PARENT WROTE HERE.</blockquote>
-          <figcaption><b>NAME AS THEY ASKED TO BE CREDITED</b><span>Pantai Tembeling, August 2026</span></figcaption>
-        </figure>
-
-        <figure class="fbcard reveal">
-          <div class="fbstars" aria-label="4 out of 5">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
-          <blockquote>PASTE WHAT THE PARENT WROTE HERE.</blockquote>
-          <figcaption><b>NAME AS THEY ASKED TO BE CREDITED</b><span>Pantai Tembeling, August 2026</span></figcaption>
-        </figure>
-
-      </div>
-    </div>
-  </section>
-  TESTIMONIALS-END -->
 
   <!-- ═══════════════════════════════════════════════════════════════════
        FEEDBACK FORM

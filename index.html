@@ -104,7 +104,10 @@
 
   <!-- ══════════════════════════════ HERO ══════════════════════════════ -->
   <section class="hero">
-    <!-- Decorative 3D backdrop: WebGL sea surface + brand constellation.
+    <!-- Decorative backdrop: a live sea and sky. The water is ray-cast
+         per pixel in a fragment shader and reflects the sky above it;
+         the vessels, dolphins, whale and gulls are drawn on a second
+         canvas using the same camera, so they sit on the waterline.
          Purely visual, hidden from assistive tech, degrades to the CSS
          gradient if WebGL or JS is unavailable. -->
     <div class="hero-canvas" aria-hidden="true">
@@ -166,6 +169,7 @@
         </p>
       </div>
 
+      <!-- KD:VENTURES:START -->
       <div class="vgrid" data-stagger="90">
 
         <a class="vcard reveal" href="kalsa-pay.html" style="--vc:var(--v-pay)">
@@ -258,6 +262,7 @@
           apps.kalsadermaga.com
         </div>
       </div>
+      <!-- KD:VENTURES:END -->
     </div>
   </section>
 
@@ -378,6 +383,7 @@
         <div class="eyebrow reveal">News &amp; updates</div>
         <h2 class="reveal" style="--d:80ms;margin:0;">Latest from the group</h2>
       </div>
+      <!-- KD:NEWS:START -->
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px;" data-stagger="100">
         <div class="newscard reveal" style="border-left-color:var(--v-shp);">
           <div class="card-meta">MAR 2026</div>
@@ -400,6 +406,7 @@
           <p class="card-body">Both platforms are running live community pilots. Schools, canteens and route communities are welcome to join.</p>
         </div>
       </div>
+      <!-- KD:NEWS:END -->
     </div>
   </section>
 
@@ -530,6 +537,6 @@
 </div>
 
 <script src="assets/site.js" defer></script>
-<script src="assets/hero3d.js" defer></script>
+<script src="assets/seascape.js" defer></script>
 </body>
 </html>

@@ -456,8 +456,39 @@ h6{letter-spacing:.14em;font-weight:700}
 .stickynav{position:sticky;top:0;z-index:60;
   background:color-mix(in srgb,var(--ink) 96%,transparent);
   backdrop-filter:saturate(160%) blur(14px);-webkit-backdrop-filter:saturate(160%) blur(14px);
-  transition:box-shadow .35s var(--ease), padding .35s var(--ease)}
+  transition:background .4s var(--ease), backdrop-filter .4s var(--ease),
+             box-shadow .35s var(--ease), padding .35s var(--ease)}
 .stickynav.scrolled{box-shadow:0 8px 30px rgba(10,37,64,.22)}
+
+/* ---------- transparent nav over a hero ----------------------------------
+   Only on pages that actually have a hero directly behind the header, and
+   only until the page scrolls. On a page with no hero the bar keeps its
+   solid background, because white links on white content are unreadable.
+
+   The bar goes transparent but NOT bare: a soft top-down veil rides with
+   it. Fully clear looked good on the calm part of the sky and became
+   illegible the moment the moon or a bright star drifted behind a link.
+   The veil is dark at the very top and gone by the bottom edge, so the
+   scene still reads through it.
+   ------------------------------------------------------------------------ */
+body:has(.hero) .stickynav:not(.scrolled){
+  background:transparent;
+  backdrop-filter:none;-webkit-backdrop-filter:none}
+body:has(.hero) .stickynav::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  opacity:1;transition:opacity .4s var(--ease);
+  background:linear-gradient(180deg,rgba(4,12,24,.62) 0%,rgba(4,12,24,.30) 58%,
+             rgba(4,12,24,0) 100%)}
+body:has(.hero) .stickynav.scrolled::before{opacity:0}
+body:has(.hero) .stickynav:not(.scrolled) .grouprail{border-bottom-color:rgba(255,255,255,.18)}
+/* Pull the hero up under the bar, then give it back the same space as
+   padding. The scene therefore extends behind the nav while the headline
+   sits exactly where it did — no reflow, nothing hidden under the links.
+   --kd-navh is measured and set by site.js; the 0px fallback means a page
+   with JS off simply keeps the old, correct layout. */
+body:has(.hero) .hero{
+  margin-top:calc(-1 * var(--kd-navh,0px));
+  padding-top:var(--kd-navh,0px)}
 .stickynav .navlinks a{position:relative;font-weight:500;font-size:14.5px;padding:6px 0;opacity:.9}
 .stickynav .navlinks a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:2px;
   background:var(--color-accent-400);border-radius:2px;transition:right .35s var(--ease)}
@@ -879,3 +910,18 @@ footer .nav-brand{color:#fff}
   display:grid;place-items:center}
 .kdbanner button:hover{background:rgba(255,255,255,.3)}
 @media (max-width:640px){.kdbanner{font-size:13.5px;padding:10px 14px;gap:10px}}
+
+/* ==========================================================================
+   ENROLMENT — "will you stay?" conditional note
+   ==========================================================================
+   The note only concerns people who picked "Decide later". It is wrapped in
+   @supports so that on a browser without :has() the note simply stays
+   visible rather than becoming unreachable — it is informative text, so
+   showing it to everyone is the safe failure, not hiding it.
+   ========================================================================== */
+.staynote{margin-top:10px;border-left:3px solid var(--color-accent);
+  padding:10px 0 10px 14px;background:transparent}
+@supports selector(:has(*)){
+  .staynote{display:none}
+  .stayfield:has(input[value^="Deciding later"]:checked) + .staynote{display:block}
+}

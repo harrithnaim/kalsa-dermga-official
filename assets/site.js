@@ -272,6 +272,30 @@
      visitors who never watch, and with Drive avoids spending the
      file's daily bandwidth quota on people who just scroll past.
      --------------------------------------------------------------- */
+  /* ---------------------------------------------------------------
+     Publish the header height as --kd-navh
+     The transparent-over-hero nav needs the hero to start behind the
+     bar. CSS cannot measure the bar, so it is published here and the
+     stylesheet pulls the hero up by exactly that much and pads it back
+     down again. Falls back to 0px, which is the old layout, so a page
+     with this script blocked still looks right rather than broken.
+     --------------------------------------------------------------- */
+  function initNavHeight() {
+    var head = document.querySelector('.stickynav');
+    if (!head) return;
+    var apply = function () {
+      document.documentElement.style.setProperty(
+        '--kd-navh', Math.round(head.getBoundingClientRect().height) + 'px');
+    };
+    apply();
+    if (window.ResizeObserver) new ResizeObserver(apply).observe(head);
+    var rt;
+    window.addEventListener('resize', function () {
+      clearTimeout(rt); rt = setTimeout(apply, 120);
+    }, { passive: true });
+    window.addEventListener('load', apply);
+  }
+
   function initVideoFacade() {
     var wraps = document.querySelectorAll('.vfacade');
     for (var i = 0; i < wraps.length; i++) {
@@ -318,7 +342,94 @@
     }
   }
 
+  /* ---------------------------------------------------------------
+     10. Copy the feedback form to our own server as well as email
+     The form posts to Web3Forms exactly as before — that is still the
+     thing that must not fail, and it keeps working if our server is
+     off. This additionally sends a copy to the admin console so an
+     approved reply can become a published quote in one click, instead
+     of someone retyping it out of an inbox.
+
+     Deliberately fire-and-forget: sendBeacon cannot delay or block the
+     real submit, and every failure is swallowed. If our server is
+     asleep the parent notices nothing and the email still arrives.
+     --------------------------------------------------------------- */
+  var FEEDBACK_SINK = 'https://apps.kalsadermaga.com/api/superapp/site/feedback';
+
+  function initFeedbackCopy() {
+    var form = document.querySelector('#feedback form');
+    if (!form || !navigator.sendBeacon) return;
+    form.addEventListener('submit', function () {
+      try {
+        var out = {};
+        var els = form.querySelectorAll('input[name],select[name],textarea[name]');
+        for (var i = 0; i < els.length; i++) {
+          var el = els[i];
+          if (['access_key', 'subject', 'from_name', 'redirect', 'botcheck'].indexOf(el.name) > -1) continue;
+          if (el.type === 'radio' && !el.checked) continue;
+          if (el.type === 'checkbox') { out[el.name] = el.checked ? el.value || 'yes' : ''; continue; }
+          out[el.name] = el.value;
+        }
+        var blob = new Blob([JSON.stringify(out)], { type: 'application/json' });
+        navigator.sendBeacon(FEEDBACK_SINK, blob);
+      } catch (e) { /* never let this affect the real submit */ }
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     11. Site-wide announcement banner
+     Read from assets/announcement.json rather than baked into every
+     page: one small file to publish, and the banner then appears on
+     all eleven pages instead of needing a marker in each of them.
+     A banner is not search-engine content, so rendering it with JS
+     costs nothing that matters.
+
+     Dismissal is remembered per announcement id, so a new notice
+     shows again even to someone who closed the last one.
+     --------------------------------------------------------------- */
+  function initBanner() {
+    if (!window.fetch) return;
+    fetch('assets/announcement.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (a) {
+        if (!a || !a.active || !a.text) return;
+        try { if (localStorage.getItem('kd_ann_' + a.id) === '1') return; } catch (e) {}
+
+        var bar = document.createElement('div');
+        bar.className = 'kdbanner' + (a.tone === 'warn' ? ' warn' : (a.tone === 'good' ? ' good' : ''));
+        bar.setAttribute('role', 'status');
+
+        var t = document.createElement('span');
+        t.className = 'kdb-t';
+        t.textContent = a.text;                    // textContent, never innerHTML
+        bar.appendChild(t);
+
+        if (a.linkText && a.linkHref) {
+          var link = document.createElement('a');
+          link.href = a.linkHref;
+          link.textContent = a.linkText;
+          bar.appendChild(link);
+        }
+
+        var x = document.createElement('button');
+        x.type = 'button';
+        x.setAttribute('aria-label', 'Dismiss this announcement');
+        x.textContent = '✕';
+        x.onclick = function () {
+          bar.remove();
+          try { localStorage.setItem('kd_ann_' + a.id, '1'); } catch (e) {}
+        };
+        bar.appendChild(x);
+
+        document.body.insertBefore(bar, document.body.firstChild);
+      })
+      .catch(function () { /* no banner is a fine outcome */ });
+  }
+
   function boot() {
+    initNavHeight();
+    initBanner();
+    initFeedbackCopy();
     initVideoFacade();
     initLightbox();
     initAutoReveal();

@@ -102,7 +102,14 @@
 
   <!-- ══════════════════════════════ HERO ══════════════════════════════ -->
   <section class="hero">
-    <div class="wrapx" style="padding-top:clamp(64px,9vw,120px);padding-bottom:clamp(56px,8vw,104px);">
+    <!-- Decorative 3D backdrop: WebGL sea surface + brand constellation.
+         Purely visual, hidden from assistive tech, degrades to the CSS
+         gradient if WebGL or JS is unavailable. -->
+    <div class="hero-canvas" aria-hidden="true">
+      <canvas id="heroWaves"></canvas>
+      <canvas id="heroNodes"></canvas>
+    </div>
+    <div class="wrapx" style="position:relative;z-index:1;padding-top:clamp(64px,9vw,120px);padding-bottom:clamp(56px,8vw,104px);">
       <div style="max-width:920px;">
         <div class="pill rise" style="--d:0ms;margin-bottom:26px;">
           <span class="dot-live"></span> Kuantan · Shah Alam <b>Est. 2026</b>
@@ -494,5 +501,6 @@
 </div>
 
 <script src="assets/site.js" defer></script>
+<script src="assets/hero3d.js" defer></script>
 </body>
 </html>

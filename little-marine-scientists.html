@@ -160,24 +160,28 @@
       </div>
 
       <!-- ─── SESSION FILM ───────────────────────────────────────────────
-           Replacing the video: swap assets/lms-150826.mp4 and the
-           poster image. Keep the file well under 100MB — GitHub refuses
-           anything larger. preload="none" means the video is only
-           downloaded once someone presses play, so it costs nothing to
-           visitors who scroll past.
+           Click-to-play. The poster loads with the page; the video player
+           is only fetched when someone presses play. That keeps the page
+           fast and — with Google Drive — stops every casual visitor
+           burning the file's daily bandwidth quota.
+
+           SWITCHING TO YOUTUBE LATER: delete the data-drive attribute and
+           put data-yt="YOUR_VIDEO_ID" in its place. From a link like
+           https://www.youtube.com/watch?v=dQw4w9WgXcQ the ID is the part
+           after "v=". Nothing else changes.
            ──────────────────────────────────────────────────────────── -->
-      <div class="vplayer reveal">
-        <video controls playsinline preload="none"
-               poster="assets/lms-poster.jpg"
-               width="1280" height="720">
-          <source src="assets/lms-150826.mp4" type="video/mp4">
-          <p style="color:#fff;padding:20px;">
-            Your browser cannot play this video.
-            <a href="assets/lms-150826.mp4" style="color:#7cc4f5;">Download it instead</a>.
-          </p>
-        </video>
+      <div class="vplayer vfacade reveal"
+           data-drive="1yOp0-HFF1kyiVTqL-wmkahzjsSVwuwqj"
+           data-title="Little Marine Scientists at Pantai Tembeling, 15 August 2026">
+        <img src="assets/lms-poster.jpg"
+             alt="Title card of the Little Marine Scientists session film"
+             class="vposter" loading="lazy">
+        <button class="vplay" type="button" aria-label="Play the session film">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+        </button>
       </div>
-      <p class="vnote">Little Marine Scientists at Pantai Tembeling, 15 August 2026 · 3 min 36 s</p>
+      <p class="vnote">Little Marine Scientists at Pantai Tembeling, 15 August 2026 · 3 min 36 s ·
+        <a href="https://drive.google.com/file/d/1yOp0-HFF1kyiVTqL-wmkahzjsSVwuwqj/view" target="_blank" rel="noopener noreferrer">open in Google Drive ↗</a></p>
 
       <!-- ─── PHOTOS ─────────────────────────────────────────────────── -->
       <h3 style="margin:clamp(36px,4vw,56px) 0 18px;">From the shoreline</h3>

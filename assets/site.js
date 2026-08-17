@@ -187,7 +187,84 @@
     }
   }
 
+  /* ---------------------------------------------------------------
+     8. Photo lightbox
+     Any .pgrid button opens its image full-size. Arrow keys and the
+     on-screen arrows move between photos; Esc or a backdrop click
+     closes. Focus returns to the thumbnail that opened it.
+     --------------------------------------------------------------- */
+  function initLightbox() {
+    var grids = document.querySelectorAll('.pgrid');
+    if (!grids.length) return;
+
+    var box = document.createElement('div');
+    box.className = 'lbox';
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+    box.setAttribute('aria-label', 'Photo viewer');
+    box.innerHTML =
+      '<button class="lclose" type="button" aria-label="Close">✕</button>' +
+      '<button class="lprev" type="button" aria-label="Previous photo">‹</button>' +
+      '<button class="lnext" type="button" aria-label="Next photo">›</button>' +
+      '<div><img alt=""><div class="lcap"></div></div>';
+    document.body.appendChild(box);
+
+    var img = box.querySelector('img');
+    var cap = box.querySelector('.lcap');
+    var shots = [], idx = 0, opener = null;
+
+    for (var g = 0; g < grids.length; g++) {
+      var btns = grids[g].querySelectorAll('button');
+      for (var i = 0; i < btns.length; i++) {
+        (function (btn) {
+          var im = btn.querySelector('img');
+          if (!im) return;
+          var c = btn.querySelector('figcaption');
+          var rec = { src: im.getAttribute('data-full') || im.src,
+                      alt: im.alt || '',
+                      cap: c ? c.textContent.trim() : '' };
+          shots.push(rec);
+          var myIndex = shots.length - 1;
+          btn.addEventListener('click', function () { opener = btn; show(myIndex); });
+        })(btns[i]);
+      }
+    }
+    if (!shots.length) { box.parentNode.removeChild(box); return; }
+
+    function show(n) {
+      idx = (n + shots.length) % shots.length;
+      img.src = shots[idx].src;
+      img.alt = shots[idx].alt;
+      cap.textContent = shots[idx].cap;
+      box.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      box.querySelector('.lclose').focus();
+    }
+    function close() {
+      box.classList.remove('open');
+      document.body.style.overflow = '';
+      img.src = '';
+      if (opener) { opener.focus(); opener = null; }
+    }
+
+    box.querySelector('.lclose').addEventListener('click', close);
+    box.querySelector('.lprev').addEventListener('click', function (e) {
+      e.stopPropagation(); show(idx - 1);
+    });
+    box.querySelector('.lnext').addEventListener('click', function (e) {
+      e.stopPropagation(); show(idx + 1);
+    });
+    box.addEventListener('click', function (e) { if (e.target === box) close(); });
+    document.addEventListener('keydown', function (e) {
+      if (!box.classList.contains('open')) return;
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowLeft') show(idx - 1);
+      else if (e.key === 'ArrowRight') show(idx + 1);
+    });
+  }
+
   function boot() {
+    initLightbox();
     initAutoReveal();
     initReveal();
     initNav();

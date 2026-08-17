@@ -1,58 +1,68 @@
 /* =====================================================================
-   KALSA DERMAGA — SEASCAPE
+   KALSA DERMAGA — SEASCAPE (night)
    =====================================================================
-   One scene, two layers, no libraries.
+   A moonlit sea under a turning sky. Two layers, no libraries.
 
-     Layer 1 (WebGL)  sky and sea in a single fragment shader. The sea is
+     Layer 1 (WebGL)  sky and water in one fragment shader. The water is
                       ray-cast per pixel against a wave field, so the
-                      horizon and the perspective are real geometry. The
-                      sky above it is the same ray, pointed up: gradient,
-                      sun, moon, stars, drifting cloud. The water then
-                      REFLECTS that sky through a Fresnel term, which is
-                      why the two halves belong to each other rather than
-                      just being stacked.
+                      horizon and perspective are real geometry, and it
+                      REFLECTS the sky above it through a Fresnel term.
+                      The sky carries a Milky Way band and two tiers of
+                      stars laid out on a sphere, and the whole star
+                      sphere ROTATES about a celestial pole — the sky is
+                      not a still backdrop, it turns like the real one.
 
-     Layer 2 (2D)     the life. Vessels on the horizon, a pod of dolphins
-                      that leaps, a whale that surfaces and blows, gulls.
-                      Placed in world coordinates and projected with the
-                      same camera the shader uses, so a hull sits ON the
-                      waterline instead of near it.
+     Layer 2 (2D)     the container vessel and the dolphins. The ship is
+                      NOT a silhouette: it is a set of solids with real
+                      vertices, projected through the same camera, back-
+                      face culled, depth sorted and shaded per face
+                      against the moon. That is why its bow swings and
+                      its sides change tone as it crosses.
 
-   Degrades in three steps, and I have rendered all three:
-     - no WebGL      -> layer 1 never draws, layer 2 and the CSS gradient
-                        still do. You keep the vessels and the wildlife.
-     - reduced motion-> one still frame of both layers. Nothing animates.
-     - offscreen or
-       hidden tab    -> the loop stops entirely.
+   Degrades in three steps, all three rendered and checked:
+     - no WebGL       -> layer 1 never draws; the ship, the dolphins and
+                         the CSS gradient still do.
+     - reduced motion -> one still frame of both layers, no loop.
+     - offscreen/hidden tab -> the loop stops.
 
    TO REMOVE: delete the script tag. Nothing else depends on it.
    ===================================================================== */
 (function () {
   'use strict';
 
+  /* The daylight version of this scene had a sun, a whale and gulls.
+     None of them are here: at night a gull is invisible and a whale is
+     a dark lump, and the brief is a moonlit sea. That code is not
+     hiding behind a flag — it is gone, and lives in the previous commit
+     if it is ever wanted back. */
+
   /* ------------------------------------------------------------------
      CAMERA — shared by the shader and the 2D layer
      ------------------------------------------------------------------
-     The eye is EYE metres above the water looking slightly down. A ray
-     for pixel uv (origin at centre, divided by height) is
+     Eye EYE metres above the water, looking slightly down. The ray for
+     pixel uv (origin centre, divided by height) is
 
          rd = normalize(vec3(uv.x*FX, uv.y*FY + PITCH, 1))
 
      so the horizon (rd.y = 0) sits at uv.y = -PITCH/FY, and a world
-     point (X, h, Z) inverts to
+     point (X, Y, Z) inverts to
 
          uv.x = X / (Z*FX)
-         uv.y = ((h - EYE)/Z - PITCH) / FY
+         uv.y = ((Y - EYE)/Z - PITCH) / FY
 
-     project() below is exactly that. Because both layers use it, a ship
-     placed at Z=140 lands on the shader's horizon and not above it.
-
-     EYE is 5 m — the view from a deck or a jetty, not from a dinghy. It
-     matters more than it sounds: at a 1 m eye height a leaping dolphin
-     rises ABOVE the horizon line, which is geometrically true and looks
-     completely wrong. The shader's ray origin must match this exactly or
-     the two layers drift apart. */
+     project() is exactly that, which is what lets a hull sit ON the
+     waterline rather than near it. The shader's ray origin must equal
+     EYE or the two layers drift apart. */
   var EYE = 5.0, FX = 1.15, FY = 0.95, PITCH = -0.115;
+
+  /* Where the moon is. The shader has the identical function in GLSL —
+     the ship is lit by this, so the two must not disagree. */
+  function moonDirJS(t) {
+    var a = 0.85 - ((t * 0.0055) % 1.8);
+    var x = a, y = 0.175 + Math.sin(t * 0.006) * 0.015, z = 0.72;
+    var m = Math.sqrt(x * x + y * y + z * z);
+    return [x / m, y / m, z / m];
+  }
 
   /* ==================================================================
      SHADER
@@ -69,7 +79,7 @@
     'uniform float uFY;',
     'uniform float uPitch;',
 
-    /* ---------- small noise kit ---------- */
+    /* ---------- noise ---------- */
     'float hash21(vec2 p){',
     '  p = fract(p*vec2(123.34,456.21));',
     '  p += dot(p,p+45.32);',
@@ -86,125 +96,136 @@
     '}',
     'float fbm(vec2 p){',
     '  float s = 0.0, a = 0.5;',
-    '  for(int i=0;i<4;i++){ s += a*vnoise(p); p *= 2.03; a *= 0.5; }',
+    '  for(int i=0;i<3;i++){ s += a*vnoise(p); p *= 2.07; a *= 0.5; }',
     '  return s;',
     '}',
 
-    /* ---------- where the sun and moon are -----------------------------
-       Dusk. The sun is just above the horizon on the left; the moon has
-       already risen on the right and crosses over roughly two minutes,
-       which is slow enough to feel like sky and fast enough that you can
-       see it move while you read the page. */
-    'vec3 sunDir(float t){',
-    '  float a = -0.62 + sin(t*0.017)*0.05;',        // lateral drift
-    '  float y =  0.055 + sin(t*0.011)*0.012;',      // sits low, breathes
-    '  return normalize(vec3(a, y, 1.0));',
-    '}',
-    'vec3 moonDir(float t){',
-    '  float a = 0.95 - mod(t*0.0075, 2.2);',        // crosses the sky
-    '  return normalize(vec3(a, 0.42 + sin(t*0.006)*0.05, 0.75));',
+    /* Rodrigues rotation — used to turn the star sphere. */
+    'vec3 rot(vec3 v, vec3 k, float a){',
+    '  float c = cos(a), s = sin(a);',
+    '  return v*c + cross(k,v)*s + k*dot(k,v)*(1.0-c);',
     '}',
 
-    /* ---------- sky ----------------------------------------------------
-       full=1 adds stars and the second cloud layer. The water's
-       reflection calls this with full=0, because paying for stars twice
-       per pixel is not worth what it buys at 18% Fresnel. */
+    /* Cube-face coordinates.
+       Stars need cells of roughly EQUAL SIZE across the sky. A flat
+       projection like rd.xz/(rd.y+k) stretches without bound toward the
+       horizon, and one unlucky cell down there inflates into an enormous
+       soft ellipse hanging over the sea — a bug I chased through the
+       moon and the cloud code before measuring it. Projecting onto the
+       six faces of a cube bounds the distortion at about 1.7x, so a star
+       stays a star wherever it is. Returns cell coords in xy, face id
+       in z. */
+    'vec3 faceCoord(vec3 v){',
+    '  vec3 a = abs(v);',
+    '  if (a.x >= a.y && a.x >= a.z) return vec3(v.y/a.x, v.z/a.x, v.x > 0.0 ? 0.0 : 1.0);',
+    '  if (a.y >= a.z)               return vec3(v.x/a.y, v.z/a.y, v.y > 0.0 ? 2.0 : 3.0);',
+    '  return vec3(v.x/a.z, v.y/a.z, v.z > 0.0 ? 4.0 : 5.0);',
+    '}',
+
+    'vec3 starLayer(vec3 sv, float dens, float thresh, float t){',
+    '  vec3 fc = faceCoord(sv);',
+    '  vec2 sp = fc.xy * dens;',
+    '  vec2 gi = floor(sp);',
+    '  float seed = fc.z * 71.7;',
+    '  float h = hash21(gi + seed);',
+    '  if (h < thresh) return vec3(0.0);',
+    '  vec2 c = gi + 0.5 + (vec2(hash21(gi+seed+3.1), hash21(gi+seed+7.7)) - 0.5)*0.8;',
+    '  float d = length(sp - c);',
+    // most stars faint, a few bright — a uniform field reads as noise
+    '  float mag = pow(hash21(gi+seed+13.3), 2.5);',
+    '  float tw  = 0.72 + 0.28*sin(t*(1.8 + mag*6.0) + h*60.0);',
+    '  float s   = smoothstep(0.34, 0.0, d) * tw * (0.22 + mag*1.7);',
+    '  float warm = hash21(gi+seed+21.1);',
+    '  vec3 tint = mix(vec3(0.74,0.83,1.00), vec3(1.00,0.87,0.72), warm*warm);',
+    '  return tint * s;',
+    '}',
+
+    'float milkyWay(vec3 sv){',
+    '  vec3 gp = normalize(vec3(0.76,0.44,-0.48));',   // pole of the band
+    '  float d = abs(dot(sv, gp));',
+    '  float band = smoothstep(0.40, 0.02, d);',
+    '  vec3 fc = faceCoord(sv);',
+    '  float n = fbm(fc.xy*3.6 + fc.z*17.0);',
+    '  return band * (0.30 + n*1.05);',
+    '}',
+
+    'vec3 moonDir(float t){',
+    /* Kept low. At y=0.55 the moon projects above the top edge of a
+       hero-sized canvas: never on screen, while its glitter path still
+       ran across the water from a source you could not see. Low also
+       gives the longest, best path. */
+    '  float a = 0.85 - mod(t*0.0055, 1.8);',
+    '  return normalize(vec3(a, 0.175 + sin(t*0.006)*0.015, 0.72));',
+    '}',
+
+    /* ---------- sky ----------
+       full=1 is the direct view: stars, Milky Way, two cloud octaves.
+       full=0 is what the water samples for its reflection — stars are
+       deliberately dropped there. Wave slopes scatter a point source
+       into noise, so per-star reflections cost a lot and read as dirt. */
     'vec3 sky(vec3 rd, float t, float full){',
     '  float up = clamp(rd.y, -0.02, 1.0);',
+    '  vec3 zenith = vec3(0.008,0.016,0.042);',
+    '  vec3 midc   = vec3(0.018,0.040,0.082);',
+    '  vec3 lowc   = vec3(0.052,0.078,0.118);',        // faint airglow
+    '  vec3 col = mix(midc, zenith, clamp(up*2.2,0.0,1.0));',
+    '  col = mix(col, lowc, pow(1.0 - clamp(up*6.0,0.0,1.0), 2.2));',
 
-    // vertical gradient: deep indigo overhead into a warm band at the sea
-    '  vec3 zenith = vec3(0.035,0.075,0.165);',
-    '  vec3 mid    = vec3(0.075,0.230,0.330);',
-    '  vec3 low    = vec3(0.480,0.420,0.360);',
-    '  vec3 col = mix(mid, zenith, clamp(up*2.1,0.0,1.0));',
-    '  col = mix(col, low, pow(1.0 - clamp(up*5.5,0.0,1.0), 2.2));',
+    '  vec3 pole = normalize(vec3(0.18,0.12,1.0));',
+    '  vec3 sv = rot(rd, pole, t*0.0125);',            // the sky turns
+    '  float hf = smoothstep(0.0, 0.15, rd.y);',       // thin near horizon
 
-    // stars, thinning towards the horizon and washed out by the sun
-    /* Stars are laid out in SCREEN space (rd.xy/rd.z), not on a horizon
-       projection. rd.xz/(rd.y+k) stretches without bound as the ray
-       drops toward the horizon, so one unlucky grid cell down there
-       inflated into an enormous soft ellipse hanging over the sea. I
-       spent two rounds blaming that shape on the moon and then on the
-       cloud clamp before measuring it. Screen space keeps every cell the
-       same size, so a star is a star. */
-    '  if (full > 0.5 && rd.z > 0.05) {',
-    '    vec2 sp = vec2(rd.x/rd.z, rd.y/rd.z) * 22.0;',
-    '    vec2 gi = floor(sp);',
-    '    float h = hash21(gi);',
-    '    if (h > 0.955) {',
-    '      vec2 c = gi + 0.5 + (vec2(hash21(gi+7.1), hash21(gi+3.3)) - 0.5)*0.7;',
-    '      float d = length(sp - c);',
-    '      float tw = 0.55 + 0.45*sin(t*(1.4 + h*5.0) + h*40.0);',
-    '      float s = smoothstep(0.22, 0.0, d) * tw;',
-    '      col += vec3(0.85,0.92,1.0) * s * smoothstep(0.03,0.42,rd.y) * 0.95;',
-    '    }',
+    '  if (full > 0.5) {',
+    '    col += milkyWay(sv) * vec3(0.085,0.100,0.150) * hf;',
+    '    col += starLayer(sv, 26.0, 0.900, t) * 0.95 * hf;',
+    '    col += starLayer(sv, 54.0, 0.952, t) * 0.55 * hf;',
     '  }',
 
-    // the sun: a soft disc with a wide warm halo
-    '  vec3 sd = sunDir(t);',
-    '  float sdot = max(dot(rd, sd), 0.0);',
-    '  col += vec3(1.00,0.62,0.34) * pow(sdot, 180.0) * 1.5;',
-    '  col += vec3(0.95,0.55,0.30) * pow(sdot,  14.0) * 0.42;',
-    '  col += vec3(0.55,0.42,0.34) * pow(sdot,   3.2) * 0.16;',
-
-    /* the moon.
-       Measured in SCREEN space, not angular distance. A disc that is
-       round in direction space is not round on screen: the ray uses
-       x*1.15 and y*0.95, so the same angle covers 21% more uv vertically
-       and the moon came out as a tall oval. Undoing the two scales puts
-       it back to a circle. (pow(dot) was worse still — at mediump there
-       are no bits left that close to 1.0, and it banded into a pair of
-       ghost columns.) */
-    '  float moon = 0.0, halo = 0.0;',
+    /* the moon — measured in SCREEN space.
+       A disc that is round in direction space is not round on screen:
+       the ray scales x by 1.15 and y by 0.95, so the same angle covers
+       21% more uv vertically and the moon came out an oval. Undoing both
+       scales puts it back to a circle. (pow(dot) is worse still: at
+       mediump there are no bits left that close to 1.0 and it bands.) */
     '  vec3 md = moonDir(t);',
+    '  float moon = 0.0, halo = 0.0;',
     '  if (rd.z > 0.02 && md.z > 0.02) {',
     '    vec2 mUV = vec2((md.x/md.z)/1.15, (md.y/md.z)/0.95);',
     '    vec2 rUV = vec2((rd.x/rd.z)/1.15, (rd.y/rd.z)/0.95);',
     '    float dm = length(rUV - mUV);',
-    // sized for the screen, not for astronomy: the real thing is
-    // 0.0045 rad and would land as three grey pixels
-    '    float disc = smoothstep(0.052, 0.044, dm);',
-    // a bite out of one side so it reads as a phase, not a dot
-    '    float bite = smoothstep(0.056, 0.048, length(rUV - mUV - vec2(0.034,0.021)));',
-    '    moon = clamp(disc - bite*0.90, 0.0, 1.0);',
-    '    halo = smoothstep(0.140, 0.052, dm);',
+    '    moon = smoothstep(0.056, 0.047, dm);',
+    '    halo = smoothstep(0.42, 0.050, dm);',
     '  }',
-    '  col += vec3(0.94,0.96,1.00) * moon * 1.9;',
-    '  col += vec3(0.55,0.68,0.90) * halo * 0.10;',
+    '  col += vec3(0.97,0.98,1.00) * moon * 2.6;',
+    '  col += vec3(0.44,0.54,0.76) * halo * halo * 0.42;',
 
-    // cloud: a drifting deck, warm-lit underneath from the sun side
+    /* thin cloud, dark against the sky, silver where the moon is behind.
+       rd.xz/rd.y is the honest flat projection but explodes at the
+       horizon; clamping it froze the noise into a huge soft oval, so
+       this divides by (rd.y + 0.25) instead — bounded everywhere, no
+       clamp, and still compresses toward the horizon like real cloud. */
     '  float cl = 0.0;',
     '  if (rd.y > 0.004) {',
-    /* rd.xz/rd.y is the honest flat-plane projection, but it explodes as
-       the ray approaches the horizon. Clamping it — which is what I did
-       first — freezes the noise over a whole region and paints a large
-       soft OVAL in the sky, which I spent a while blaming on the moon.
-       Dividing by (rd.y + 0.25) is bounded everywhere, needs no clamp,
-       and still compresses the cloud toward the horizon the way real
-       cloud does. */
     '    vec2 cp = rd.xz/(rd.y + 0.25);',
-    '    cl = fbm(cp*2.20 + vec2(t*0.010, t*0.004));',
-    '    cl = smoothstep(0.50, 0.86, cl);',
+    '    cl = fbm(cp*2.05 + vec2(t*0.009, t*0.004));',
+    '    cl = smoothstep(0.52, 0.90, cl);',
     '    if (full > 0.5) {',
-    '      float cl2 = fbm(cp*4.40 + vec2(-t*0.017, t*0.007) + 11.0);',
-    '      cl = max(cl, smoothstep(0.60, 0.92, cl2)*0.55);',
+    '      float cl2 = fbm(cp*4.30 + vec2(-t*0.015, t*0.006) + 11.0);',
+    '      cl = max(cl, smoothstep(0.62, 0.94, cl2)*0.5);',
     '    }',
     '    cl *= smoothstep(0.004, 0.10, rd.y);',
-    // In the reflection (full=0) a near-horizontal ray sends rd.xz/rd.y
-    // off to the clamp and the cloud field flattens into one huge pale
-    // smear on the water. Fading it out at low angles kills that.
-    '    if (full < 0.5) cl *= 0.45 * smoothstep(0.02, 0.30, rd.y);',
     '  }',
-    '  vec3 cloudCol = mix(vec3(0.13,0.18,0.26), vec3(0.85,0.60,0.42), pow(sdot,2.0));',
-    '  col = mix(col, cloudCol, cl*0.62);',
+    '  float mdot = max(dot(rd, md), 0.0);',
+    '  vec3 cloudCol = mix(vec3(0.030,0.042,0.068), vec3(0.42,0.48,0.60), pow(mdot,6.0));',
+    '  col = mix(col, cloudCol, cl*0.55);',
 
     '  return col;',
     '}',
 
-    /* ---------- sea surface ----------
-       Six octaves. An earlier pass used frequencies three to six times
-       lower and the result read as a flat teal panel, because the swells
-       were effectively hundreds of metres wide. */
+    /* ---------- the sea surface ----------
+       Six octaves. An early pass ran these three to six times lower and
+       the water read as a flat panel: the swells were effectively
+       hundreds of metres across. */
     'float wave(vec2 p, float t){',
     '  float h = 0.0;',
     '  h += sin(p.x*1.70 + t*1.10)*0.34;',
@@ -218,66 +239,64 @@
 
     'void main(){',
     '  vec2 uv = (gl_FragCoord.xy - 0.5*uRes)/uRes.y;',
-    '  vec3 ro = vec3(0.0, 5.0, 0.0);',            // must equal EYE in the JS
+    '  vec3 ro = vec3(0.0, 5.0, 0.0);',                // must equal EYE
     '  vec3 rd = normalize(vec3(uv.x*1.15, uv.y*uFY + uPitch + uPtr.y*0.018, 1.0));',
     '  float t = uTime;',
-    '  vec3 sd = sunDir(t);',
+    '  vec3 md = moonDir(t);',
+    '  vec3 horizonCol = vec3(0.045,0.062,0.092);',
     '  vec3 col;',
 
-    /* ---- above the horizon: sky ---- */
-    '  if (rd.y > 0.0) {',
+    '  if (rd.y > 0.0) {',                              // sky
     '    col = sky(rd, t, 1.0);',
-    // haze thickening into the horizon line so sea and sky meet softly
     '    float hz = 1.0 - smoothstep(0.0, 0.055, rd.y);',
-    '    col = mix(col, vec3(0.30,0.34,0.36), hz*0.55);',
+    '    col = mix(col, horizonCol, hz*0.6);',
     '    gl_FragColor = vec4(col, 1.0);',
     '    return;',
     '  }',
 
-    /* ---- below: the water ---- */
-    '  float d = -ro.y/rd.y;',
+    '  float d = -ro.y/rd.y;',                          // water
     '  vec3 pos = ro + rd*d;',
-    // 0.25 keeps the apparent wavelength right now that the eye is five
-    // times higher; without it the whole sea turns to fine chop
+    // 0.25 keeps the apparent wavelength right at a 5 m eye height
     '  vec2 q = vec2(pos.x, pos.z)*0.25 + vec2(uPtr.x*0.4, t*0.32);',
 
     '  float e = 0.045;',
-    '  float h  = wave(q, t);',
-    '  float hx = wave(q + vec2(e,0.0), t);',
-    '  float hz2= wave(q + vec2(0.0,e), t);',
-    // flatten the normal with distance, or the far field turns to noise
-    // more perturbation up close, not less: a flatter near field turned
-    // the reflected cloud into big pale blobs on the water
-    '  float flat0 = mix(0.150, 0.010, smoothstep(30.0, 430.0, d));',
-    '  vec3 n = normalize(vec3(-(hx-h)/e*flat0, 1.0, -(hz2-h)/e*flat0));',
+    '  float h   = wave(q, t);',
+    '  float hx  = wave(q + vec2(e,0.0), t);',
+    '  float hz2 = wave(q + vec2(0.0,e), t);',
+    // more perturbation near, less far — a flat near field turned the
+    // reflected sky into big pale blobs
+    '  float sl = mix(0.150, 0.010, smoothstep(30.0, 430.0, d));',
+    '  vec3 n = normalize(vec3(-(hx-h)/e*sl, 1.0, -(hz2-h)/e*sl));',
 
     '  vec3 V = -rd;',
     '  vec3 R = reflect(rd, n);',
-    '  R.y = abs(R.y);',                    // never sample below the sea
+    '  R.y = abs(R.y);',
     '  vec3 refl = sky(R, t, 0.0);',
 
-    // Fresnel: glancing angles at distance mirror the sky, near water is body colour
-    '  float fres = pow(1.0 - max(dot(n, V), 0.0), 4.5);',
-    '  fres = clamp(0.045 + fres*0.95, 0.0, 1.0);',
+    '  float fres = pow(1.0 - max(dot(n,V),0.0), 4.5);',
+    '  fres = clamp(0.040 + fres*0.95, 0.0, 1.0);',
 
-    '  vec3 deep = vec3(0.020,0.075,0.130);',
-    '  vec3 body = vec3(0.045,0.230,0.290);',
-    '  vec3 col2 = mix(deep, body, clamp(0.45 + h*0.55, 0.0, 1.0));',
-    '  col = mix(col2, refl, fres);',
+    '  vec3 deep = vec3(0.006,0.017,0.034);',
+    '  vec3 body = vec3(0.017,0.052,0.082);',
+    '  vec3 water = mix(deep, body, clamp(0.45 + h*0.55, 0.0, 1.0));',
+    '  col = mix(water, refl, fres);',
 
-    // sun glitter — the broken path of light running toward the viewer
-    '  vec3 H = normalize(sd + V);',
-    '  float spec = pow(max(dot(n,H),0.0), 90.0);',
-    '  float path = smoothstep(0.55, 1.0, 1.0 - abs(uv.x - sd.x*0.62)*1.4);',
-    '  col += vec3(1.00,0.72,0.45) * spec * (0.55 + path*2.4);',
+    /* the moon path — the broken ribbon of light running to the viewer.
+       Narrower and harder than a sun path: moonlight is a smaller, far
+       dimmer source, so it glitters rather than floods. */
+    '  vec3 H = normalize(md + V);',
+    '  float spec = pow(max(dot(n,H),0.0), 220.0);',
+    '  float path = smoothstep(0.62, 1.0, 1.0 - abs(uv.x - md.x*0.55)*1.5);',
+    '  col += vec3(0.80,0.86,1.00) * spec * (0.45 + path*3.6);',
+    // a broad, weak moonlight sheen so the swell stays legible away
+    // from the glitter path instead of falling into pure black
+    '  col += vec3(0.10,0.14,0.21) * pow(max(dot(n,md),0.0), 5.0) * 0.30;',
 
-    // white water on the steepest crests, only where you could resolve it
-    '  float crest = smoothstep(0.30, 0.52, h) * (1.0 - smoothstep(50.0, 230.0, d));',
-    '  col = mix(col, vec3(0.72,0.86,0.88), crest*0.20);',
+    '  float crest = smoothstep(0.32, 0.54, h) * (1.0 - smoothstep(50.0, 230.0, d));',
+    '  col = mix(col, vec3(0.30,0.38,0.46), crest*0.16);',
 
-    // distance haze into the horizon, matched to the sky side
     '  float fog = smoothstep(70.0, 720.0, d);',
-    '  col = mix(col, vec3(0.30,0.34,0.36), fog*0.86);',
+    '  col = mix(col, horizonCol, fog*0.88);',
 
     '  gl_FragColor = vec4(col, 1.0);',
     '}'
@@ -296,11 +315,10 @@
     var visible = true, running = false;
     var W = 0, H = 0;
 
-    /* ---- canvases: reuse the page's if it has them, else make them ---- */
-    // The shader writes alpha 1.0, so it is opaque. The life layer must
-    // therefore sit AFTER it in the DOM — an earlier version inserted
-    // both at the front, which put every ship and dolphin behind an
-    // opaque sea and looked exactly like the 2D layer was broken.
+    // The shader writes alpha 1.0, so it is opaque and the life layer
+    // must come AFTER it in the DOM. An earlier version inserted both at
+    // the front, which hid every ship behind an opaque sea and looked
+    // exactly like the 2D layer was broken.
     var made = [];
     function grab(id, cls) {
       var c = id && document.getElementById(id);
@@ -315,7 +333,7 @@
     var glCanvas = grab(opts.glId, opts.canvasClass);
     var fgCanvas = grab(opts.fgId, opts.canvasClass);
     for (var mi = made.length - 1; mi >= 0; mi--) {
-      host.insertBefore(made[mi], host.firstChild);   // gl first, life above it
+      host.insertBefore(made[mi], host.firstChild);
     }
     var ctx = fgCanvas.getContext ? fgCanvas.getContext('2d') : null;
 
@@ -338,8 +356,8 @@
         gl = glCanvas.getContext('webgl', {
           alpha: true, antialias: false, depth: false,
           premultipliedAlpha: true, powerPreference: 'low-power',
-          // a single draw is wiped on the next composite without this,
-          // which is what made an earlier version render blank
+          // without this a single draw is wiped on the next composite,
+          // which is what made an early version render blank
           preserveDrawingBuffer: true
         }) || glCanvas.getContext('experimental-webgl');
       } catch (e) { gl = null; }
@@ -372,149 +390,319 @@
         e.preventDefault(); gl = null;
       });
       glCanvas.addEventListener('webglcontextrestored', function () {
-        if (initGL()) { resize(); }
+        if (initGL()) resize();
       });
       host.classList.add('kd-has-sea');
       return true;
     }
 
     /* ---- projection, shared with the shader ---- */
-    function project(X, height, Z) {
+    function project(X, Y, Z) {
       if (Z < 0.6) Z = 0.6;
-      var uvx = X / (Z * FX);
-      var uvy = ((height - EYE) / Z - PITCH) / FY;
-      return { x: W * 0.5 + uvx * H, y: H * 0.5 - uvy * H };
+      return {
+        x: W * 0.5 + (X / (Z * FX)) * H,
+        y: H * 0.5 - (((Y - EYE) / Z - PITCH) / FY) * H,
+        z: Z
+      };
     }
-    // pixels per world metre at distance Z
     function scaleAt(Z) { return H / (Z * FY); }
-    function horizonY() { return H * 0.5 + (PITCH / FY) * H; }
-
-    /* ==============================================================
-       THE LIFE — vessels, dolphins, a whale, gulls
-       ============================================================== */
-
-    // Deterministic pseudo-random so the scene is identical on every
-    // load and on every device. Nothing here uses Math.random.
     function rnd(i) { var s = Math.sin(i * 127.1) * 43758.5453; return s - Math.floor(s); }
-
-    /* Wrap a world X so the object re-enters from the far side just past
-       the edge of view. The span HAS to scale with distance: a fixed one
-       kept the dolphins — which are close, so a metre is a lot of pixels
-       — off screen for most of their cycle while the ships barely moved. */
     function wrapX(x, Z) {
       var span = Z * FX * 2.9;
       return ((x + span * 0.5) % span + span) % span - span * 0.5;
     }
 
-    var VESSELS = [
-      { z: 165, x: -150, spd:  1.55, len: 30, type: 'container' },
-      { z: 112, x:  180, spd: -1.05, len: 20, type: 'coaster'   },
-      { z: 235, x:   40, spd:  0.85, len: 34, type: 'container' },
-      { z:  74, x: -120, spd:  0.62, len:  7, type: 'boat'      }
+    /* ==============================================================
+       THE CONTAINER VESSEL — real solids, not a silhouette
+       ==============================================================
+       Each part is eight corner points in ship-local metres (x along
+       the hull, y up from the waterline, z across the beam). They are
+       moved into world space, projected through the same camera as the
+       water, back-face culled, sorted far-to-near and shaded per face
+       against the moon. Cheap, and it behaves like geometry: the bow
+       swings as it crosses, the flank brightens as it turns into the
+       moonlight, and the top surfaces catch light the sides do not.
+       ============================================================== */
+
+    // [x0,x1, y0,y1, z0,z1, r,g,b, bowTaper]
+    var SHIP_PARTS = [
+      // hull. bowTaper narrows the +x end to a stem instead of a slab
+      [-58, 62, 0.0, 11.0, -13, 13,  16, 22, 30, 1],
+      // container stacks, three ranks, slightly different tones
+      [-46, -33, 11.0, 24.0, -12, 12,  32, 40, 49, 0],
+      [-31, -18, 11.0, 21.5, -12, 12,  27, 34, 41, 0],
+      [-14,  -1, 11.0, 26.5, -12, 12,  38, 34, 37, 0],
+      [  1,  13, 11.0, 23.0, -12, 12,  25, 38, 43, 0],
+      [ 16,  29, 11.0, 25.0, -11, 11,  34, 41, 45, 0],
+      [ 31,  42, 11.0, 20.5, -11, 11,  28, 33, 39, 0],
+      // deckhouse aft, then the funnel on top of it
+      [-72, -50, 11.0, 30.0,  -11, 11,  40, 45, 52, 0],
+      [-66, -57, 30.0, 38.0,   -5,  5,  30, 34, 40, 0]
     ];
 
-    function drawVessel(v, t) {
-      var Z = v.z;
-      var X = wrapX(v.x + v.spd * t, Z);
+    var CORNERS = [
+      [0,0,0],[1,0,0],[1,0,1],[0,0,1],
+      [0,1,0],[1,1,0],[1,1,1],[0,1,1]
+    ];
+    var QUADS = [[0,1,2,3],[4,7,6,5],[0,4,5,1],[3,2,6,7],[0,3,7,4],[1,5,6,2]];
+
+    /* Distance matters more than anything else here. At Z=96 a 120 m
+        hull is 680 px long and towers over the horizon — which is
+        geometrically correct and looks absurd, because you are standing
+        96 m from a container ship. At 520 m she is 126 px long and 40 px
+        tall, sitting just under the horizon, which is what one actually
+        looks like from a shore.
+        The speed is 6.2 m/s — twelve knots, a real service speed, and
+        fast enough that you can see her move while you read the page. */
+    var VESSEL   = { z: 300,  x0: -260, spd:  6.2, scale: 1.00 };
+    var FAR_SHIP = { z: 1150, x0:  400, spd: -5.0, scale: 0.85 };
+
+    function shipSolids(part, sx, sz, dir, bob, scale) {
+      var x0 = part[0]*scale, x1 = part[1]*scale;
+      var y0 = part[2]*scale, y1 = part[3]*scale;
+      var z0 = part[4]*scale, z1 = part[5]*scale;
+      var taper = part[9];
+      var v = [], i, c, lx, ly, lz;
+      for (i = 0; i < 8; i++) {
+        c = CORNERS[i];
+        lx = c[0] ? x1 : x0;
+        ly = c[1] ? y1 : y0;
+        lz = c[2] ? z1 : z0;
+        // a raked stem: pull the forward corners toward the centreline,
+        // more so at the waterline than at deck level
+        if (taper && c[0]) {
+          var k = 0.20 + 0.55 * (1 - c[1]);
+          lz *= (1 - k);
+          lx += (c[1] ? 0 : -6 * scale);
+        }
+        v.push([sx + lx * dir, ly + bob, sz + lz * dir]);
+      }
+      return v;
+    }
+
+    function shadeFaces(verts, base, L, out) {
+      // centroid of the whole solid, used to orient each face outward
+      var cx = 0, cy = 0, cz = 0, i, j;
+      for (i = 0; i < 8; i++) { cx += verts[i][0]; cy += verts[i][1]; cz += verts[i][2]; }
+      cx /= 8; cy /= 8; cz /= 8;
+
+      for (i = 0; i < 6; i++) {
+        var q = QUADS[i];
+        var a = verts[q[0]], b = verts[q[1]], c2 = verts[q[2]];
+        var ux = b[0]-a[0], uy = b[1]-a[1], uz = b[2]-a[2];
+        var vx = c2[0]-a[0], vy = c2[1]-a[1], vz = c2[2]-a[2];
+        var nx = uy*vz - uz*vy, ny = uz*vx - ux*vz, nz = ux*vy - uy*vx;
+        var nm = Math.sqrt(nx*nx + ny*ny + nz*nz) || 1;
+        nx /= nm; ny /= nm; nz /= nm;
+
+        var fx = 0, fy = 0, fz = 0;
+        for (j = 0; j < 4; j++) { fx += verts[q[j]][0]; fy += verts[q[j]][1]; fz += verts[q[j]][2]; }
+        fx /= 4; fy /= 4; fz /= 4;
+        // flip the normal outward, whatever the winding happened to be
+        if (nx*(fx-cx) + ny*(fy-cy) + nz*(fz-cz) < 0) { nx = -nx; ny = -ny; nz = -nz; }
+
+        // back-face cull against the real camera position
+        var ex = -fx, ey = EYE - fy, ez = -fz;
+        if (nx*ex + ny*ey + nz*ez <= 0) continue;
+
+        var dif = Math.max(0, nx*L[0] + ny*L[1] + nz*L[2]);
+        /* Low ambient, hard key. At 0.16 fill the six faces all landed
+           within a few values of each other and the hull read as one
+           flat grey block — the geometry was there but invisible. */
+        var amb = 0.12 + 0.17 * Math.max(0, ny);
+        var k = amb + dif * 1.25;
+        out.push({
+          d: fz,
+          p: [project(verts[q[0]][0], verts[q[0]][1], verts[q[0]][2]),
+              project(verts[q[1]][0], verts[q[1]][1], verts[q[1]][2]),
+              project(verts[q[2]][0], verts[q[2]][1], verts[q[2]][2]),
+              project(verts[q[3]][0], verts[q[3]][1], verts[q[3]][2])],
+          c: [base[0]*k, base[1]*k, base[2]*k]
+        });
+      }
+    }
+
+    function drawVessel(cfg, t, lights) {
+      var Z = cfg.z;
+      var X = wrapX(cfg.x0 + cfg.spd * t, Z);
+      var dir = cfg.spd >= 0 ? 1 : -1;
       var s = scaleAt(Z);
-      var base = project(X, 0, Z);
-      if (base.x < -260 || base.x > W + 260) return;
+      if (120 * cfg.scale * s < 8) return;
 
-      // ride the swell, slower and shallower the further out
-      var bob = Math.sin(t * 0.62 + v.z) * 0.10 + Math.sin(t * 0.37 + v.x) * 0.06;
-      var roll = Math.sin(t * 0.44 + v.z * 0.5) * 0.012;
-      var y = base.y + bob * s * 0.5;
+      var bob  = Math.sin(t * 0.44 + Z) * 0.55 + Math.sin(t * 0.27 + X) * 0.32;
+      var L = moonDirJS(t);
 
-      var L = v.len * s;            // hull length in pixels
-      if (L < 2.2) return;
-      var hull = Math.max(1, L * 0.085);
+      var faces = [], i;
+      for (i = 0; i < SHIP_PARTS.length; i++) {
+        var p = SHIP_PARTS[i];
+        shadeFaces(shipSolids(p, X, Z, dir, bob, cfg.scale), [p[6], p[7], p[8]], L, faces);
+      }
+      faces.sort(function (a, b) { return b.d - a.d; });   // painter's order
 
-      // Atmospheric perspective, done as HAZE and not as transparency.
-      // Fading the alpha made the ships look like ghosts with the sea
-      // showing through them; a distant ship is not see-through, it is
-      // the same solid shape shifted toward the colour of the air. The
-      // target here is the exact fog colour the shader mixes toward.
-      var fogAmt = Math.max(0, Math.min(0.62, (Z - 40) / 300));
-      var ink = 'rgb(' +
-        Math.round(10 + (77 - 10) * fogAmt) + ',' +
-        Math.round(26 + (87 - 26) * fogAmt) + ',' +
-        Math.round(38 + (92 - 38) * fogAmt) + ')';
+      /* Atmospheric perspective as HAZE, not transparency. Fading alpha
+         made the ships look like ghosts with sea showing through them; a
+         distant vessel is the same solid shape shifted toward the colour
+         of the air. Target is the shader's own horizon colour. */
+      var fogAmt = Math.max(0, Math.min(0.72, (Z - 260) / 1500));
+      var HR = 11, HG = 16, HB = 23;
 
       ctx.save();
-      ctx.translate(base.x, y);
-      ctx.rotate(roll);
       ctx.globalAlpha = 1;
-      ctx.fillStyle = ink;
-
-      // hull
-      ctx.beginPath();
-      ctx.moveTo(-L / 2, 0);
-      ctx.lineTo(L / 2, 0);
-      ctx.lineTo(L * 0.42, -hull);
-      ctx.lineTo(-L * 0.46, -hull);
-      ctx.closePath();
-      ctx.fill();
-
-      if (v.type === 'container') {
-        // stacked boxes amidships, bridge aft
-        var bw = L * 0.60, bh = hull * 1.5;
-        ctx.fillRect(-bw * 0.55, -hull - bh, bw, bh);
-        ctx.fillRect(L * 0.16, -hull - bh * 2.0, L * 0.16, bh * 2.0);
-        ctx.fillRect(L * 0.20, -hull - bh * 2.7, L * 0.045, bh * 0.7);   // funnel
-      } else if (v.type === 'coaster') {
-        ctx.fillRect(L * 0.05, -hull - hull * 1.9, L * 0.26, hull * 1.9);
-        ctx.fillRect(-L * 0.40, -hull - hull * 2.6, Math.max(1, L * 0.02), hull * 2.6);
-      } else {
-        // small local boat: cabin and a mast
-        ctx.fillRect(-L * 0.10, -hull - hull * 1.6, L * 0.30, hull * 1.6);
-        ctx.fillRect(-L * 0.02, -hull - hull * 4.0, Math.max(1, L * 0.035), hull * 4.0);
+      for (i = 0; i < faces.length; i++) {
+        var f = faces[i];
+        var r = Math.round(f.c[0] + (HR - f.c[0]) * fogAmt);
+        var g = Math.round(f.c[1] + (HG - f.c[1]) * fogAmt);
+        var b = Math.round(f.c[2] + (HB - f.c[2]) * fogAmt);
+        ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
+        ctx.beginPath();
+        ctx.moveTo(f.p[0].x, f.p[0].y);
+        ctx.lineTo(f.p[1].x, f.p[1].y);
+        ctx.lineTo(f.p[2].x, f.p[2].y);
+        ctx.lineTo(f.p[3].x, f.p[3].y);
+        ctx.closePath();
+        ctx.fill();
+        // hairline seam kill: canvas leaves gaps between adjacent quads
+        ctx.strokeStyle = ctx.fillStyle;
+        ctx.lineWidth = 0.7;
+        ctx.stroke();
       }
       ctx.restore();
 
-      // reflection: flipped, faded, and wobbling with the swell
-      if (L > 6) {
+      /* Lights. At night these do more for realism than the geometry:
+         warm deck and accommodation lights, a white masthead, and the
+         red/green sidelights that tell you which way she is heading. */
+      var lit = 1 - fogAmt;
+      var waterY = project(X, 0, Z).y;
+      function lamp(lx, ly, lz, col, size) {
+        var p = project(X + lx * cfg.scale * dir, ly * cfg.scale + bob, Z + lz * cfg.scale * dir);
+        lights.push({
+          x: p.x, y: p.y, w: waterY, c: col,
+          r: Math.max(0.8, size * Math.max(0.55, s * cfg.scale)), a: lit
+        });
+      }
+      lamp(-61, 31.5,   0, '255,222,150', 0.80);   // accommodation
+      lamp(-66, 39.5,   0, '255,255,240', 0.70);   // masthead
+      lamp( 55, 12.5,   0, '255,255,235', 0.62);   // stem head
+      lamp(-58, 24.0, -13, '255,90,90',   0.55);   // port sidelight
+      lamp(-58, 24.0,  13, '110,255,140', 0.55);   // starboard sidelight
+      lamp(-20, 26.5, -12, '250,236,190', 0.48);   // deck floods
+      lamp( 22, 24.0, -11, '250,236,190', 0.48);
+      /* Wake. A thin foam trail at the waterline that spreads and
+         fades. The first version was a large pale wedge reaching above
+         the horizon, which read as a lens flare, not a wake. */
+      if (s * cfg.scale > 0.9) {
+        var stern = project(X - 62 * cfg.scale * dir, 0, Z);
+        var wl = Math.min(280, 150 * s * cfg.scale);
         ctx.save();
-        ctx.translate(base.x, y);
-        ctx.scale(1, -1);
-        ctx.globalAlpha = (0.22 - fogAmt * 0.16) * (0.75 + 0.25 * Math.sin(t * 1.7 + Z));
-        ctx.fillStyle = 'rgba(8,22,34,0.85)';
-        ctx.beginPath();
-        ctx.moveTo(-L / 2, 0); ctx.lineTo(L / 2, 0);
-        ctx.lineTo(L * 0.34, -hull * 2.4); ctx.lineTo(-L * 0.38, -hull * 2.4);
-        ctx.closePath();
-        ctx.fill();
+        for (var wi = 0; wi < 18; wi++) {
+          var wf = wi / 17;
+          ctx.globalAlpha = 0.14 * lit * (1 - wf) * (1 - wf) *
+                            (0.6 + 0.4 * Math.sin(t * 1.6 + wi));
+          ctx.fillStyle = 'rgb(178,200,224)';
+          ctx.beginPath();
+          ctx.ellipse(stern.x - wl * wf * dir, stern.y + wl * 0.035 * wf,
+                      wl * 0.045,
+                      Math.max(0.5, s * cfg.scale * (0.5 + wf * 2.0)),
+                      0, 0, 6.2832);
+          ctx.fill();
+        }
         ctx.restore();
       }
     }
 
-    /* ---- dolphins ----
-       Each animal runs a cycle: swim submerged, then one leap. The leap
-       is a parabola in world space; the body is drawn rotated to the
-       tangent of that parabola, which is what stops it looking like a
-       sticker sliding through the air. */
+    /* Light glows and their reflections, drawn after every hull so they
+       are never buried. The vertical smear under each lamp is the single
+       strongest night cue on water. */
+    function drawLights(list, t) {
+      var i, l;
+      /* The vertical smear under a light is the strongest night cue on
+         water, but it has to START at that ship's waterline and run
+         DOWN toward the viewer, with a length set by how high the lamp
+         sits. An earlier version measured from the middle of the canvas,
+         which put streaks in mid-air above the horizon. */
+      for (i = 0; i < list.length; i++) {
+        l = list[i];
+        var above = Math.max(2, l.w - l.y);          // lamp height on screen
+        var drop = above * 1.9 + 5;
+        /* Drawn as a ladder of short horizontal dashes, jittered, not as
+           one solid gradient bar. A continuous bar reads as a pole
+           holding the ship up; real reflected light is chopped into
+           rungs by every ripple it crosses. */
+        var N = 14;
+        for (var k = 0; k < N; k++) {
+          var f = k / (N - 1);
+          var yy = l.w + drop * f * f;               // bunched near the hull
+          var jit = Math.sin(t * 2.3 + k * 1.7 + l.x * 0.35) * l.r * 0.9 * f;
+          var wdt = l.r * (0.7 + f * 2.6);
+          var hgt = Math.max(0.6, l.r * 0.34 * (1 - f * 0.4));
+          ctx.globalAlpha = 0.26 * l.a * (1 - f) * (1 - f) *
+                            (0.55 + 0.45 * Math.sin(t * 3.1 + k * 2.3));
+          ctx.fillStyle = 'rgb(' + l.c + ')';
+          ctx.beginPath();
+          ctx.ellipse(l.x + jit, yy, wdt, hgt, 0, 0, 6.2832);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      }
+      for (i = 0; i < list.length; i++) {
+        l = list[i];
+        var g = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r * 3.4);
+        g.addColorStop(0.00, 'rgba(' + l.c + ',' + (0.92 * l.a).toFixed(3) + ')');
+        g.addColorStop(0.22, 'rgba(' + l.c + ',' + (0.22 * l.a).toFixed(3) + ')');
+        g.addColorStop(1.00, 'rgba(' + l.c + ',0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(l.x, l.y, l.r * 3.4, 0, 6.2832);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,' + (0.75 * l.a).toFixed(3) + ')';
+        ctx.beginPath();
+        ctx.arc(l.x, l.y, Math.max(0.5, l.r * 0.42), 0, 6.2832);
+        ctx.fill();
+      }
+    }
+
+    /* ==============================================================
+       DOLPHINS
+       ==============================================================
+       Each runs a cycle: submerged, then one leap. The leap is a
+       parabola in world space and the body is rotated to the tangent of
+       it, which is what stops it looking like a sticker sliding through
+       the air. At night the body is nearly black; what sells it is the
+       moonlit rim down its back and a wet highlight.
+       ============================================================== */
     var POD = [
-      { z: 20, x0: -16, spd: 3.3, period: 7.4, off: 0.0,  h: 1.55, sc: 1.00 },
+      { z: 20, x0: -16, spd: 3.3, period: 7.4, off: 0.00, h: 1.55, sc: 1.00 },
       { z: 24, x0: -21, spd: 3.3, period: 7.4, off: 0.55, h: 1.30, sc: 0.88 },
       { z: 17, x0: -12, spd: 3.3, period: 7.4, off: 1.05, h: 1.15, sc: 0.80 }
     ];
 
+    function dolphinPath(ctx2, L) {
+      ctx2.beginPath();
+      ctx2.moveTo(L * 0.50, 0);
+      ctx2.quadraticCurveTo(L * 0.10, -L * 0.19, -L * 0.34, -L * 0.09);
+      ctx2.quadraticCurveTo(-L * 0.44, -L * 0.05, -L * 0.50, -L * 0.20);
+      ctx2.lineTo(-L * 0.40, L * 0.02);
+      ctx2.lineTo(-L * 0.50, L * 0.16);
+      ctx2.quadraticCurveTo(-L * 0.36, L * 0.10, -L * 0.20, L * 0.11);
+      ctx2.quadraticCurveTo(L * 0.14, L * 0.14, L * 0.50, 0);
+      ctx2.closePath();
+    }
+
     function drawDolphin(dp, t) {
       var Z = dp.z + Math.sin(t * 0.3 + dp.off) * 1.5;
       var X = wrapX(dp.x0 + dp.spd * t, Z);
-
       var cyc = ((t + dp.off * dp.period) % dp.period) / dp.period;
-      var AIR = 0.30;                      // fraction of the cycle in the air
+      var AIR = 0.30;
       var s = scaleAt(Z) * dp.sc;
-      var L = 2.0 * s;                     // body length, ~2 m
+      var L = 2.0 * s;
       if (L < 3) return;
 
-      if (cyc > AIR) {
-        // submerged — a travelling swell mark and an occasional dorsal
+      if (cyc > AIR) {                                  // submerged
         var sub = (cyc - AIR) / (1 - AIR);
         var pw = project(X, 0, Z);
         ctx.save();
-        ctx.globalAlpha = 0.16 * (1 - sub);
-        ctx.fillStyle = 'rgba(220,245,250,1)';
+        ctx.globalAlpha = 0.13 * (1 - sub);
+        ctx.fillStyle = 'rgba(200,224,240,1)';
         ctx.beginPath();
         ctx.ellipse(pw.x, pw.y, L * 0.55, L * 0.10, 0, 0, 6.2832);
         ctx.fill();
@@ -522,11 +710,9 @@
         return;
       }
 
-      var u = cyc / AIR;                   // 0..1 through the arc
-      var height = dp.h * 4 * u * (1 - u); // parabola, peaks at u=0.5
+      var u = cyc / AIR;
+      var height = dp.h * 4 * u * (1 - u);
       var p = project(X, height, Z);
-
-      // tangent: sample the parabola slightly ahead
       var u2 = Math.min(1, u + 0.02);
       var p2 = project(X + dp.spd * 0.02 * dp.period * AIR, dp.h * 4 * u2 * (1 - u2), Z);
       var ang = Math.atan2(p2.y - p.y, p2.x - p.x);
@@ -534,56 +720,52 @@
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(ang);
-      ctx.globalAlpha = 0.92;
 
-      // Countershaded, and dark enough to read against a sunlit sea.
-      // An earlier pass ran 40->150 and the animals looked like paper
-      // cut-outs floating over the water rather than coming out of it.
       var g = ctx.createLinearGradient(0, -L * 0.18, 0, L * 0.18);
-      g.addColorStop(0.00, 'rgba(18,34,48,1)');
-      g.addColorStop(0.55, 'rgba(46,74,94,1)');
-      g.addColorStop(1.00, 'rgba(124,152,166,1)');
+      g.addColorStop(0.00, 'rgba(10,16,24,1)');
+      g.addColorStop(0.55, 'rgba(20,30,42,1)');
+      g.addColorStop(1.00, 'rgba(46,60,76,1)');
       ctx.fillStyle = g;
-      ctx.strokeStyle = 'rgba(12,24,36,0.55)';
-      ctx.lineWidth = Math.max(0.6, L * 0.012);
-
-      // body: a fusiform curve, nose right
-      ctx.beginPath();
-      ctx.moveTo(L * 0.50, 0);
-      ctx.quadraticCurveTo(L * 0.10, -L * 0.19, -L * 0.34, -L * 0.09);
-      ctx.quadraticCurveTo(-L * 0.44, -L * 0.05, -L * 0.50, -L * 0.20);  // fluke up
-      ctx.lineTo(-L * 0.40, L * 0.02);
-      ctx.lineTo(-L * 0.50, L * 0.16);
-      ctx.quadraticCurveTo(-L * 0.36, L * 0.10, -L * 0.20, L * 0.11);
-      ctx.quadraticCurveTo(L * 0.14, L * 0.14, L * 0.50, 0);
-      ctx.closePath();
+      dolphinPath(ctx, L);
       ctx.fill();
-      ctx.stroke();
 
-      // dorsal fin
-      ctx.beginPath();
+      // moonlit rim along the back, and a wet highlight on the flank
+      ctx.save();
+      dolphinPath(ctx, L);
+      ctx.clip();
+      var rg = ctx.createLinearGradient(0, -L * 0.22, 0, -L * 0.02);
+      rg.addColorStop(0, 'rgba(196,214,242,0.85)');
+      rg.addColorStop(1, 'rgba(196,214,242,0)');
+      ctx.fillStyle = rg;
+      ctx.fillRect(-L * 0.55, -L * 0.24, L * 1.1, L * 0.24);
+      var wg = ctx.createRadialGradient(L * 0.10, -L * 0.02, 0, L * 0.10, -L * 0.02, L * 0.30);
+      wg.addColorStop(0, 'rgba(226,238,255,0.42)');
+      wg.addColorStop(1, 'rgba(226,238,255,0)');
+      ctx.fillStyle = wg;
+      ctx.fillRect(-L * 0.55, -L * 0.30, L * 1.1, L * 0.6);
+      ctx.restore();
+
+      ctx.fillStyle = g;
+      ctx.beginPath();                                   // dorsal
       ctx.moveTo(L * 0.02, -L * 0.15);
       ctx.quadraticCurveTo(-L * 0.06, -L * 0.34, -L * 0.14, -L * 0.13);
       ctx.closePath();
       ctx.fill();
-
-      // pectoral
-      ctx.globalAlpha = 0.75;
-      ctx.beginPath();
+      ctx.globalAlpha = 0.8;
+      ctx.beginPath();                                   // pectoral
       ctx.moveTo(L * 0.16, L * 0.06);
       ctx.quadraticCurveTo(L * 0.04, L * 0.24, -L * 0.04, L * 0.10);
       ctx.closePath();
       ctx.fill();
       ctx.restore();
 
-      // splash at entry and exit
-      var edge = Math.min(u, 1 - u);
+      var edge = Math.min(u, 1 - u);                     // splash
       if (edge < 0.16) {
         var pw2 = project(X, 0, Z);
         var k = 1 - edge / 0.16;
         ctx.save();
-        ctx.globalAlpha = 0.42 * k;
-        ctx.fillStyle = 'rgba(226,248,252,1)';
+        ctx.globalAlpha = 0.34 * k;
+        ctx.fillStyle = 'rgba(206,228,248,1)';
         for (var i = 0; i < 6; i++) {
           var a = -0.35 - i * 0.18 - rnd(i + dp.off) * 0.3;
           var r = L * (0.30 + rnd(i * 3.1) * 0.55) * k;
@@ -596,134 +778,14 @@
       }
     }
 
-    /* ---- the whale ----
-       Much further out and much rarer: a long cycle where the back rolls
-       through the surface, blows, and shows the fluke going down. */
-    var WHALE = { z: 55, x0: 30, spd: -1.15, period: 26 };
-
-    function drawWhale(t) {
-      var Z = WHALE.z;
-      var X = wrapX(WHALE.x0 + WHALE.spd * t, Z);
-      var s = scaleAt(Z);
-      var L = 14 * s;                          // a 14 m animal
-      if (L < 6) return;
-
-      var cyc = (t % WHALE.period) / WHALE.period;
-      if (cyc > 0.42) return;                  // down, out of sight
-      var u = cyc / 0.42;
-      var out = Math.sin(u * Math.PI);         // rises, holds, falls
-      var p = project(X, 0, Z);
-
-      ctx.save();
-      ctx.fillStyle = 'rgba(24,42,56,0.92)';
-
-      /* The back. Kept deliberately low — 0.13 of body length, not the
-         0.30 I first used. A rolling whale shows a long shallow curve;
-         a tall hump reads as a rock. */
-      ctx.beginPath();
-      ctx.moveTo(p.x - L * 0.46, p.y);
-      ctx.quadraticCurveTo(p.x - L * 0.05, p.y - L * 0.13 * out,
-                           p.x + L * 0.42, p.y);
-      ctx.closePath();
-      ctx.fill();
-
-      if (out > 0.5) {                          // dorsal, once well clear
-        ctx.beginPath();
-        ctx.moveTo(p.x + L * 0.16, p.y - L * 0.085 * out);
-        ctx.quadraticCurveTo(p.x + L * 0.07, p.y - L * 0.20 * out,
-                             p.x + L * 0.03, p.y - L * 0.075 * out);
-        ctx.closePath();
-        ctx.fill();
-      }
-
-      if (u > 0.82) {                           // fluke on the way down
-        var fk = (u - 0.82) / 0.18;
-        ctx.beginPath();
-        ctx.moveTo(p.x - L * 0.44, p.y);
-        ctx.quadraticCurveTo(p.x - L * 0.54, p.y - L * 0.22 * fk,
-                             p.x - L * 0.66, p.y - L * 0.26 * fk);
-        ctx.quadraticCurveTo(p.x - L * 0.50, p.y - L * 0.11 * fk,
-                             p.x - L * 0.44, p.y);
-        ctx.closePath();
-        ctx.fill();
-      }
-      ctx.restore();
-
-      /* The blow.
-         This was one large soft radial ellipse, and at 60x120 px hanging
-         over the horizon it read as a ghost — I chased it through the
-         cloud code, the star field and the moon before spotting it was
-         the spout. Now it is a handful of small puffs that rise and
-         separate, which is both what a blow looks like and impossible to
-         mistake for a bug in the sky. */
-      if (u > 0.16 && u < 0.60) {
-        var b = (u - 0.16) / 0.44;              // 0..1 through the blow
-        var bx = p.x + L * 0.28;
-        var by = p.y - L * 0.10 * out;
-        ctx.save();
-        // Soft-edged and overlapping. Five hard-edged circles in a column
-        // read as a stack of coins, not as mist.
-        var fade = 0.50 * (1 - b) * Math.min(1, b * 6);
-        for (var i = 0; i < 5; i++) {
-          var lift = (0.13 + i * 0.075) * b;    // upper puffs travel further
-          var px = bx + (rnd(i * 5.3) - 0.5) * L * 0.055 + (i - 2) * L * 0.012 * b;
-          var py = by - L * lift;
-          var r  = L * (0.055 + i * 0.013) * (0.5 + b * 0.8);
-          var gg = ctx.createRadialGradient(px, py, 0, px, py, r);
-          var aa = (fade * (1 - i * 0.12)).toFixed(3);
-          gg.addColorStop(0.00, 'rgba(240,250,253,' + aa + ')');
-          gg.addColorStop(0.55, 'rgba(232,246,251,' + (aa * 0.55).toFixed(3) + ')');
-          gg.addColorStop(1.00, 'rgba(228,244,250,0)');
-          ctx.fillStyle = gg;
-          ctx.beginPath();
-          ctx.ellipse(px, py, r * 1.15, r, 0, 0, 6.2832);
-          ctx.fill();
-        }
-        ctx.restore();
-      }
-    }
-
-    /* ---- gulls ---- */
-    var GULLS = [
-      { z: 26, x0: -30, y: 13.0, spd: 2.2, flap: 5.5 },
-      { z: 31, x0:  14, y: 16.5, spd: 1.7, flap: 4.7 },
-      { z: 22, x0:  40, y: 10.5, spd: 2.6, flap: 6.2 }
-    ];
-
-    function drawGull(g, t) {
-      var X = wrapX(g.x0 + g.spd * t, g.z);
-      var hgt = g.y + Math.sin(t * 0.5 + g.x0) * 0.5;
-      var p = project(X, hgt, g.z);
-      var s = scaleAt(g.z);
-      var w = 0.55 * s;
-      if (w < 1.6 || p.y < 0 || p.y > H) return;
-
-      // never let f reach 0: a wing at exactly flat draws as a dash and
-      // reads as a smudge on the horizon rather than a bird
-      var f = 0.22 + (Math.sin(t * g.flap) * 0.5 + 0.5) * 0.78;
-      ctx.save();
-      ctx.globalAlpha = 0.5;
-      ctx.strokeStyle = 'rgba(16,32,44,0.9)';
-      ctx.lineWidth = Math.max(0.8, w * 0.14);
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(p.x - w, p.y + w * 0.30 * f);
-      ctx.quadraticCurveTo(p.x - w * 0.4, p.y - w * 0.32 * f, p.x, p.y);
-      ctx.quadraticCurveTo(p.x + w * 0.4, p.y - w * 0.32 * f, p.x + w, p.y + w * 0.30 * f);
-      ctx.stroke();
-      ctx.restore();
-    }
-
     function drawLife(t) {
       if (!ctx) return;
       ctx.clearRect(0, 0, W, H);
-      var i;
-      // far to near
-      var vs = VESSELS.slice().sort(function (a, b) { return b.z - a.z; });
-      for (i = 0; i < vs.length; i++) drawVessel(vs[i], t);
-      drawWhale(t);
-      for (i = 0; i < POD.length; i++) drawDolphin(POD[i], t);
-      for (i = 0; i < GULLS.length; i++) drawGull(GULLS[i], t);
+      var lights = [];
+      drawVessel(FAR_SHIP, t, lights);
+      drawVessel(VESSEL, t, lights);
+      drawLights(lights, t);
+      for (var i = 0; i < POD.length; i++) drawDolphin(POD[i], t);
     }
 
     /* ==============================================================
@@ -734,9 +796,8 @@
       W = Math.max(1, Math.round(rect.width));
       H = Math.max(1, Math.round(rect.height));
       var pw = Math.round(W * DPR), ph = Math.round(H * DPR);
-      // the shader is the expensive half; run it at reduced resolution on
-      // small screens where nobody can see the difference anyway
-      var q = window.innerWidth < 700 ? 0.68 : 1;
+      // the shader is the expensive half; run it lower on small screens
+      var q = window.innerWidth < 700 ? 0.66 : 1;
       var gw = Math.max(1, Math.round(pw * q)), gh = Math.max(1, Math.round(ph * q));
 
       glCanvas.width = gw; glCanvas.height = gh;
@@ -763,7 +824,7 @@
     function frame(ts) {
       if (!running) return;
       // the app replaces its container on navigation; without this the
-      // orphaned scene keeps running a rAF loop against a dead node
+      // orphaned scene keeps a rAF loop running against a dead node
       if (host.isConnected === false) { running = false; return; }
       if (start === null) start = ts;
       var t = (ts - start) / 1000 + (opts.t0 || 0);
@@ -780,11 +841,7 @@
       window.requestAnimationFrame(frame);
     }
     function pause() { running = false; }
-
-    function still() {
-      // a deliberately chosen moment: dolphin mid-leap, whale blowing
-      resize(); drawGL(3.1); drawLife(3.1);
-    }
+    function still() { resize(); drawGL(4.2); drawLife(4.2); }
 
     initGL();
     resize();
@@ -822,7 +879,7 @@
      BOOT
      ==================================================================
      The website has one fixed host that exists in the HTML. The super
-     app does not: it renders its landing screen from JavaScript after
+     app does not — it renders its landing screen from JavaScript after
      load, so a single querySelector on DOMContentLoaded finds nothing
      and the card stays a flat gradient. Scan, then rescan on DOM
      changes, and attach to anything new.

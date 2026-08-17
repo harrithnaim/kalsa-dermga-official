@@ -54,7 +54,14 @@
     'uniform vec2  uPtr;',
     'uniform float uHorizon;',
     'uniform float uMotion;',        // 0 = a still frame, 1 = full motion
+    'uniform float uFocus;',         // vertical crop centre, 0.5 = middle
+    'uniform float uFocusX;',        // horizontal crop centre
 
+    'float segDist(vec2 p, vec2 a, vec2 b){',
+    '  vec2 pa = p - a, ba = b - a;',
+    '  float h = clamp(dot(pa,ba)/max(1e-5, dot(ba,ba)), 0.0, 1.0);',
+    '  return length(pa - ba*h);',
+    '}',
     'float hash21(vec2 p){',
     '  p = fract(p*vec2(123.34,456.21));',
     '  p += dot(p,p+45.32);',
@@ -77,9 +84,30 @@
        smears the last row of pixels into visible steps along the bottom. */
     '  float zoom = 0.985 - 0.030*(0.5 + 0.5*sin(t*0.055))*uMotion;',
     '  vec2 par = uPtr * vec2(0.010, 0.006) * uMotion;',
-    '  vec2 base = (uv - 0.5)*f*zoom + 0.5 + par;',
+    // the sea lifts the camera a little; without it the frame is inert
+    '  par.y += sin(t*0.33)*0.0016*uMotion;',
+    /* uFocus biases WHICH part survives the crop. A wide hero over a
+       16:9 plate throws away a third of the height, and centring that
+       loss cuts the top off the Milky Way — the best thing in the
+       picture. Below 0.5 keeps more sky. */
+    '  vec2 base = (uv - 0.5)*f*zoom + vec2(uFocusX, uFocus) + par;',
 
     /* ---- how far below the horizon we are, 0 at the line, 1 at the bottom ---- */
+    /* ---- the sky turns ----
+       Rotated about a pivot below the horizon, faded to nothing AT the
+       horizon so the waterline cannot tear. Bounded by a sine rather than
+       accumulating with t: a monotonic rotation looks right for a minute
+       and then swings the whole sky off the edge of the plate. */
+    '  float skyAmt = 1.0 - smoothstep(uHorizon - 0.11, uHorizon - 0.008, base.y);',
+    '  if (skyAmt > 0.001 && uMotion > 0.5) {',
+    '    float ang = 0.050*sin(t*0.021) * skyAmt;',
+    '    vec2 piv = vec2(0.52, uHorizon + 0.22);',
+    '    vec2 rel = base - piv;',
+    '    vec2 rr = vec2(rel.x*cos(ang) - rel.y*sin(ang), rel.x*sin(ang) + rel.y*cos(ang));',
+    '    base = mix(base, piv + rr, skyAmt);',
+    '    base.x += 0.0045*sin(t*0.017)*skyAmt;',
+    '  }',
+
     '  float depth = clamp((base.y - uHorizon)/max(0.001, 1.0 - uHorizon), 0.0, 1.0);',
     '  float isWater = smoothstep(0.0, 0.045, base.y - uHorizon);',
 
@@ -132,6 +160,28 @@
     '  float tw = 0.62 + 0.38*sin(t*(1.4 + hs*5.5) + hs*62.0);',
     '  col += col * star * (tw - 0.62) * 1.5 * uMotion;',
 
+    /* ---- the occasional meteor ----
+       Purely additive, so it cannot tear anything, and it is the one bit
+       of motion in the sky a viewer notices immediately. One every nine
+       seconds, on a fresh track each time. */
+    '  if (uMotion > 0.5) {',
+    '    float seg = floor(t/9.0);',
+    '    float ph  = fract(t/9.0);',
+    '    if (ph < 0.19) {',
+    '      float k = ph/0.19;',
+    '      float r1 = hash21(vec2(seg, 3.7));',
+    '      float r2 = hash21(vec2(seg, 9.1));',
+    '      vec2 a0 = vec2(0.06 + r1*0.72, 0.04 + r2*0.30);',
+    '      vec2 dir = normalize(vec2(0.62 + r2*0.30, 0.34 + r1*0.22));',
+    '      vec2 head = a0 + dir*(k*0.30);',
+    '      vec2 tail = a0 + dir*max(0.0, k-0.20)*0.30;',
+    '      float dseg = segDist(base, tail, head);',
+    '      float fade = sin(k*3.14159);',
+    '      float m = smoothstep(0.0045, 0.0, dseg) * fade;',
+    '      col += vec3(0.85,0.92,1.00) * m * 0.85 * skyAmt;',
+    '    }',
+    '  }',
+
     /* ---- a light vignette so the crops at the edges stay quiet ---- */
     '  vec2 vd = (frag - 0.5);',
     '  col *= 1.0 - dot(vd, vd)*0.28;',
@@ -146,6 +196,25 @@
 
     var horizon = parseFloat(host.getAttribute('data-horizon'));
     if (!(horizon > 0 && horizon < 1)) horizon = 0.78;
+    var focus = parseFloat(host.getAttribute('data-focus'));
+    if (!(focus > 0 && focus < 1)) focus = 0.5;
+
+    /* Horizontal crop centre, and it has to be responsive.
+       A 16:9 plate in a phone-shaped hero keeps only about a third of the
+       width. Centred, that third is empty sea: the dolphins are off the
+       left edge and the ship is off the right, so the one frame that has
+       everything in it shows nothing. On a narrow screen we bias toward
+       the vessel, which is the subject; wide screens get the lot. */
+    var fxNarrow = parseFloat(host.getAttribute('data-focus-x-narrow'));
+    var fxWide = parseFloat(host.getAttribute('data-focus-x'));
+    if (!(fxNarrow > 0 && fxNarrow < 1)) fxNarrow = 0.80;
+    if (!(fxWide > 0 && fxWide < 1)) fxWide = 0.5;
+    function focusX() {
+      var r = W && H ? W / H : 1.6;
+      // blend rather than switch, so a resize does not jump
+      var k = Math.max(0, Math.min(1, (1.55 - r) / 0.75));
+      return fxWide + (fxNarrow - fxWide) * k;
+    }
 
     var reduced = window.matchMedia &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -172,7 +241,7 @@
     var extra = document.getElementById('heroNodes');
     if (extra && extra.parentNode) extra.parentNode.removeChild(extra);
 
-    var gl = null, prog, uRes, uTexRes, uTime, uPtr, uHorizon, uMotion, tex;
+    var gl = null, prog, uRes, uTexRes, uTime, uPtr, uHorizon, uMotion, uFocus, uFocusX, tex;
     var texW = 1, texH = 1, ready = false;
 
     function compile(type, srcStr) {
@@ -218,6 +287,8 @@
       uPtr     = gl.getUniformLocation(prog, 'uPtr');
       uHorizon = gl.getUniformLocation(prog, 'uHorizon');
       uMotion  = gl.getUniformLocation(prog, 'uMotion');
+      uFocus   = gl.getUniformLocation(prog, 'uFocus');
+      uFocusX  = gl.getUniformLocation(prog, 'uFocusX');
 
       canvas.addEventListener('webglcontextlost', function (e) {
         e.preventDefault(); gl = null; running = false;
@@ -264,6 +335,8 @@
       gl.uniform2f(uTexRes, texW, texH);
       gl.uniform1f(uHorizon, horizon);
       gl.uniform1f(uMotion, reduced ? 0 : 1);
+      gl.uniform1f(uFocus, focus);
+      gl.uniform1f(uFocusX, focusX());
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
 
@@ -324,12 +397,14 @@
      any film card that appears, give it the default plate, and rescan on
      DOM changes. */
   var DEFAULT_PLATE = 'hero-ocean.jpg';
-  var DEFAULT_HORIZON = '0.435';
+  var DEFAULT_HORIZON = '0.637';
+  var DEFAULT_FOCUS = '0.44';
 
   function adopt(el) {
     if (el.getAttribute('data-plate')) return;
     el.setAttribute('data-plate', DEFAULT_PLATE);
     if (!el.getAttribute('data-horizon')) el.setAttribute('data-horizon', DEFAULT_HORIZON);
+    if (!el.getAttribute('data-focus')) el.setAttribute('data-focus', DEFAULT_FOCUS);
   }
 
   var started = 0;

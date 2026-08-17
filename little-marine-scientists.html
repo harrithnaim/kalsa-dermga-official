@@ -222,8 +222,186 @@
       <p class="vnote" style="margin-top:14px;">Photographs from the session on 15 August 2026.</p>
       <div style="margin-top:clamp(28px,3vw,40px);">
         <a href="#enrol" class="btn btn-primary">Register for the next session</a>
+        <a href="#feedback" class="btn btn-secondary" style="margin-left:10px;">Already joined? Tell us how it went</a>
       </div>
 
+    </div>
+  </section>
+
+  <!--
+    /*  ===================================================================
+        PUBLISHED FEEDBACK
+  
+        Nothing shows here until you paste in real quotes - deliberately.
+        Invented testimonials on a children's programme page would be a
+        bad look if anyone ever checked.
+  
+        TO PUBLISH A QUOTE:
+          1. Check the submission said YES to "happy for us to publish".
+             The email shows this as:
+                Publish permission: Yes, you may publish this
+          2. Find the line just below marked TESTIMONIALS-START and the
+             one marked TESTIMONIALS-END. Delete both of those lines.
+             That un-hides the section.
+          3. Fill in the cards. Copy a whole figure block to add another
+             quote; delete any spare cards you do not need.
+          4. Credit them exactly as they asked in "How should we credit
+             you". If they left it blank, use something neutral such as
+             "A parent, Kuantan".
+        ===================================================================  */
+  -->
+
+  <!-- TESTIMONIALS-START
+  <section id="voices" class="sec">
+    <div class="wrapx">
+      <div style="max-width:620px;margin:0 0 clamp(28px,3.5vw,44px);">
+        <div class="eyebrow">In their words</div>
+        <h2 style="margin:0 0 14px;">What families said</h2>
+        <p class="lede" style="margin:0;">Feedback from parents whose children joined a session.</p>
+      </div>
+      <div class="fbgrid" data-stagger="90">
+
+        <figure class="fbcard reveal">
+          <div class="fbstars" aria-label="5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>PASTE WHAT THE PARENT WROTE HERE.</blockquote>
+          <figcaption><b>NAME AS THEY ASKED TO BE CREDITED</b><span>Pantai Tembeling, August 2026</span></figcaption>
+        </figure>
+
+        <figure class="fbcard reveal">
+          <div class="fbstars" aria-label="5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>PASTE WHAT THE PARENT WROTE HERE.</blockquote>
+          <figcaption><b>NAME AS THEY ASKED TO BE CREDITED</b><span>Pantai Tembeling, August 2026</span></figcaption>
+        </figure>
+
+        <figure class="fbcard reveal">
+          <div class="fbstars" aria-label="4 out of 5">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
+          <blockquote>PASTE WHAT THE PARENT WROTE HERE.</blockquote>
+          <figcaption><b>NAME AS THEY ASKED TO BE CREDITED</b><span>Pantai Tembeling, August 2026</span></figcaption>
+        </figure>
+
+      </div>
+    </div>
+  </section>
+  TESTIMONIALS-END -->
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       FEEDBACK FORM
+       Delivered by Web3Forms to lmsteam@kalsadermaga.com, same as the
+       enrolment form. The subject line is different, so you can filter
+       feedback away from enrolments in your inbox.
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section id="feedback" class="sec recap">
+    <div class="wrapx">
+      <div style="max-width:660px;margin:0 0 clamp(26px,3vw,40px);">
+        <div class="eyebrow">Your feedback</div>
+        <h2 style="margin:0 0 16px;">Tell us how the session went</h2>
+        <p class="lede" style="margin:0;">
+          If your child joined a Little Marine Scientists session, we would like to hear from
+          you — what worked, what did not, and what we should do differently next time. It
+          takes about two minutes and it genuinely shapes the next session.
+        </p>
+      </div>
+
+      <form action="https://api.web3forms.com/submit" method="POST" style="max-width:820px;">
+        <!-- Web3Forms delivers this form to lmsteam@kalsadermaga.com -->
+        <input type="hidden" name="access_key" value="9885f0b8-dcfc-43fc-a5ca-2205aa7d6ea2">
+        <input type="hidden" name="subject" value="LMS FEEDBACK from kalsadermaga.com">
+        <input type="hidden" name="from_name" value="Little Marine Scientists — feedback">
+        <input type="hidden" name="redirect" value="https://www.kalsadermaga.com/thank-you.html">
+        <input type="checkbox" name="botcheck" style="display:none !important" tabindex="-1" autocomplete="off">
+
+        <fieldset>
+          <legend>The session</legend>
+          <div class="grid2">
+            <div class="field">
+              <label for="f-session">Which session did you join? *</label>
+              <select class="input" id="f-session" name="Session attended" required>
+                <option value="">Please choose</option>
+                <option>Pantai Tembeling — 15 August 2026</option>
+                <option>Another session</option>
+                <option>I have not joined yet</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-role">You are *</label>
+              <select class="input" id="f-role" name="Respondent" required>
+                <option value="">Please choose</option>
+                <option>A parent or guardian</option>
+                <option>A participant</option>
+                <option>A teacher or school representative</option>
+                <option>A volunteer or helper</option>
+                <option>Someone else</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field" style="margin-top:var(--space-3);">
+            <label>Overall, how was it? *</label>
+            <div class="seg rating" role="group" aria-label="Overall rating out of five">
+              <label class="seg-opt"><input type="radio" name="Overall rating" value="5 - Excellent" required><span>&#9733; 5</span></label>
+              <label class="seg-opt"><input type="radio" name="Overall rating" value="4 - Good"><span>&#9733; 4</span></label>
+              <label class="seg-opt"><input type="radio" name="Overall rating" value="3 - Fine"><span>&#9733; 3</span></label>
+              <label class="seg-opt"><input type="radio" name="Overall rating" value="2 - Poor"><span>&#9733; 2</span></label>
+              <label class="seg-opt"><input type="radio" name="Overall rating" value="1 - Bad"><span>&#9733; 1</span></label>
+            </div>
+          </div>
+
+          <div class="field" style="margin-top:var(--space-3);">
+            <label>Would you recommend LMS to another family? *</label>
+            <div class="seg" role="group" aria-label="Would you recommend">
+              <label class="seg-opt"><input type="radio" name="Would recommend" value="Yes" required><span>Yes</span></label>
+              <label class="seg-opt"><input type="radio" name="Would recommend" value="Maybe"><span>Maybe</span></label>
+              <label class="seg-opt"><input type="radio" name="Would recommend" value="No"><span>No</span></label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>What you thought</legend>
+          <div class="field">
+            <label for="f-good">What did your child enjoy most?</label>
+            <textarea class="input" id="f-good" name="Enjoyed most" rows="3" placeholder="The rock pools, the facilitators, meeting other children..."></textarea>
+          </div>
+          <div class="field" style="margin-top:var(--space-3);">
+            <label for="f-improve">What could we do better?</label>
+            <textarea class="input" id="f-improve" name="Could do better" rows="3" placeholder="Timing, group size, shade, communication before the day — be honest, this is the useful part."></textarea>
+          </div>
+          <div class="field" style="margin-top:var(--space-3);">
+            <label for="f-ideas">Suggestions or ideas for future sessions</label>
+            <textarea class="input" id="f-ideas" name="Suggestions" rows="3" placeholder="Topics, locations, dates, activities you would like to see."></textarea>
+          </div>
+          <div class="field" style="margin-top:var(--space-3);">
+            <label for="f-other">Anything else you would like to tell us?</label>
+            <textarea class="input" id="f-other" name="Anything else" rows="2"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>About you</legend>
+          <div class="grid2">
+            <div class="field">
+              <label for="f-name">Your name *</label>
+              <input class="input" id="f-name" type="text" name="Name" required>
+            </div>
+            <div class="field">
+              <label for="f-email">Email *</label>
+              <input class="input" id="f-email" type="email" name="Email" placeholder="you@example.com" required>
+            </div>
+            <div class="field">
+              <label for="f-phone">Phone (optional)</label>
+              <input class="input" id="f-phone" type="tel" name="Phone" placeholder="012-3456789">
+            </div>
+            <div class="field">
+              <label for="f-child">Child's name (optional)</label>
+              <input class="input" id="f-child" type="text" name="Child name">
+            </div>
+          </div>
+          <p class="formnote" style="margin-top:var(--space-3);">We ask for your email so we can reply if you have raised something that needs an answer. We will not add you to any mailing list.</p>
+        </fieldset>
+
+        <button class="btn btn-primary" type="submit" style="margin-top:var(--space-2);">Send Feedback</button>
+        <p class="formnote" style="margin-top:var(--space-3);">Goes straight to the LMS team at lmsteam@kalsadermaga.com. We may share selected comments on this page to help other families decide &mdash; never your email, your phone number or your child&rsquo;s name.</p>
+      </form>
     </div>
   </section>
 

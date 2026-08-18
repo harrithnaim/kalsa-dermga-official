@@ -111,7 +111,8 @@
          Purely visual, hidden from assistive tech, degrades to the CSS
          gradient if WebGL or JS is unavailable. -->
     <div class="hero-canvas" aria-hidden="true"
-         data-plate="assets/hero-ocean.jpg" data-horizon="0.637" data-focus="0.47">
+         data-plate="assets/hero-base.jpg" data-horizon="0.574" data-focus="0.50"
+         data-focus-x-narrow="0.42">
       <canvas id="heroWaves"></canvas>
     </div>
     <div class="wrapx" style="position:relative;z-index:1;padding-top:clamp(64px,9vw,120px);padding-bottom:clamp(56px,8vw,104px);">
@@ -537,6 +538,6 @@
 </div>
 
 <script src="assets/site.js" defer></script>
-<script src="assets/heroplate.js" defer></script>
+<script src="assets/herolayers.js" defer></script>
 </body>
 </html>

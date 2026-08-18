@@ -15,11 +15,19 @@
                       into this plate any more, the ripple can be pushed
                       much harder than it could before.
 
-     Layer 2 (2D)     the subjects. The vessel sails, each dolphin leaps
-                      on its own cycle, and both throw a reflection that
-                      is drawn as horizontal slices with a sinusoidal
-                      offset — a mirrored copy alone reads as a sticker,
-                      the slicing is what makes it sit in water.
+     Layer 2 (2D)     the vessel. She sails bow-first along the horizon
+                      and throws a reflection drawn as horizontal slices
+                      with a sinusoidal offset — a mirrored copy alone
+                      reads as a sticker; the slicing is what makes it
+                      sit in water.
+
+                      There WAS a pod of dolphins here. Each sprite is a
+                      single frozen leap, and one pose can surface and
+                      submerge convincingly but cannot change shape
+                      mid-arc, so it never stopped looking staged. Cut on
+                      purpose. The 'dolphin' role below is still wired
+                      and still works — add sprites back to the list and
+                      they animate — but nothing uses it today.
 
    THE ONE IDEA THAT MAKES THIS WORK
    Sprites are positioned in PLATE space, not screen space, and the crop
@@ -63,19 +71,7 @@
       /* NEGATIVE speed. The bow is the low, pointed end on the LEFT of
          the sprite and the accommodation block is aft on the right, so a
          positive speed sailed her stern-first across the horizon. */
-      x: 0.615, y: 0.5775, w: 0.150, speed: -0.0040, refl: 0.30 },
-
-    /* The pod sits centre-left and low. Further left and the crop eats
-       it on a 16:9-ish hero; further right and it fouls the vessel and
-       the moon path. */
-    { src: 'hero-dolphin-1.png', role: 'dolphin',
-      x: 0.305, y: 0.870, w: 0.175, period: 10.5, off: 0.00, lift: 0.030, drift: 0.0016 },
-    { src: 'hero-dolphin-2.png', role: 'dolphin',
-      x: 0.430, y: 0.812, w: 0.140, period: 10.5, off: 0.31, lift: 0.026, drift: 0.0016 },
-    { src: 'hero-dolphin-3.png', role: 'dolphin',
-      x: 0.530, y: 0.858, w: 0.105, period: 10.5, off: 0.58, lift: 0.022, drift: 0.0016 },
-    { src: 'hero-dolphin-4.png', role: 'dolphin',
-      x: 0.375, y: 0.768, w: 0.115, period: 10.5, off: 0.80, lift: 0.020, drift: 0.0016 }
+      x: 0.615, y: 0.5775, w: 0.150, speed: -0.0040, refl: 0.30 }
   ];
 
   var VERT =

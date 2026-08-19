@@ -241,7 +241,47 @@
        page has no empty section. Do not hand-edit between the markers —
        the next Publish overwrites it.
        ═══════════════════════════════════════════════════════════════════ -->
+  <!-- ═══════════════════════════════════════════════════════════════
+       MOVING GALLERY
+       A decorative ribbon of session photographs that slides sideways.
+       site.js duplicates the track and marks it aria-hidden, which is
+       correct here: it is scenery, and the real, clickable, captioned
+       gallery is the grid above. Screen readers get that one instead of
+       a wall of repeated images, and pointing at the strip pauses it.
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="sec pmarq-sec" aria-hidden="true">
+    <div class="marquee pmarquee">
+      <div class="marquee-track">
+        <figure><img src="assets/lms-150826-01.jpg" alt="" loading="lazy"></figure>
+        <figure><img src="assets/lms-150826-02.jpg" alt="" loading="lazy"></figure>
+        <figure><img src="assets/lms-carousel-1.jpg" alt="" loading="lazy"></figure>
+        <figure><img src="assets/lms-150826-03.jpg" alt="" loading="lazy"></figure>
+        <figure><img src="assets/lms-group-2026.jpg" alt="" loading="lazy"></figure>
+        <figure><img src="assets/lms-150826-04.jpg" alt="" loading="lazy"></figure>
+        <figure><img src="assets/lms-carousel-2.jpg" alt="" loading="lazy"></figure>
+        <figure><img src="assets/lms-150826-05.jpg" alt="" loading="lazy"></figure>
+        <figure><img src="assets/lms-150826-06.jpg" alt="" loading="lazy"></figure>
+      </div>
+    </div>
+  </section>
+
   <!-- KD:TESTIMONIALS:START -->
+  <section id="voices" class="sec">
+    <div class="wrapx">
+      <div style="max-width:620px;margin:0 0 clamp(28px,3.5vw,44px);">
+        <div class="eyebrow">In their words</div>
+        <h2 style="margin:0 0 14px;">What families said</h2>
+        <p class="lede" style="margin:0;">Feedback from parents whose children joined a session.</p>
+      </div>
+      <div class="fbgrid" data-stagger="90">
+      <figure class="fbcard reveal">
+        <div class="fbstars" aria-label="5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <blockquote>Exploring the marine life. She even asked if she can repeat the activity the next day she woke up.</blockquote>
+        <figcaption><b>Aimi A.</b><span>Parent &middot; Pantai Tembeling, 15 August 2026</span></figcaption>
+      </figure>
+      </div>
+    </div>
+  </section>
   <!-- KD:TESTIMONIALS:END -->
 
 

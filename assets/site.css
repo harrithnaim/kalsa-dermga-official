@@ -928,3 +928,30 @@ footer .nav-brand{color:#fff}
   .staynote{display:none}
   .stayfield:has(input[value^="Deciding later"]:checked) + .staynote{display:block}
 }
+
+/* ==========================================================================
+   MOVING PHOTO GALLERY
+   ==========================================================================
+   Reuses the text marquee's machinery — site.js clones the track and the
+   keyframe slides it by exactly -50%, which is why the loop is seamless
+   only when the content is duplicated. Slower than the text version:
+   photographs carry more to look at, and at 34s they blur past.
+   ========================================================================== */
+.pmarq-sec{padding-top:0}
+.pmarquee .marquee-track{
+  gap:16px;align-items:center;animation-duration:52s}
+.pmarquee figure{
+  margin:0;flex:none;border-radius:var(--radius-lg);overflow:hidden;
+  box-shadow:var(--shadow-sm);background:var(--color-surface-2)}
+.pmarquee img{
+  display:block;height:clamp(150px,19vw,236px);width:auto;object-fit:cover;
+  transition:transform .6s var(--ease)}
+.pmarquee figure:hover img{transform:scale(1.04)}
+@media (prefers-reduced-motion:reduce){
+  /* the shared rule already stops the slide; stop the zoom too */
+  .pmarquee img{transition:none}
+}
+/* Belt and braces for the above: if anything inside a marquee ever picks
+   up a reveal class from elsewhere, it must still be visible. */
+.marquee .reveal,.marquee .reveal-l,.marquee .reveal-r,.marquee .reveal-s{
+  opacity:1!important;transform:none!important}

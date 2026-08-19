@@ -169,6 +169,12 @@
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
       if (el.closest('header') || el.closest('footer')) continue;
+      /* Never auto-reveal anything inside a marquee. initMarquee runs
+         AFTER this and duplicates the track's innerHTML, so the clones
+         carry the reveal class but were never handed to the observer —
+         they stay at opacity 0 forever and half the strip is invisible.
+         A marquee is decorative and already moving; it needs no reveal. */
+      if (el.closest('.marquee')) continue;
       if (el.classList.contains('reveal') || el.classList.contains('reveal-l') ||
           el.classList.contains('reveal-r') || el.classList.contains('reveal-s')) continue;
       if (el.closest('.card') && el.classList.contains('card-title')) continue;

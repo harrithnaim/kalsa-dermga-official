@@ -339,6 +339,16 @@
           f.focus();
         }
 
+        /* Point any "watch on YouTube" link at the same video, so the
+           id lives in exactly one place. Two copies of it in the markup
+           is a trap: somebody swaps the film, updates the player, misses
+           the link, and it quietly sends people to a deleted video. */
+        if (!unset(yt)) {
+          var note = w.nextElementSibling;
+          var out = note && note.querySelector && note.querySelector('a.ytlink');
+          if (out) out.setAttribute('href', 'https://www.youtube.com/watch?v=' + encodeURIComponent(yt));
+        }
+
         btn.addEventListener('click', play);
         w.addEventListener('click', function (e) {
           if (e.target === btn || btn.contains(e.target)) return;

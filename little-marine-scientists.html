@@ -170,13 +170,19 @@
            fast and means visitors who scroll past are never handed to
            YouTube's trackers.
 
-           Now on YouTube: watch?v=afFWmTQ9k5o. Served from
-           youtube-nocookie.com, so no cookie is set until play.
-           To change the film later, replace the data-yt value with the
-           part of the YouTube link after "v=". Nothing else changes.
+           TO CHANGE THE FILM: edit data-yt below and nothing else.
+           It is the part of a YouTube link after "v=", so from
+           https://www.youtube.com/watch?v=ABC123xyz the value is
+           ABC123xyz. The "watch on YouTube" link underneath reads its
+           href from this same attribute at load, so there is exactly one
+           value to change and the two can never disagree.
+
+           Served from youtube-nocookie.com and only on click, so no
+           cookie is set and nothing is requested from YouTube until
+           somebody actually presses play.
            ──────────────────────────────────────────────────────────── -->
       <div class="vplayer vfacade reveal"
-           data-yt="afFWmTQ9k5o"
+           data-yt="WpHkbufpZkg"
            data-title="Little Marine Scientists at Pantai Tembeling, 15 August 2026">
         <img src="assets/lms-poster.jpg"
              alt="Title card of the Little Marine Scientists session film"
@@ -186,7 +192,7 @@
         </button>
       </div>
       <p class="vnote">Little Marine Scientists at Pantai Tembeling, 15 August 2026 · 3 min 36 s ·
-        <a href="https://www.youtube.com/watch?v=afFWmTQ9k5o" target="_blank" rel="noopener noreferrer">watch on YouTube ↗</a></p>
+        <a class="ytlink" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">watch on YouTube ↗</a></p>
 
       <!-- ─── PHOTOS ─────────────────────────────────────────────────── -->
       <h3 style="margin:clamp(36px,4vw,56px) 0 18px;">From the shoreline</h3>

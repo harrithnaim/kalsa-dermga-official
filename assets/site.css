@@ -955,3 +955,79 @@ footer .nav-brand{color:#fff}
    up a reveal class from elsewhere, it must still be visible. */
 .marquee .reveal,.marquee .reveal-l,.marquee .reveal-r,.marquee .reveal-s{
   opacity:1!important;transform:none!important}
+
+/* ==========================================================================
+   DRIFTING PLANKTON
+   ==========================================================================
+   Decoration for the Secret Drifter of The Sea session. "Plankton" is Greek
+   for drifter — organisms that cannot swim against a current and go where
+   the water takes them — so the one honest thing this ornament can do is
+   drift. The shapes are real forms the children looked at: a triangular
+   diatom, a chain diatom, a copepod, a dinoflagellate.
+
+   THREE NESTED ELEMENTS, and that is not an accident. Rise, sway and spin
+   are three transforms, and three animations on ONE element silently fight
+   over `transform` — the last declared simply wins and the other two never
+   happen. One box per axis is the fix.
+
+   CSS only: no JavaScript, nothing to schedule, nothing to pause. It cannot
+   jank because the compositor owns it.
+   ========================================================================== */
+/* The block that owns a drift field. Everything inside it that is not the
+   field itself is lifted above the drifters, so the plankton always pass
+   BEHIND the words no matter how the block is later re-ordered. */
+.sessionblock{position:relative;overflow:hidden}
+.sessionblock > *:not(.driftfield){position:relative;z-index:1}
+
+.driftfield{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+
+/* Rise is animated on `top`, not on translateY. A transform in vh covers a
+   fixed distance, so in a block taller than the viewport every drifter ends
+   up bunched at the bottom — which is exactly what the first render showed.
+   A percentage `top` resolves against the field, so they spread across it
+   however tall it turns out to be. */
+.pk{position:absolute;left:var(--x);top:108%;
+  animation:pk-rise var(--dy,44s) linear infinite;
+  animation-delay:var(--d,0s)}
+.pk-x{display:block;animation:pk-sway var(--dx,13s) ease-in-out infinite alternate;
+  animation-delay:var(--d,0s)}
+.pk-r{display:block;animation:pk-spin var(--dr,30s) linear infinite;
+  animation-delay:var(--d,0s)}
+.pk svg{display:block;width:calc(var(--s,1) * 46px);height:auto;
+  color:var(--color-accent);opacity:var(--o,.17)}
+/* the same drifter reads much larger against a 390px column */
+@media (max-width:560px){ .pk svg{width:calc(var(--s,1) * 32px)} }
+
+@keyframes pk-rise{from{top:108%} to{top:-24%}}
+@keyframes pk-sway{from{transform:translateX(-18px)} to{transform:translateX(18px)}}
+@keyframes pk-spin{from{transform:rotate(0)}       to{transform:rotate(360deg)}}
+
+@media (prefers-reduced-motion:reduce){
+  /* Hidden rather than frozen. Held still they are just specks scattered
+     over the text, and they were only ever there to move. */
+  .driftfield{display:none}
+}
+
+/* ---------- how the session ran ---------- */
+.method{list-style:none;margin:0;padding:0;counter-reset:step;
+  display:grid;gap:clamp(14px,1.6vw,20px)}
+.method li{counter-increment:step;position:relative;
+  display:grid;grid-template-columns:auto 1fr;gap:clamp(14px,1.8vw,22px);
+  align-items:start;padding:clamp(16px,2vw,22px) clamp(16px,2.2vw,26px);
+  border:1px solid var(--color-divider);border-radius:var(--radius-lg);
+  background:var(--color-surface);
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease),
+             border-color .3s var(--ease)}
+.method li:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);
+  border-color:color-mix(in srgb,var(--color-accent) 45%,var(--color-divider))}
+.method li::before{content:counter(step);
+  display:grid;place-items:center;width:38px;height:38px;flex:none;
+  border-radius:50%;font-weight:800;font-size:15px;letter-spacing:-.02em;
+  color:var(--color-bg);background:var(--color-accent)}
+.method b{display:block;font-size:16.5px;letter-spacing:-.015em;margin-bottom:3px}
+.method p{margin:0;font-size:15px;line-height:1.62;
+  color:color-mix(in srgb,var(--color-text) 76%,transparent)}
+@media (max-width:560px){
+  .method li{grid-template-columns:1fr;gap:10px}
+  .method li::before{width:32px;height:32px;font-size:14px}
+}

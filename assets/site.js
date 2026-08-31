@@ -307,6 +307,7 @@
     for (var i = 0; i < wraps.length; i++) {
       (function (w) {
         var yt = w.getAttribute('data-yt');
+        var list = w.getAttribute('data-yt-list');
         var dr = w.getAttribute('data-drive');
         var btn = w.querySelector('.vplay');
         if (!btn) return;
@@ -314,14 +315,33 @@
         // no id filled in yet — hide the play button rather than
         // giving the visitor a control that does nothing
         var unset = function (v) { return !v || v.indexOf('PASTE_') === 0; };
-        if (unset(yt) && unset(dr)) { btn.style.display = 'none'; return; }
+        if (unset(yt) && unset(list) && unset(dr)) { btn.style.display = 'none'; return; }
 
         function play() {
           if (w.classList.contains('playing')) return;
           var src, allow;
-          if (!unset(yt)) {
-            src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(yt) +
+          if (!unset(yt) || !unset(list)) {
+            /* Three shapes, and which one you get depends only on the
+               attributes:
+
+                 data-yt only          that one film
+                 data-yt + data-yt-list  that film first, with the rest of
+                                       the playlist queued behind it
+                 data-yt-list only     "videoseries", which plays the
+                                       NEWEST item first — so pointing it
+                                       at a channel's uploads playlist
+                                       (swap the UC of a channel id for
+                                       UU) means new films appear here on
+                                       their own, with no edit at all.
+
+               rel=0 keeps YouTube's end-screen suggestions inside the
+               same channel rather than sending a parent off to whatever
+               the algorithm fancies, which matters on a children's
+               programme page. */
+            var base = unset(yt) ? 'videoseries' : encodeURIComponent(yt);
+            src = 'https://www.youtube-nocookie.com/embed/' + base +
                   '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+            if (!unset(list)) src += '&list=' + encodeURIComponent(list);
             allow = 'accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen';
           } else {
             src = 'https://drive.google.com/file/d/' + encodeURIComponent(dr) + '/preview';
@@ -343,10 +363,15 @@
            id lives in exactly one place. Two copies of it in the markup
            is a trap: somebody swaps the film, updates the player, misses
            the link, and it quietly sends people to a deleted video. */
-        if (!unset(yt)) {
-          var note = w.nextElementSibling;
-          var out = note && note.querySelector && note.querySelector('a.ytlink');
-          if (out) out.setAttribute('href', 'https://www.youtube.com/watch?v=' + encodeURIComponent(yt));
+        var note = w.nextElementSibling;
+        var out = note && note.querySelector && note.querySelector('a.ytlink');
+        if (out) {
+          if (!unset(yt)) {
+            out.setAttribute('href', 'https://www.youtube.com/watch?v=' + encodeURIComponent(yt) +
+              (unset(list) ? '' : '&list=' + encodeURIComponent(list)));
+          } else if (!unset(list)) {
+            out.setAttribute('href', 'https://www.youtube.com/playlist?list=' + encodeURIComponent(list));
+          }
         }
 
         btn.addEventListener('click', play);

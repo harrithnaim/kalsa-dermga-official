@@ -135,11 +135,229 @@
     <div class="wrapx">
 
       <!-- KD:LMS-SESSIONS:START -->
-      <div class="recap-head"><div style="max-width:640px;">
-        <div class="eyebrow">Little Marine Scientists</div>
-        <h2 style="margin:0 0 16px;">Our next session</h2>
-        <p class="lede" style="margin:0;">Details of the next shoreline session will appear here. Register below and we will let you know the date.</p>
-      </div></div>
+      <!-- Everything between these two markers is written by the admin console
+           (Website tab). Edit it here if you like, but the next Publish will
+           overwrite it. The markers themselves must stay exactly as they are —
+           publishing fails loudly if either goes missing. -->
+      <!-- The 29 August session. Wrapped so the drift field is clipped to
+           this block alone and does not run on under the older sessions. -->
+      <div class="sessionblock">
+      <!-- ─── DRIFTING PLANKTON ──────────────────────────────────────
+           Four real forms the children looked at under the microscope,
+           defined once as <symbol>s and reused. Each drifter is three
+           nested spans because rise, sway and spin are three transforms
+           and one element can only hold one.
+           ───────────────────────────────────────────────────────────── -->
+      <div class="driftfield" aria-hidden="true">
+        <svg width="0" height="0" style="position:absolute">
+          <symbol id="pk-diatom" viewBox="0 0 40 40">
+            <path d="M20 4 36 32H4Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M20 11v15M13.5 26h13M11 21h18" fill="none" stroke="currentColor" stroke-width="1.1"/>
+          </symbol>
+          <symbol id="pk-chain" viewBox="0 0 60 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="7" width="12" height="10" rx="2"/>
+              <rect x="16" y="7" width="12" height="10" rx="2"/>
+              <rect x="30" y="7" width="12" height="10" rx="2"/>
+              <rect x="44" y="7" width="12" height="10" rx="2"/>
+            </g>
+          </symbol>
+          <symbol id="pk-copepod" viewBox="0 0 40 44">
+            <ellipse cx="20" cy="16" rx="9" ry="12" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M20 28v8M20 36l-5 6M20 36l5 6M13 7 6 2M27 7l7-5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            <circle cx="16.5" cy="12" r="1.5" fill="currentColor"/>
+          </symbol>
+          <symbol id="pk-dino" viewBox="0 0 40 40">
+            <circle cx="20" cy="17" r="10" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M10 17h20" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M20 27c-4 4-2 8-6 11M20 27c4 3 7 2 9 7" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </symbol>
+        </svg>
+
+        <span class="pk" style="--x:6%;--s:.85;--o:0.34;--dy:46s;--dx:12s;--dr:34s;--d:-3s"><span class="pk-x"><span class="pk-r"><svg><use href="#pk-diatom"/></svg></span></span></span>
+        <span class="pk" style="--x:17%;--s:1.25;--o:0.22;--dy:62s;--dx:17s;--dr:52s;--d:-21s"><span class="pk-x"><span class="pk-r"><svg><use href="#pk-chain"/></svg></span></span></span>
+        <span class="pk" style="--x:28%;--s:.65;--o:0.41;--dy:38s;--dx:9s;--dr:26s;--d:-11s"><span class="pk-x"><span class="pk-r"><svg><use href="#pk-copepod"/></svg></span></span></span>
+        <span class="pk" style="--x:41%;--s:1.05;--o:0.26;--dy:55s;--dx:15s;--dr:44s;--d:-33s"><span class="pk-x"><span class="pk-r"><svg><use href="#pk-dino"/></svg></span></span></span>
+        <span class="pk" style="--x:53%;--s:.75;--o:0.36;--dy:41s;--dx:11s;--dr:30s;--d:-7s"><span class="pk-x"><span class="pk-r"><svg><use href="#pk-chain"/></svg></span></span></span>
+        <span class="pk" style="--x:64%;--s:1.35;--o:0.20;--dy:68s;--dx:19s;--dr:58s;--d:-45s"><span class="pk-x"><span class="pk-r"><svg><use href="#pk-diatom"/></svg></span></span></span>
+        <span class="pk" style="--x:75%;--s:.70;--o:0.39;--dy:36s;--dx:8s;--dr:24s;--d:-17s"><span class="pk-x"><span class="pk-r"><svg><use href="#pk-dino"/></svg></span></span></span>
+        <span class="pk" style="--x:86%;--s:1.00;--o:0.27;--dy:52s;--dx:14s;--dr:40s;--d:-28s"><span class="pk-x"><span class="pk-r"><svg><use href="#pk-copepod"/></svg></span></span></span>
+        <span class="pk" style="--x:94%;--s:.60;--o:0.37;--dy:43s;--dx:10s;--dr:28s;--d:-39s"><span class="pk-x"><span class="pk-r"><svg><use href="#pk-diatom"/></svg></span></span></span>
+      </div>
+
+      <div class="recap-head">
+        <div style="max-width:660px;">
+          <div class="eyebrow">Latest session</div>
+          <div class="recap-meta">
+            <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg>29 August 2026</span>
+            <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>Pantai Tembeling, Kuantan</span>
+            <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="3.5"/><path d="M22 20v-2a4 4 0 0 0-3-3.9"/></svg>11 children, aged 5&ndash;12</span>
+          </div>
+          <h2 style="margin:0 0 16px;">Secret Drifter of The Sea</h2>
+          <p class="lede" style="margin:0;">
+            <em>Plankton</em> is Greek for <em>drifter</em> &mdash; living things too small to
+            swim against the sea, that go wherever the water carries them. On 29 August,
+            eleven children aged five to twelve went looking for them: sampling the water
+            at Pantai Tembeling, then putting what they caught under a microscope to
+            find out what had been drifting past them all along.
+          </p>
+        </div>
+      </div>
+
+      <div class="recap-stats">
+        <div class="rs"><b>11</b><span>Children took part</span></div>
+        <div class="rs"><b>29 Aug</b><span>Session date, 2026</span></div>
+        <div class="rs"><b>5&ndash;12</b><span>Age range, years</span></div>
+        <div class="rs"><b>2nd</b><span>Session at this shoreline</span></div>
+      </div>
+
+      <!-- ─── THE SESSION FILM ────────────────────────────────────────── -->
+      <div class="vplayer vfacade reveal"
+           data-yt="ODQeKbE6uAI"
+           data-yt-list="UUslziKWN27MfF7jjbsa6YxQ"
+           data-title="Secret Drifter of The Sea — Little Marine Scientists at Pantai Tembeling, Kuantan">
+        <img src="assets/lms-poster.jpg"
+             alt="Title card of the Little Marine Scientists session film"
+             class="vposter" loading="lazy">
+        <button class="vplay" type="button" aria-label="Play the session film">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+        </button>
+      </div>
+      <p class="vnote"><b>Secret Drifter of The Sea</b> &mdash; Pantai Tembeling, Kuantan.
+        The rest of the session films play after it, straight from our
+        <a class="ytlink" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">YouTube channel &#8599;</a></p>
+
+      <!-- ─── HOW THE SESSION RAN ─────────────────────────────────────── -->
+      <h3 style="margin:clamp(36px,4vw,56px) 0 18px;">How the morning ran</h3>
+      <ol class="method" data-stagger="90">
+        <li class="reveal">
+          <div>
+            <b>Meet the plankton</b>
+            <p>We showed the children pictures of zooplankton and phytoplankton
+               and let them guess which was which, before telling them.</p>
+          </div>
+        </li>
+        <li class="reveal">
+          <div>
+            <b>Build a net, take a sample</b>
+            <p>They learnt how plankton sampling is done, using a plankton net
+               we made ourselves, and collected a sample from the beach water.</p>
+          </div>
+        </li>
+        <li class="reveal">
+          <div>
+            <b>Prepare the slides</b>
+            <p>The sample came back to base, where the children helped prepare it
+               on slides ready for the microscope.</p>
+          </div>
+        </li>
+        <li class="reveal">
+          <div>
+            <b>Under the microscope</b>
+            <p>Every child got hands-on time at the eyepiece &mdash; exploring the
+               instrument itself, and seeing the living things and the properties
+               of the water they had been standing in an hour earlier.</p>
+          </div>
+        </li>
+        <li class="reveal">
+          <div>
+            <b>What did we learn?</b>
+            <p>We closed with simple questions about the morning, and small
+               rewards for the children who answered correctly.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div style="margin-top:clamp(28px,3vw,40px);">
+        <a href="#enrol" class="btn btn-primary">Register for the next session</a>
+        <a href="#feedback" class="btn btn-secondary" style="margin-left:10px;">Already joined? Tell us how it went</a>
+      </div>
+      </div><!-- /.sessionblock -->
+
+      <hr style="border:0;border-top:1px solid var(--color-divider);margin:clamp(44px,5vw,72px) 0 clamp(30px,3.4vw,46px);">
+
+      <div class="recap-head">
+        <div style="max-width:640px;">
+          <div class="eyebrow">Previous session</div>
+          <div class="recap-meta">
+            <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg>15 August 2026</span>
+            <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>Pantai Tembeling, Pahang</span>
+            <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="3.5"/><path d="M22 20v-2a4 4 0 0 0-3-3.9"/></svg>22 children</span>
+          </div>
+          <h2 style="margin:0 0 16px;">A morning at Pantai Tembeling</h2>
+          <p class="lede" style="margin:0;">
+            On 15 August we ran a Little Marine Scientists session at Pantai Tembeling with
+            22 children. They spent the morning on the shoreline — looking closely at what
+            the tide had left behind, asking a great many questions, and thoroughly enjoying
+            themselves. Here is how it went.
+          </p>
+        </div>
+      </div>
+
+      <div class="recap-stats">
+        <div class="rs"><b>22</b><span>Children took part</span></div>
+        <div class="rs"><b>15 Aug</b><span>Session date, 2026</span></div>
+        <div class="rs"><b>Tembeling</b><span>Pantai Tembeling, Pahang</span></div>
+        <div class="rs"><b>1st</b><span>Session at this shoreline</span></div>
+      </div>
+
+      <!-- The 15 August film. Same facade, same playlist, so it also
+           queues the rest of the channel after it. -->
+      <div class="vplayer vfacade reveal"
+           data-yt="tgHmmgz5TT4"
+           data-yt-list="UUslziKWN27MfF7jjbsa6YxQ"
+           data-title="Secret Life of Low Tide — Pantai Tembeling, 15 August 2026">
+        <img src="assets/lms-poster.jpg"
+             alt="Title card of the Little Marine Scientists session film"
+             class="vposter" loading="lazy">
+        <button class="vplay" type="button" aria-label="Play the session film">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+        </button>
+      </div>
+      <p class="vnote"><b>Secret Life of Low Tide</b> &mdash; Pantai Tembeling, 15 August 2026 &middot;
+        <a class="ytlink" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">watch on YouTube &#8599;</a></p>
+
+      <!-- ─── PHOTOS ─────────────────────────────────────────────────── -->
+      <h3 style="margin:clamp(36px,4vw,56px) 0 18px;">From the shoreline</h3>
+      <div class="pgrid" data-stagger="70">
+
+        <button type="button">
+          <img src="assets/lms-150826-01.jpg" alt="Children at the oyster rocks as the tide goes out" loading="lazy">
+          <figcaption>At the oyster rocks</figcaption>
+        </button>
+
+        <button type="button">
+          <img src="assets/lms-150826-02.jpg" alt="The beach at Pantai Tembeling, backed by forest" loading="lazy">
+          <figcaption>Pantai Tembeling</figcaption>
+        </button>
+
+        <button type="button">
+          <img src="assets/lms-150826-03.jpg" alt="Children crouching in the shallows around a find" loading="lazy">
+          <figcaption>A find in the shallows</figcaption>
+        </button>
+
+        <button type="button">
+          <img src="assets/lms-150826-04.jpg" alt="The wide tidal lagoon the session explored" loading="lazy">
+          <figcaption>The tidal lagoon</figcaption>
+        </button>
+
+        <button type="button">
+          <img src="assets/lms-150826-05.jpg" alt="Children gathered at the shelter between activities" loading="lazy">
+          <figcaption>Back at the shelter</figcaption>
+        </button>
+
+        <button type="button">
+          <img src="assets/lms-150826-06.jpg" alt="All 22 children and the LMS team in front of the shelter" loading="lazy">
+          <figcaption>The group, 22 strong</figcaption>
+        </button>
+
+      </div>
+
+      <p class="vnote" style="margin-top:14px;">Photographs from the session on 15 August 2026.</p>
+      <div style="margin-top:clamp(28px,3vw,40px);">
+        <a href="#enrol" class="btn btn-primary">Register for the next session</a>
+        <a href="#feedback" class="btn btn-secondary" style="margin-left:10px;">Already joined? Tell us how it went</a>
+      </div>
       <!-- KD:LMS-SESSIONS:END -->
 
     </div>
@@ -177,8 +395,23 @@
   </section>
 
   <!-- KD:TESTIMONIALS:START -->
-
-      <!-- KD:TESTIMONIALS:END -->
+  <section id="voices" class="sec">
+    <div class="wrapx">
+      <div style="max-width:620px;margin:0 0 clamp(28px,3.5vw,44px);">
+        <div class="eyebrow">In their words</div>
+        <h2 style="margin:0 0 14px;">What families said</h2>
+        <p class="lede" style="margin:0;">Feedback from parents whose children joined a session.</p>
+      </div>
+      <div class="fbgrid" data-stagger="90">
+      <figure class="fbcard reveal">
+        <div class="fbstars" aria-label="5 out of 5">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <blockquote>Exploring the marine life. She even asked if she can repeat the activity the next day she woke up.</blockquote>
+        <figcaption><b>Aimi A.</b><span>Parent &middot; Pantai Tembeling, 15 August 2026</span></figcaption>
+      </figure>
+      </div>
+    </div>
+  </section>
+  <!-- KD:TESTIMONIALS:END -->
 
 
   <!-- ═══════════════════════════════════════════════════════════════════
@@ -544,6 +777,5 @@
 
 
 <script src="assets/site.js" defer></script>
-  <script src="assets/kalsa-capture.js" defer></script>
 </body>
 </html>

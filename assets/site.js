@@ -467,6 +467,217 @@
       .catch(function () { /* no banner is a fine outcome */ });
   }
 
+  /* ---------------------------------------------------------------
+     12. Enrolment: module pricing + pay-now / pay-later-on-WhatsApp
+     The enrolment form on little-marine-scientists.html has per-module
+     checkboxes (data-mod-price) that build a running total, and two
+     buttons instead of one plain submit:
+
+       #btn-pay-now   → validate, send to web3forms + admin dashboard,
+                        then create a CHIP checkout session and redirect.
+       #btn-pay-later → validate, send to web3forms + admin dashboard,
+                        then open WhatsApp with a pre-filled summary so
+                        the parent can ask questions before paying.
+
+     Both paths always reach web3forms (lmsteam@kalsadermaga.com) and
+     the admin dashboard (ENROL_SINK) — payment is the only thing that
+     differs between them. This section only runs on pages that have
+     the enrolment form; it does nothing on pages without it.
+     --------------------------------------------------------------- */
+  var ENROL_SINK = 'https://apps.kalsadermaga.com/api/superapp/site/enrolment';
+  var LMS_WHATSAPP_NUMBER = '601139822811'; // 011-39822811 in international format
+
+  function initModulePricing() {
+    var form = document.querySelector('#enrol form');
+    if (!form) return;
+
+    var modInputs = form.querySelectorAll('.modcheck input[type="checkbox"]');
+    var totalEl = document.getElementById('modtotal-amount');
+    var payNowAmountEl = document.getElementById('paynow-amount');
+    if (!modInputs.length || !totalEl) return;
+
+    function recalc() {
+      var total = 0;
+      for (var i = 0; i < modInputs.length; i++) {
+        if (modInputs[i].checked) total += parseFloat(modInputs[i].getAttribute('data-mod-price')) || 0;
+      }
+      totalEl.textContent = 'RM ' + total;
+      if (payNowAmountEl) payNowAmountEl.textContent = 'RM ' + total;
+      return total;
+    }
+
+    for (var j = 0; j < modInputs.length; j++) {
+      modInputs[j].addEventListener('change', recalc);
+    }
+    recalc();
+  }
+
+  function getSelectedModules(form) {
+    var inputs = form.querySelectorAll('.modcheck input[type="checkbox"]:checked');
+    var out = [];
+    for (var i = 0; i < inputs.length; i++) {
+      out.push({
+        name: inputs[i].value,
+        price: parseFloat(inputs[i].getAttribute('data-mod-price')) || 0
+      });
+    }
+    return out;
+  }
+
+  function collectFormData(form) {
+    var out = {};
+    var els = form.querySelectorAll('input[name],select[name],textarea[name]');
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (['access_key', 'subject', 'from_name', 'redirect', 'botcheck'].indexOf(el.name) > -1) continue;
+      if (el.type === 'checkbox') {
+        if (el.name === 'Modules') { if (el.checked) { out[el.name] = out[el.name] ? out[el.name] + ', ' + el.value : el.value; } continue; }
+        out[el.name] = el.checked ? (el.value || 'Yes') : '';
+        continue;
+      }
+      if (el.type === 'radio') { if (!el.checked) continue; }
+      out[el.name] = el.value;
+    }
+    return out;
+  }
+
+  function postWeb3Forms(form) {
+    var payload = collectFormData(form);
+    payload.access_key = form.querySelector('input[name="access_key"]').value;
+    payload.subject = form.querySelector('input[name="subject"]').value;
+    payload.from_name = form.querySelector('input[name="from_name"]').value;
+
+    return fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); });
+  }
+
+  function notifyAdminDashboard(form, extra) {
+    try {
+      var payload = collectFormData(form);
+      for (var k in extra) { if (extra.hasOwnProperty(k)) payload[k] = extra[k]; }
+      if (navigator.sendBeacon) {
+        var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+        navigator.sendBeacon(ENROL_SINK, blob);
+      } else if (window.fetch) {
+        fetch(ENROL_SINK, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload), keepalive: true
+        });
+      }
+    } catch (e) { /* dashboard notification is best-effort, never blocks the parent */ }
+  }
+
+  function initEnrolSubmit() {
+    var form = document.querySelector('#enrol form');
+    if (!form || !window.fetch) return;
+
+    var payNowBtn = document.getElementById('btn-pay-now');
+    var payLaterBtn = document.getElementById('btn-pay-later');
+    var statusEl = document.getElementById('enrol-status');
+
+    function setStatus(msg, cls) {
+      if (!statusEl) return;
+      statusEl.textContent = msg || '';
+      statusEl.className = 'paystatus' + (cls ? ' ' + cls : '');
+    }
+
+    function validateCommon() {
+      if (!form.reportValidity()) return false;
+      var modules = getSelectedModules(form);
+      if (modules.length === 0) {
+        setStatus('Please select at least one module before continuing.', 'err');
+        return false;
+      }
+      return true;
+    }
+
+    if (payNowBtn) {
+      payNowBtn.addEventListener('click', function () {
+        if (!validateCommon()) return;
+        var modules = getSelectedModules(form);
+        var total = modules.reduce(function (sum, m) { return sum + m.price; }, 0);
+
+        var originalLabel = payNowBtn.textContent;
+        payNowBtn.disabled = true;
+        if (payLaterBtn) payLaterBtn.disabled = true;
+        payNowBtn.textContent = 'Submitting…';
+        setStatus('');
+
+        postWeb3Forms(form)
+          .then(function () {
+            notifyAdminDashboard(form, { 'Payment path': 'Pay now', 'Modules total': total });
+            payNowBtn.textContent = 'Redirecting to payment…';
+            return fetch(CHECKOUT_ENDPOINT, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                items: modules,
+                total: total,
+                source: 'little-marine-scientists.html',
+                child: form.querySelector('[name="Child name"]').value,
+                email: form.querySelector('[name="Parent email"]').value
+              })
+            });
+          })
+          .then(function (r) {
+            if (!r.ok) throw new Error('Checkout request failed (' + r.status + ')');
+            return r.json();
+          })
+          .then(function (data) {
+            if (!data || !data.checkout_url) throw new Error('No checkout URL returned');
+            window.location.href = data.checkout_url;
+          })
+          .catch(function () {
+            setStatus('We received your enrolment, but could not start payment just now. Please call 011-39822811 to complete payment, or try again in a moment.', 'err');
+            payNowBtn.disabled = false;
+            if (payLaterBtn) payLaterBtn.disabled = false;
+            payNowBtn.textContent = originalLabel;
+          });
+      });
+    }
+
+    if (payLaterBtn) {
+      payLaterBtn.addEventListener('click', function () {
+        if (!validateCommon()) return;
+        var modules = getSelectedModules(form);
+        var total = modules.reduce(function (sum, m) { return sum + m.price; }, 0);
+        var childName = form.querySelector('[name="Child name"]').value;
+        var moduleNames = modules.map(function (m) { return m.name; }).join(', ');
+
+        var originalLabel = payLaterBtn.textContent;
+        payLaterBtn.disabled = true;
+        if (payNowBtn) payNowBtn.disabled = true;
+        payLaterBtn.textContent = 'Submitting…';
+        setStatus('');
+
+        postWeb3Forms(form)
+          .then(function () {
+            notifyAdminDashboard(form, { 'Payment path': 'Pay later via WhatsApp', 'Modules total': total });
+
+            var msg = 'Hi LMS team, I just enrolled ' + (childName || 'my child') +
+              ' for: ' + moduleNames + ' (Total: RM ' + total + '). ' +
+              'I have a few questions before I complete payment.';
+            var waUrl = 'https://wa.me/' + LMS_WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
+
+            setStatus('Enrolment received — opening WhatsApp so you can chat with our team before paying.', 'ok');
+            window.open(waUrl, '_blank', 'noopener');
+            payLaterBtn.textContent = 'Enrolment sent ✓';
+          })
+          .catch(function () {
+            setStatus('Sorry, something went wrong sending your enrolment. Please try again, or call 011-39822811.', 'err');
+            payLaterBtn.disabled = false;
+            if (payNowBtn) payNowBtn.disabled = false;
+            payLaterBtn.textContent = originalLabel;
+          });
+      });
+    }
+  }
+
+  var CHECKOUT_ENDPOINT = 'https://apps.kalsadermaga.com/api/superapp/site/checkout';
+
   function boot() {
     initNavHeight();
     initBanner();
@@ -480,6 +691,8 @@
     initCarousels();
     initMarquee();
     initMobileNav();
+    initModulePricing();
+    initEnrolSubmit();
   }
 
   if (document.readyState === 'loading') {

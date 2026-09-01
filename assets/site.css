@@ -1031,3 +1031,38 @@ footer .nav-brand{color:#fff}
   .method li{grid-template-columns:1fr;gap:10px}
   .method li::before{width:32px;height:32px;font-size:14px}
 }
+
+/* ===================================================================
+   MODULE PRICING & ENROLMENT PAYMENT
+   Per-module prices inside the "Programme preferences" fieldset, the
+   running total, and the two enrol/pay buttons at the bottom of the
+   enrolment form.
+   =================================================================== */
+.modgrid .check{align-items:flex-start}
+.modcheck span{display:flex;flex-direction:column;gap:2px}
+.modprice{
+  font-size:12.5px;font-weight:700;color:var(--color-accent-700);
+}
+.modprice-soon{
+  color:color-mix(in srgb, var(--color-text) 50%, transparent);
+  font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:11px;
+}
+.modcheck.is-upcoming{opacity:.55;cursor:not-allowed}
+.modcheck.is-upcoming input{cursor:not-allowed}
+
+.modtotal{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:var(--space-3);padding:var(--space-2) var(--space-3);
+  border-radius:var(--radius-md);
+  background:color-mix(in srgb, var(--color-accent) 8%, transparent);
+  font-size:14px;
+}
+.modtotal b{font-size:18px;color:var(--color-accent-700)}
+
+.enrolsubmit{margin-top:var(--space-2)}
+.btn-secondary#btn-pay-later{background:transparent;border:1px solid var(--color-divider)}
+
+.paystatus{font-size:13px;line-height:1.5;min-height:16px}
+.paystatus.err{color:var(--color-accent-2-700)}
+.paystatus.ok{color:var(--color-accent-700)}
+

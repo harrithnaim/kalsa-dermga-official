@@ -1050,14 +1050,32 @@ footer .nav-brand{color:#fff}
 .modcheck.is-upcoming{opacity:.55;cursor:not-allowed}
 .modcheck.is-upcoming input{cursor:not-allowed}
 
+.childmodule-block{
+  border:1px solid var(--color-divider);border-radius:var(--radius-md);
+  padding:var(--space-3);margin-top:var(--space-3);
+}
+.childmodule-block:first-child{margin-top:6px}
+.childmodule-heading{
+  font-weight:700;font-size:14px;margin-bottom:10px;
+  color:var(--color-accent-700);
+}
+.childsubtotal{
+  margin-top:10px;font-size:13px;text-align:right;
+  color:color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+.childsubtotal b{color:var(--color-text);opacity:1;font-weight:700}
+
 .modtotal{
-  display:flex;align-items:center;justify-content:space-between;
   margin-top:var(--space-3);padding:var(--space-2) var(--space-3);
   border-radius:var(--radius-md);
   background:color-mix(in srgb, var(--color-accent) 8%, transparent);
   font-size:14px;
 }
-.modtotal b{font-size:18px;color:var(--color-accent-700)}
+.modtotal-row{display:flex;align-items:center;justify-content:space-between;padding:3px 0}
+.modtotal-row b{font-weight:700}
+.modtotal-final{border-top:1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);margin-top:4px;padding-top:8px}
+.modtotal-final b{font-size:18px;color:var(--color-accent-700)}
+#modtotal-discount{color:var(--color-accent-2-700)}
 
 .enrolsubmit{margin-top:var(--space-2)}
 .btn-secondary#btn-pay-later{background:transparent;border:1px solid var(--color-divider)}

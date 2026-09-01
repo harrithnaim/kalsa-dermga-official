@@ -485,41 +485,228 @@
      the enrolment form; it does nothing on pages without it.
      --------------------------------------------------------------- */
   var ENROL_SINK = 'https://apps.kalsadermaga.com/api/superapp/site/enrolment';
-  var LMS_WHATSAPP_NUMBER = '601139822811'; // 011-39822811 in international format
+  var LMS_WHATSAPP_NUMBER = '60123454520'; // 012-3454520 in international format
+
+  /* Single source of truth for module names/prices/availability — edit
+     here only. Every child's picker (renderChildModules) is generated
+     from this list, so adding, renaming, repricing, or activating a
+     module never needs an HTML edit. */
+  var LMS_MODULES = [
+    { name: 'Secret Life of Low Tide', price: 70, available: true },
+    { name: 'The Sick Sea Shells', price: 85, available: true },
+    { name: 'Secret Drifters of The Sea', price: 95, available: true },
+    { name: 'Upcoming module 4', price: 0, available: false },
+    { name: 'Upcoming module 5', price: 0, available: false },
+    { name: 'Upcoming module 6', price: 0, available: false }
+  ];
+
+  /* Builds one module-picker block per child inside #childmodules, based
+     on "Number of children enrolling together". Each child gets their
+     own checkboxes (siblings can pick different modules), and children
+     2+ get their own Name/Age fields (child 1's are already in the
+     "Child's details" fieldset above). Re-run whenever the sibling
+     count changes; preserves already-made selections and typed
+     name/age values where a child index still exists after rebuild. */
+  function renderChildModules(form) {
+    var container = document.getElementById('childmodules');
+    var countInput = document.getElementById('c-siblingcount');
+    if (!container || !countInput) return;
+
+    var count = parseInt(countInput.value, 10) || 1;
+    if (count < 1) count = 1;
+    if (count > 10) count = 10;
+
+    var preserved = {};
+    var existingBlocks = container.querySelectorAll('.childmodule-block');
+    for (var b = 0; b < existingBlocks.length; b++) {
+      var idx = existingBlocks[b].getAttribute('data-child');
+      var checked = [];
+      var checks = existingBlocks[b].querySelectorAll('input[type="checkbox"]:checked');
+      for (var c2 = 0; c2 < checks.length; c2++) checked.push(checks[c2].value);
+      var nameInput = existingBlocks[b].querySelector('.childname-input');
+      var ageInput = existingBlocks[b].querySelector('.childage-input');
+      preserved[idx] = {
+        checked: checked,
+        name: nameInput ? nameInput.value : '',
+        age: ageInput ? ageInput.value : ''
+      };
+    }
+
+    container.innerHTML = '';
+
+    for (var i = 1; i <= count; i++) {
+      var block = document.createElement('div');
+      block.className = 'childmodule-block';
+      block.setAttribute('data-child', i);
+
+      var heading = document.createElement('div');
+      heading.className = 'childmodule-heading';
+      heading.textContent = 'Child ' + i;
+      block.appendChild(heading);
+
+      if (i >= 2) {
+        var row = document.createElement('div');
+        row.className = 'grid2';
+        row.style.marginBottom = '10px';
+
+        var nameField = document.createElement('div');
+        nameField.className = 'field';
+        var nameLabel = document.createElement('label');
+        nameLabel.textContent = 'Name *';
+        var nameInputEl = document.createElement('input');
+        nameInputEl.className = 'input childname-input';
+        nameInputEl.type = 'text';
+        nameInputEl.name = 'Child ' + i + ' name';
+        nameInputEl.required = true;
+        nameInputEl.value = (preserved[i] && preserved[i].name) || '';
+        nameField.appendChild(nameLabel);
+        nameField.appendChild(nameInputEl);
+
+        var ageField = document.createElement('div');
+        ageField.className = 'field';
+        var ageLabel = document.createElement('label');
+        ageLabel.textContent = 'Age *';
+        var ageInputEl = document.createElement('input');
+        ageInputEl.className = 'input childage-input';
+        ageInputEl.type = 'number';
+        ageInputEl.name = 'Child ' + i + ' age';
+        ageInputEl.min = '4';
+        ageInputEl.max = '17';
+        ageInputEl.required = true;
+        ageInputEl.value = (preserved[i] && preserved[i].age) || '';
+        ageField.appendChild(ageLabel);
+        ageField.appendChild(ageInputEl);
+
+        row.appendChild(nameField);
+        row.appendChild(ageField);
+        block.appendChild(row);
+      }
+
+      var modGrid = document.createElement('div');
+      modGrid.className = 'grid2 modgrid';
+
+      for (var m = 0; m < LMS_MODULES.length; m++) {
+        var mod = LMS_MODULES[m];
+        var label = document.createElement('label');
+        label.className = 'check modcheck' + (mod.available ? '' : ' is-upcoming');
+
+        var input = document.createElement('input');
+        input.type = 'checkbox';
+        input.name = 'Modules (Child ' + i + ')';
+        input.value = mod.name;
+        input.setAttribute('data-mod-price', mod.price);
+        if (!mod.available) input.disabled = true;
+        if (preserved[i] && preserved[i].checked.indexOf(mod.name) > -1) input.checked = true;
+
+        var span = document.createElement('span');
+        span.appendChild(document.createTextNode(mod.name + ' '));
+        var priceB = document.createElement('b');
+        priceB.className = 'modprice' + (mod.available ? '' : ' modprice-soon');
+        priceB.textContent = mod.available ? ('RM ' + mod.price) : 'Coming soon';
+        span.appendChild(priceB);
+
+        label.appendChild(input);
+        label.appendChild(span);
+        modGrid.appendChild(label);
+      }
+
+      block.appendChild(modGrid);
+
+      var subEl = document.createElement('div');
+      subEl.className = 'childsubtotal';
+      subEl.innerHTML = 'Subtotal: <b class="childsubtotal-amount">RM 0</b>';
+      block.appendChild(subEl);
+
+      container.appendChild(block);
+    }
+  }
 
   function initModulePricing() {
     var form = document.querySelector('#enrol form');
     if (!form) return;
 
-    var modInputs = form.querySelectorAll('.modcheck input[type="checkbox"]');
+    var countInput = document.getElementById('c-siblingcount');
+    var subtotalEl = document.getElementById('modtotal-subtotal');
+    var discountRowEl = document.getElementById('modtotal-discount-row');
+    var discountEl = document.getElementById('modtotal-discount');
+    var childrenEl = document.getElementById('modtotal-children');
     var totalEl = document.getElementById('modtotal-amount');
     var payNowAmountEl = document.getElementById('paynow-amount');
-    if (!modInputs.length || !totalEl) return;
+    if (!countInput || !totalEl) return;
 
     function recalc() {
-      var total = 0;
-      for (var i = 0; i < modInputs.length; i++) {
-        if (modInputs[i].checked) total += parseFloat(modInputs[i].getAttribute('data-mod-price')) || 0;
-      }
-      totalEl.textContent = 'RM ' + total;
-      if (payNowAmountEl) payNowAmountEl.textContent = 'RM ' + total;
-      return total;
+      var t = computeTotals(form);
+      if (subtotalEl) subtotalEl.textContent = 'RM ' + t.subtotal;
+      if (childrenEl) childrenEl.textContent = t.children;
+      if (discountRowEl) discountRowEl.style.display = t.discount > 0 ? '' : 'none';
+      if (discountEl) discountEl.textContent = '\u2212RM ' + t.discount;
+      totalEl.textContent = 'RM ' + t.total;
+      if (payNowAmountEl) payNowAmountEl.textContent = 'RM ' + t.total;
+      return t;
     }
 
-    for (var j = 0; j < modInputs.length; j++) {
-      modInputs[j].addEventListener('change', recalc);
+    function rebuild() {
+      renderChildModules(form);
+      var allChecks = document.querySelectorAll('#childmodules input[type="checkbox"]');
+      for (var ci = 0; ci < allChecks.length; ci++) {
+        allChecks[ci].addEventListener('change', recalc);
+      }
+      recalc();
     }
-    recalc();
+
+    countInput.addEventListener('input', rebuild);
+    rebuild();
   }
 
+  /* Single source of truth for pricing — used by the live total display
+     (initModulePricing) and by both submit buttons, so what a parent
+     sees is always exactly what gets charged. RM5/child discount kicks
+     in automatically once 2 or more children are enrolling together.
+     Also updates each child block's own subtotal line as a side effect. */
+  function computeTotals(form) {
+    var blocks = form.querySelectorAll('.childmodule-block');
+    var children = blocks.length || 1;
+    var subtotal = 0;
+    for (var b = 0; b < blocks.length; b++) {
+      var checks = blocks[b].querySelectorAll('input[type="checkbox"]:checked');
+      var childSum = 0;
+      for (var c = 0; c < checks.length; c++) {
+        childSum += parseFloat(checks[c].getAttribute('data-mod-price')) || 0;
+      }
+      var subEl = blocks[b].querySelector('.childsubtotal-amount');
+      if (subEl) subEl.textContent = 'RM ' + childSum;
+      subtotal += childSum;
+    }
+    var discountPerChild = children >= 2 ? 5 : 0;
+    var discount = discountPerChild * children;
+    var total = Math.max(subtotal - discount, 0);
+    return { children: children, subtotal: subtotal, discount: discount, total: total };
+  }
+
+  /* Returns every selected module across all children, each tagged with
+     which child it belongs to (by name if typed, else "Child N") — used
+     to build the CHIP checkout line items and the WhatsApp summary. */
   function getSelectedModules(form) {
-    var inputs = form.querySelectorAll('.modcheck input[type="checkbox"]:checked');
     var out = [];
-    for (var i = 0; i < inputs.length; i++) {
-      out.push({
-        name: inputs[i].value,
-        price: parseFloat(inputs[i].getAttribute('data-mod-price')) || 0
-      });
+    var blocks = form.querySelectorAll('.childmodule-block');
+    for (var b = 0; b < blocks.length; b++) {
+      var idx = blocks[b].getAttribute('data-child');
+      var label;
+      if (idx === '1') {
+        var c1 = form.querySelector('#c-name');
+        label = (c1 && c1.value) || 'Child 1';
+      } else {
+        var ni = blocks[b].querySelector('.childname-input');
+        label = (ni && ni.value) || ('Child ' + idx);
+      }
+      var checks = blocks[b].querySelectorAll('input[type="checkbox"]:checked');
+      for (var c = 0; c < checks.length; c++) {
+        out.push({
+          child: label,
+          name: checks[c].value,
+          price: parseFloat(checks[c].getAttribute('data-mod-price')) || 0
+        });
+      }
     }
     return out;
   }
@@ -531,7 +718,7 @@
       var el = els[i];
       if (['access_key', 'subject', 'from_name', 'redirect', 'botcheck'].indexOf(el.name) > -1) continue;
       if (el.type === 'checkbox') {
-        if (el.name === 'Modules') { if (el.checked) { out[el.name] = out[el.name] ? out[el.name] + ', ' + el.value : el.value; } continue; }
+        if (el.name.indexOf('Modules (') === 0) { if (el.checked) { out[el.name] = out[el.name] ? out[el.name] + ', ' + el.value : el.value; } continue; }
         out[el.name] = el.checked ? (el.value || 'Yes') : '';
         continue;
       }
@@ -570,18 +757,46 @@
     } catch (e) { /* dashboard notification is best-effort, never blocks the parent */ }
   }
 
+  /* Turns the flat getSelectedModules() list into a readable per-child
+     summary, e.g. "Child 1: Secret Life of Low Tide (RM70); Aisyah:
+     The Sick Sea Shells, Secret Drifters of The Sea (RM180)" — used in
+     the WhatsApp pay-later message so the team sees who picked what. */
+  function summarizeModulesByChild(modules) {
+    var byChild = {};
+    var order = [];
+    for (var i = 0; i < modules.length; i++) {
+      var m = modules[i];
+      if (!byChild[m.child]) { byChild[m.child] = { names: [], total: 0 }; order.push(m.child); }
+      byChild[m.child].names.push(m.name);
+      byChild[m.child].total += m.price;
+    }
+    var lines = [];
+    for (var j = 0; j < order.length; j++) {
+      var c = order[j];
+      lines.push(c + ': ' + byChild[c].names.join(', ') + ' (RM' + byChild[c].total + ')');
+    }
+    return lines.join('; ');
+  }
+
   function initEnrolSubmit() {
     var form = document.querySelector('#enrol form');
     if (!form || !window.fetch) return;
 
     var payNowBtn = document.getElementById('btn-pay-now');
     var payLaterBtn = document.getElementById('btn-pay-later');
+    var enrolOnlyBtn = document.getElementById('btn-enrol-only');
     var statusEl = document.getElementById('enrol-status');
 
     function setStatus(msg, cls) {
       if (!statusEl) return;
       statusEl.textContent = msg || '';
       statusEl.className = 'paystatus' + (cls ? ' ' + cls : '');
+    }
+
+    function disableAll(disabled) {
+      if (payNowBtn) payNowBtn.disabled = disabled;
+      if (payLaterBtn) payLaterBtn.disabled = disabled;
+      if (enrolOnlyBtn) enrolOnlyBtn.disabled = disabled;
     }
 
     function validateCommon() {
@@ -598,24 +813,30 @@
       payNowBtn.addEventListener('click', function () {
         if (!validateCommon()) return;
         var modules = getSelectedModules(form);
-        var total = modules.reduce(function (sum, m) { return sum + m.price; }, 0);
+        var totals = computeTotals(form);
 
         var originalLabel = payNowBtn.textContent;
-        payNowBtn.disabled = true;
-        if (payLaterBtn) payLaterBtn.disabled = true;
+        disableAll(true);
         payNowBtn.textContent = 'Submitting…';
         setStatus('');
 
         postWeb3Forms(form)
           .then(function () {
-            notifyAdminDashboard(form, { 'Payment path': 'Pay now', 'Modules total': total });
+            notifyAdminDashboard(form, {
+              'Payment path': 'Pay now',
+              'Children enrolling': totals.children,
+              'Sibling discount': totals.discount,
+              'Modules total': totals.total
+            });
             payNowBtn.textContent = 'Redirecting to payment…';
             return fetch(CHECKOUT_ENDPOINT, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 items: modules,
-                total: total,
+                children: totals.children,
+                discount: totals.discount,
+                total: totals.total,
                 source: 'little-marine-scientists.html',
                 child: form.querySelector('[name="Child name"]').value,
                 email: form.querySelector('[name="Parent email"]').value
@@ -632,8 +853,7 @@
           })
           .catch(function () {
             setStatus('We received your enrolment, but could not start payment just now. Please call 011-39822811 to complete payment, or try again in a moment.', 'err');
-            payNowBtn.disabled = false;
-            if (payLaterBtn) payLaterBtn.disabled = false;
+            disableAll(false);
             payNowBtn.textContent = originalLabel;
           });
       });
@@ -643,22 +863,28 @@
       payLaterBtn.addEventListener('click', function () {
         if (!validateCommon()) return;
         var modules = getSelectedModules(form);
-        var total = modules.reduce(function (sum, m) { return sum + m.price; }, 0);
+        var totals = computeTotals(form);
         var childName = form.querySelector('[name="Child name"]').value;
-        var moduleNames = modules.map(function (m) { return m.name; }).join(', ');
+        var summaryText = summarizeModulesByChild(modules);
 
         var originalLabel = payLaterBtn.textContent;
-        payLaterBtn.disabled = true;
-        if (payNowBtn) payNowBtn.disabled = true;
+        disableAll(true);
         payLaterBtn.textContent = 'Submitting…';
         setStatus('');
 
         postWeb3Forms(form)
           .then(function () {
-            notifyAdminDashboard(form, { 'Payment path': 'Pay later via WhatsApp', 'Modules total': total });
+            notifyAdminDashboard(form, {
+              'Payment path': 'Pay later via WhatsApp',
+              'Children enrolling': totals.children,
+              'Sibling discount': totals.discount,
+              'Modules total': totals.total
+            });
 
             var msg = 'Hi LMS team, I just enrolled ' + (childName || 'my child') +
-              ' for: ' + moduleNames + ' (Total: RM ' + total + '). ' +
+              (totals.children >= 2 ? ' and ' + (totals.children - 1) + ' sibling(s)' : '') +
+              ' — ' + summaryText + ' (Total: RM ' + totals.total +
+              (totals.discount > 0 ? ', after RM' + totals.discount + ' sibling discount' : '') + '). ' +
               'I have a few questions before I complete payment.';
             var waUrl = 'https://wa.me/' + LMS_WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
 
@@ -668,12 +894,55 @@
           })
           .catch(function () {
             setStatus('Sorry, something went wrong sending your enrolment. Please try again, or call 011-39822811.', 'err');
-            payLaterBtn.disabled = false;
-            if (payNowBtn) payNowBtn.disabled = false;
+            disableAll(false);
             payLaterBtn.textContent = originalLabel;
           });
       });
     }
+
+    if (enrolOnlyBtn) {
+      enrolOnlyBtn.addEventListener('click', function () {
+        if (!validateCommon()) return;
+        var totals = computeTotals(form);
+
+        var originalLabel = enrolOnlyBtn.textContent;
+        disableAll(true);
+        enrolOnlyBtn.textContent = 'Submitting…';
+        setStatus('');
+
+        postWeb3Forms(form)
+          .then(function () {
+            notifyAdminDashboard(form, {
+              'Payment path': 'Enrolled only — no payment yet',
+              'Children enrolling': totals.children,
+              'Sibling discount': totals.discount,
+              'Modules total': totals.total
+            });
+            setStatus('Enrolment received — our team will contact you about payment before the session.', 'ok');
+            enrolOnlyBtn.textContent = 'Enrolment sent ✓';
+          })
+          .catch(function () {
+            setStatus('Sorry, something went wrong sending your enrolment. Please try again, or call 011-39822811.', 'err');
+            disableAll(false);
+            enrolOnlyBtn.textContent = originalLabel;
+          });
+      });
+    }
+  }
+
+  /* Keeps the hidden "email" field in sync with the visible "Parent
+     email" field. Web3Forms' Autoresponder (Pro feature — confirms an
+     enrolment straight to the parent's inbox) only fires on a field
+     literally named "email"; this lets that work without renaming
+     "Parent email" and breaking the admin dashboard's existing field
+     mapping. Requires enabling Autoresponder on the Web3Forms
+     dashboard for this access key — see note in the HTML above the
+     hidden field. */
+  function initEmailMirror() {
+    var source = document.getElementById('p-email');
+    var mirror = document.getElementById('p-email-mirror');
+    if (!source || !mirror) return;
+    source.addEventListener('input', function () { mirror.value = source.value; });
   }
 
   var CHECKOUT_ENDPOINT = 'https://apps.kalsadermaga.com/api/superapp/site/checkout';
@@ -693,6 +962,7 @@
     initMobileNav();
     initModulePricing();
     initEnrolSubmit();
+    initEmailMirror();
   }
 
   if (document.readyState === 'loading') {

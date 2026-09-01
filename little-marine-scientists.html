@@ -693,10 +693,15 @@
       </fieldset>
 
       <div class="enrolsubmit">
-        <button class="btn btn-primary" type="button" id="btn-pay-now" style="width:100%;">Enrol &amp; Pay Now — <span id="paynow-amount">RM 0</span></button>
+        <!-- TEMP: CHIP payment gateway pending approval from the CHIP
+             team. This button is disabled until that clears — remove
+             the disabled attribute and this comment once CHIP is live.
+             The other two buttons (WhatsApp / enrol-only) are unaffected. -->
+        <button class="btn btn-primary" type="button" id="btn-pay-now" style="width:100%;" disabled title="Card/FPX/QR payment is being set up — pending approval">Enrol &amp; Pay Now — <span id="paynow-amount">RM 0</span> (Coming soon)</button>
         <button class="btn btn-secondary" type="button" id="btn-pay-later" style="width:100%;margin-top:10px;">Enrol &amp; Ask on WhatsApp First</button>
         <button class="btn btn-secondary" type="button" id="btn-enrol-only" style="width:100%;margin-top:10px;">Enrol Now</button>
       </div>
+      <p class="formnote" id="paynow-pending-note" style="margin-top:8px;">Online payment is being set up and will be available soon — for now, please enrol and pay later via WhatsApp, or enrol now and we'll follow up.</p>
       <div class="paystatus" id="enrol-status" aria-live="polite" style="margin-top:var(--space-3);"></div>
       <p class="formnote" style="margin-top:var(--space-3);">Either way, your details go to lmsteam@kalsadermaga.com and our team, and we aim to reply within three working days. Questions before you pay? Call 011-39822811.</p>
     </form>

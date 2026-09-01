@@ -492,9 +492,9 @@
      from this list, so adding, renaming, repricing, or activating a
      module never needs an HTML edit. */
   var LMS_MODULES = [
-    { name: 'Secret Life of Low Tide', price: 70, available: true },
-    { name: 'The Sick Sea Shells', price: 85, available: true },
-    { name: 'Secret Drifters of The Sea', price: 95, available: true },
+    { name: 'Secret Life of Low Tide', price: 60, available: true },
+    { name: 'The Sick Sea Shells', price: 50, available: true },
+    { name: 'Secret Drifters of The Sea', price: 60, available: true },
     { name: 'Upcoming module 4', price: 0, available: false },
     { name: 'Upcoming module 5', price: 0, available: false },
     { name: 'Upcoming module 6', price: 0, available: false }

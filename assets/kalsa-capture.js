@@ -29,15 +29,21 @@
   }
   function send(payload) {
     var body = JSON.stringify(payload);
+    // text/plain is a CORS-safelisted Content-Type, so neither the beacon nor
+    // the fetch triggers a CORS preflight. An application/json beacon DOES need
+    // one, which iOS Safari cannot perform for a beacon -- so those submissions
+    // were being dropped silently. The server accepts a JSON text body whatever
+    // the declared Content-Type.
     if (navigator.sendBeacon) {
       try {
-        var blob = new Blob([body], { type: 'application/json' });
-        if (navigator.sendBeacon(API, blob)) return Promise.resolve(true);
+        var blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
+        if (navigator.sendBeacon(API, blob)) return { beacon: true, done: Promise.resolve(true) };
       } catch (e) { /* fall through to fetch */ }
     }
-    return fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    var done = fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
       body: body, keepalive: true, mode: 'cors' })
       .then(function () { return true; }).catch(function () { return false; });
+    return { beacon: false, done: done };
   }
   function attach(form) {
     if (form.getAttribute('data-kalsa-capture') === 'on') return;
@@ -45,8 +51,12 @@
     form.addEventListener('submit', function (ev) {
       if (form.checkValidity && !form.checkValidity()) return;
       var payload = fieldsOf(form);
-      var done = send(payload);
-      if (navigator.sendBeacon) return;
+      var r = send(payload);
+      // Beacon accepted -> data is already queued by the browser; let the form
+      // submit / navigate as normal.
+      if (r.beacon) return;
+      // Otherwise hold the navigation briefly so the keepalive fetch is flushed
+      // before the page unloads, then release regardless of the outcome.
       ev.preventDefault();
       var released = false;
       var go = function () {
@@ -56,7 +66,7 @@
         form.submit();
       };
       setTimeout(go, WAIT_MS);
-      done.then(go, go);
+      r.done.then(go, go);
     });
   }
   function init() {

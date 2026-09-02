@@ -525,10 +525,16 @@
       for (var c2 = 0; c2 < checks.length; c2++) checked.push(checks[c2].value);
       var nameInput = existingBlocks[b].querySelector('.childname-input');
       var ageInput = existingBlocks[b].querySelector('.childage-input');
+      var schoolInput = existingBlocks[b].querySelector('.childschool-input');
+      var swimInput = existingBlocks[b].querySelector('.childswim-input');
+      var medicalInput = existingBlocks[b].querySelector('.childmedical-input');
       preserved[idx] = {
         checked: checked,
         name: nameInput ? nameInput.value : '',
-        age: ageInput ? ageInput.value : ''
+        age: ageInput ? ageInput.value : '',
+        school: schoolInput ? schoolInput.value : '',
+        swim: swimInput ? swimInput.value : '',
+        medical: medicalInput ? medicalInput.value : ''
       };
     }
 
@@ -580,6 +586,62 @@
         row.appendChild(nameField);
         row.appendChild(ageField);
         block.appendChild(row);
+
+        var row2 = document.createElement('div');
+        row2.className = 'grid2';
+        row2.style.marginBottom = '10px';
+
+        var schoolField = document.createElement('div');
+        schoolField.className = 'field';
+        var schoolLabel = document.createElement('label');
+        schoolLabel.textContent = 'School or community *';
+        var schoolInputEl = document.createElement('input');
+        schoolInputEl.className = 'input childschool-input';
+        schoolInputEl.type = 'text';
+        schoolInputEl.name = 'Child ' + i + ' school';
+        schoolInputEl.placeholder = 'e.g. SK Beserah';
+        schoolInputEl.required = true;
+        schoolInputEl.value = (preserved[i] && preserved[i].school) || '';
+        schoolField.appendChild(schoolLabel);
+        schoolField.appendChild(schoolInputEl);
+
+        var swimField = document.createElement('div');
+        swimField.className = 'field';
+        var swimLabel = document.createElement('label');
+        swimLabel.textContent = 'Can this child swim? *';
+        var swimSelectEl = document.createElement('select');
+        swimSelectEl.className = 'input childswim-input';
+        swimSelectEl.name = 'Child ' + i + ' swim';
+        swimSelectEl.required = true;
+        var swimOptions = ['', 'Yes, confidently', 'A little, needs supervision', 'No, cannot swim'];
+        for (var so = 0; so < swimOptions.length; so++) {
+          var opt = document.createElement('option');
+          opt.value = swimOptions[so];
+          opt.textContent = so === 0 ? 'Please choose' : swimOptions[so];
+          if (preserved[i] && preserved[i].swim === swimOptions[so]) opt.selected = true;
+          swimSelectEl.appendChild(opt);
+        }
+        swimField.appendChild(swimLabel);
+        swimField.appendChild(swimSelectEl);
+
+        row2.appendChild(schoolField);
+        row2.appendChild(swimField);
+        block.appendChild(row2);
+
+        var medicalField = document.createElement('div');
+        medicalField.className = 'field';
+        medicalField.style.marginBottom = '10px';
+        var medicalLabel = document.createElement('label');
+        medicalLabel.textContent = 'Medical conditions, allergies or accessibility needs';
+        var medicalTextEl = document.createElement('textarea');
+        medicalTextEl.className = 'input childmedical-input';
+        medicalTextEl.name = 'Child ' + i + ' medical';
+        medicalTextEl.rows = 2;
+        medicalTextEl.placeholder = 'Leave blank if none.';
+        medicalTextEl.value = (preserved[i] && preserved[i].medical) || '';
+        medicalField.appendChild(medicalLabel);
+        medicalField.appendChild(medicalTextEl);
+        block.appendChild(medicalField);
       }
 
       var modGrid = document.createElement('div');

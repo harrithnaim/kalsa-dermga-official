@@ -1008,6 +1008,63 @@
   }
 
   var CHECKOUT_ENDPOINT = 'https://apps.kalsadermaga.com/api/superapp/site/checkout';
+  var CHECKOUT_STATUS_ENDPOINT = 'https://apps.kalsadermaga.com/api/superapp/site/checkout-status';
+
+  /* Handles a parent landing back on this page after CHIP checkout.
+     The backend sets success_redirect_url / failure_redirect_url (see
+     checkout-route-example.js) to send them back here with
+     ?enrol_ref=<order id>&result=success|failed — that gives an
+     IMMEDIATE message without waiting on anything.
+
+     That URL result is UX only, not proof of payment — a parent could
+     land on the "success" URL and then have the payment fail a moment
+     later, or vice versa. The one authoritative answer is whatever the
+     backend recorded from CHIP's webhook, so this also asks the
+     backend for the real status and corrects the message if it
+     disagrees. If that check fails (e.g. webhook hasn't landed yet),
+     the original URL-based message is left standing rather than
+     blocking the parent with an error. */
+  function initPaymentResult() {
+    var statusEl = document.getElementById('enrol-status');
+    if (!statusEl) return;
+
+    var params = new URLSearchParams(window.location.search);
+    var ref = params.get('enrol_ref');
+    var result = params.get('result');
+    if (!ref && !result) return; // not a return-from-payment visit
+
+    function show(msg, cls) {
+      statusEl.textContent = msg;
+      statusEl.className = 'paystatus' + (cls ? ' ' + cls : '');
+    }
+
+    if (result === 'success') {
+      show('Payment received — thank you! A confirmation has been sent to your email. Our team will be in touch with session details.', 'ok');
+    } else if (result === 'failed') {
+      show('Your payment did not go through. No charge was made. You can try again above, or enrol now and pay later via WhatsApp.', 'err');
+    }
+
+    if (ref && window.fetch) {
+      fetch(CHECKOUT_STATUS_ENDPOINT + '?ref=' + encodeURIComponent(ref))
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          if (!data || !data.status) return;
+          if (data.status === 'paid') {
+            show('Payment confirmed — thank you! A confirmation has been sent to your email. Our team will be in touch with session details.', 'ok');
+          } else if (data.status === 'failed') {
+            show('Payment was not successful. No charge was made. You can try again above, or enrol now and pay later via WhatsApp.', 'err');
+          } else if (data.status === 'pending') {
+            show('Payment is still being confirmed — this can take a minute. Refresh this page shortly, or contact us if it does not update.', '');
+          }
+        })
+        .catch(function () { /* keep the URL-based message; the backend webhook is still the source of truth */ });
+    }
+
+    // Clean the query string so a page refresh doesn't re-show a stale message.
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
 
   function boot() {
     initNavHeight();
@@ -1025,6 +1082,7 @@
     initModulePricing();
     initEnrolSubmit();
     initEmailMirror();
+    initPaymentResult();
   }
 
   if (document.readyState === 'loading') {

@@ -406,6 +406,12 @@ header:not([style*="--color-accent-2"]) .navtoggle{color:var(--color-text);borde
   --v-med:#8b5cf6;
   --v-lms:#1c7ed6;
   --v-shp:#0a2540;
+
+  /* the software we sell. A separate family from the brands above,
+     so they take their own hues rather than borrowing a brand's. */
+  --v-pos:#c2255c;
+  --v-ord:#0ca678;
+  --v-gam:#4c6ef5;
 }
 
 html{scroll-behavior:smooth;scroll-padding-top:96px;-webkit-text-size-adjust:100%}

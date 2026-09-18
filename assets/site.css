@@ -1090,3 +1090,84 @@ footer .nav-brand{color:#fff}
 .paystatus.err{color:var(--color-accent-2-700)}
 .paystatus.ok{color:var(--color-accent-700)}
 
+
+/* =====================================================================
+   PRODUCT SCREENS
+   =====================================================================
+   The software pages were walls of prose. These are for showing the
+   thing instead of describing it: a real screenshot in a frame, one
+   short claim beside it.
+
+   The frames are drawn in CSS rather than baked into the images, so the
+   same screenshot works on any background and the picture stays sharp
+   on a phone.
+   ===================================================================== */
+
+/* ---------- a browser window ---------- */
+.browser{border-radius:14px;overflow:hidden;background:#fff;
+  border:1px solid color-mix(in srgb,var(--ink) 12%,transparent);
+  box-shadow:0 24px 60px -24px rgba(10,37,64,.32), 0 3px 10px rgba(10,37,64,.07)}
+.browser .bar{display:flex;align-items:center;gap:7px;padding:9px 13px;
+  background:color-mix(in srgb,var(--ink) 5%,#fff);
+  border-bottom:1px solid color-mix(in srgb,var(--ink) 9%,transparent)}
+.browser .bar i{width:9px;height:9px;border-radius:50%;flex:none;
+  background:color-mix(in srgb,var(--ink) 18%,transparent)}
+.browser .bar b{margin-left:9px;font-weight:500;font-size:11.5px;letter-spacing:.01em;
+  color:color-mix(in srgb,var(--ink) 46%,transparent);
+  background:color-mix(in srgb,var(--ink) 6%,transparent);
+  padding:3px 11px;border-radius:var(--radius-pill);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
+.browser img{display:block;width:100%;height:auto}
+
+/* ---------- a phone ---------- */
+.phone{position:relative;width:min(280px,72vw);margin:0 auto;
+  border-radius:34px;padding:9px;background:#0f1b2a;
+  box-shadow:0 26px 60px -22px rgba(10,37,64,.45), 0 3px 10px rgba(10,37,64,.10)}
+.phone::before{content:"";position:absolute;top:15px;left:50%;transform:translateX(-50%);
+  width:74px;height:5px;border-radius:3px;background:rgba(255,255,255,.22);z-index:2}
+.phone img{display:block;width:100%;height:auto;border-radius:26px}
+/* a fixed window on a tall screenshot, so a phone shot never runs away
+   down the page — the top of the screen is the part that sells it */
+.phone.crop{overflow:hidden}
+.phone.crop span{display:block;border-radius:26px;overflow:hidden;max-height:460px}
+
+/* ---------- one claim, one picture ---------- */
+.feat{display:grid;grid-template-columns:0.92fr 1.08fr;gap:clamp(28px,4.5vw,64px);
+  align-items:center;padding:clamp(34px,4.6vw,68px) 0}
+.feat + .feat{border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent)}
+.feat:nth-child(even) .feat-media{order:-1}
+.feat h3{font-size:clamp(23px,2.5vw,32px);letter-spacing:-.03em;margin:0 0 14px;line-height:1.14}
+.feat p{font-size:16.5px;line-height:1.65;margin:0 0 18px;
+  color:color-mix(in srgb,var(--ink) 68%,transparent)}
+.feat .tag{display:inline-flex;align-items:center;gap:7px;margin-bottom:14px;
+  font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  padding:5px 12px;border-radius:var(--radius-pill);
+  color:var(--vc,var(--color-accent));
+  background:color-mix(in srgb,var(--vc,var(--color-accent)) 11%,transparent)}
+@media (max-width:820px){
+  .feat{grid-template-columns:1fr;gap:26px;padding:34px 0}
+  .feat:nth-child(even) .feat-media{order:0}
+}
+
+/* ---------- the short version: what you actually get ---------- */
+.wins{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px}
+.win{display:flex;gap:12px;align-items:flex-start;padding:17px 19px;
+  border-radius:var(--radius-lg);background:var(--color-surface);
+  border:1px solid color-mix(in srgb,var(--ink) 8%,transparent)}
+.win svg{flex:none;margin-top:2px;color:var(--vc,var(--color-accent))}
+.win b{display:block;font-size:15.5px;letter-spacing:-.015em;margin-bottom:3px}
+.win span{font-size:14px;line-height:1.55;
+  color:color-mix(in srgb,var(--ink) 62%,transparent)}
+
+/* ---------- honest limits, kept short ---------- */
+.limits{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+.limit{padding:19px 21px;border-radius:var(--radius-lg);
+  border:1px dashed color-mix(in srgb,var(--ink) 20%,transparent)}
+.limit b{display:block;font-size:15px;margin-bottom:5px}
+.limit span{font-size:14px;line-height:1.6;
+  color:color-mix(in srgb,var(--ink) 62%,transparent)}
+
+/* the product hero: copy and the phone side by side, stacked on a phone */
+@media (max-width:860px){
+  .prodhero .wrapx[style*="grid-template-columns"]{grid-template-columns:1fr!important;gap:30px!important}
+}

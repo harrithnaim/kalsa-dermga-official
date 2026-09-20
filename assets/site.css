@@ -407,7 +407,7 @@ header:not([style*="--color-accent-2"]) .navtoggle{color:var(--color-text);borde
   --v-lms:#1c7ed6;
   --v-shp:#0a2540;
 
-  /* the software we sell. A separate family from the brands above,
+  /* the platforms we sell. A separate family from the brands above,
      so they take their own hues rather than borrowing a brand's. */
   --v-pos:#c2255c;
   --v-ord:#0ca678;
@@ -1094,7 +1094,7 @@ footer .nav-brand{color:#fff}
 /* =====================================================================
    PRODUCT SCREENS
    =====================================================================
-   The software pages were walls of prose. These are for showing the
+   The platform pages were walls of prose. These are for showing the
    thing instead of describing it: a real screenshot in a frame, one
    short claim beside it.
 

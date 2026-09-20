@@ -40,7 +40,7 @@
         <div class="navlinks" style="display:flex;align-items:center;gap:26px;">
           <a href="index.html">Home</a>
           <a href="index.html#ventures">Our Brands</a>
-          <a href="software.html">Software</a>
+          <a href="platforms.html">Platforms</a>
           <a href="index.html#about">About</a>
           <a href="index.html#impact">Community</a>
         </div>
@@ -48,7 +48,7 @@
           <a href="index.html#contact" class="btn btn-primary">Work With Us</a>
         </div>
         <label class="btn btn-secondary navtoggle" for="navcheck" style="color:#fff;border-color:rgba(255,255,255,0.32);">Menu</label>
-      </nav><input type="checkbox" id="navcheck"><div class="mobilenav"><a href="index.html">Home</a><a href="kalsa-pay.html">Kalsa Pay</a><a href="ejasplis.html">eJasPlis</a><a href="heningan-group.html">Heningan Group</a><a href="our-sports-club.html">Our Sports Club</a><a href="el-medina-spa.html">El Medina Spa</a><a href="little-marine-scientists.html">Little Marine Scientists</a><a href="kalsa-pay-signup.html" style="padding-left:14px;opacity:.85;">&mdash; Start at your school</a><a href="software.html">Software</a><a href="kalsa-pos.html" style="padding-left:14px;opacity:.85;">&mdash; Kalsa POS</a><a href="orderje.html" style="padding-left:14px;opacity:.85;">&mdash; ORDERje</a><a href="gameon.html" style="padding-left:14px;opacity:.85;">&mdash; Pre-Match GameOn</a></div>
+      </nav><input type="checkbox" id="navcheck"><div class="mobilenav"><a href="index.html">Home</a><a href="kalsa-pay.html">Kalsa Pay</a><a href="ejasplis.html">eJasPlis</a><a href="heningan-group.html">Heningan Group</a><a href="our-sports-club.html">Our Sports Club</a><a href="el-medina-spa.html">El Medina Spa</a><a href="little-marine-scientists.html">Little Marine Scientists</a><a href="kalsa-pay-signup.html" style="padding-left:14px;opacity:.85;">&mdash; Start at your school</a><a href="platforms.html">Platforms</a><a href="kalsa-pos.html" style="padding-left:14px;opacity:.85;">&mdash; Kalsa POS</a><a href="orderje.html" style="padding-left:14px;opacity:.85;">&mdash; ORDERje</a><a href="gameon.html" style="padding-left:14px;opacity:.85;">&mdash; Pre-Match GameOn</a></div>
     </div>
   </header>
 
@@ -58,7 +58,7 @@
       <h1 style="font-size:clamp(36px,5vw,54px);max-width:640px;margin:var(--space-3) 0 var(--space-4);">Cashless payments for your school canteen and bookstore</h1>
       <p style="font-size:17px;max-width:540px;color:color-mix(in srgb, var(--color-text) 78%, transparent);margin:0 0 var(--space-6);">Children tap an NFC wristband to pay for food and books. Parents load credit, set spending limits, and see every purchase from their phone. No cash, no custom hardware &mdash; just a tap.</p>
       <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-8);">
-        <a href="kalsa-pay-signup.html" class="btn btn-primary">Bring Kalsa Pay to Your School</a>
+        <a href="kalsa-pay-signup.html" class="btn btn-primary" data-ins="kalsa-pay:signup">Bring Kalsa Pay to Your School</a>
         <a href="#how" class="btn btn-secondary">How It Works</a>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,auto);gap:var(--space-6);">
@@ -183,7 +183,7 @@
         <h2 style="margin:0 0 var(--space-4);max-width:480px;">Pilot programme &mdash; free for parents</h2>
         <p style="font-size:16px;color:color-mix(in srgb, var(--color-text) 78%, transparent);margin:0 0 var(--space-3);max-width:560px;">We are running a two-week pilot with a small group of families to prove it works smoothly, every day, with real queues at break time. Onboarding takes about five minutes per family at a parents&rsquo; meet-up.</p>
         <p style="font-size:16px;color:color-mix(in srgb, var(--color-text) 78%, transparent);margin:0 0 var(--space-6);max-width:560px;">If you run a school canteen or bookstore, or you are a parent who would like it at your school, talk to us.</p>
-        <a href="kalsa-pay-signup.html" class="btn btn-primary">See the Onboarding Steps</a>
+        <a href="kalsa-pay-signup.html" class="btn btn-primary" data-ins="kalsa-pay:signup">See the Onboarding Steps</a>
       </div>
       <div class="card elev-sm">
         <div class="card-kicker">What a school needs</div>
@@ -205,7 +205,7 @@
       <p style="font-size:16px;color:color-mix(in srgb, var(--color-text) 78%, transparent);margin:0 0 var(--space-3);">Tell us a little about your school or counter and we will come back to you with what a pilot would involve.</p>
       <p style="font-size:15px;margin:0;">Ready to go ahead instead? <a href="kalsa-pay-signup.html"><strong>See the six onboarding steps and sign up &rarr;</strong></a></p>
     </div>
-    <form action="https://api.web3forms.com/submit" method="POST" style="max-width:820px;">
+    <form action="https://api.web3forms.com/submit" method="POST" style="max-width:820px;" data-ins-form="enquiry" data-ins-product="kalsa-pay">
       <!-- Web3Forms delivers this form to management@kalsadermaga.com -->
       <input type="hidden" name="access_key" value="880bdff0-d86e-4e2b-80a7-0e63870d4ab5">
       <input type="hidden" name="subject" value="Kalsa Pay enquiry from kalsadermaga.com">
@@ -226,8 +226,8 @@
       </div>
       <div class="field" style="margin-top:var(--space-3);"><label for="k-msg">What would you like to know? *</label>
         <textarea class="input" id="k-msg" name="Message" rows="4" placeholder="Current payment method, canteen or bookstore setup, timelines, questions&hellip;" required></textarea></div>
-      <button class="btn btn-primary" type="submit" style="width:100%;margin-top:var(--space-3);">Send Enquiry</button>
-      <p class="formnote" style="margin-top:var(--space-3);">Or call 013-6300944 &middot; management@kalsadermaga.com</p>
+      <button class="btn btn-primary" type="submit" data-ins="kalsa-pay:submit" style="width:100%;margin-top:var(--space-3);">Send Enquiry</button>
+      <p class="formnote" style="margin-top:var(--space-3);">Or call 012-3454520 &middot; management@kalsadermaga.com</p>
     </form>
   </section>
 
@@ -250,9 +250,9 @@
         </div>
       </div>
       <div>
-        <h6 style="margin:0 0 14px;">Software &amp; platforms</h6>
+        <h6 style="margin:0 0 14px;">Platforms</h6>
         <div style="display:flex;flex-direction:column;gap:9px;font-size:14px;">
-          <a href="software.html">All our software</a>
+          <a href="platforms.html">All our platforms</a>
           <a href="kalsa-pos.html">Kalsa POS</a>
           <a href="orderje.html">ORDERje</a>
           <a href="gameon.html">Pre-Match GameOn</a>
@@ -266,8 +266,8 @@
         <h6 style="margin:0 0 14px;">Contact</h6>
         <div style="display:flex;flex-direction:column;gap:9px;font-size:14px;">
           <span style="opacity:.75;">A13, Level 1, Jalan Kurniajaya 3,<br>25150 Kuantan, Pahang</span>
-          <a href="tel:+60136300944">013-6300944</a>
-          <a href="mailto:management@kalsadermaga.com">management@kalsadermaga.com</a>
+          <a href="tel:+60123454520" data-ins="kalsa-pay:phone">012-3454520</a>
+          <a href="mailto:management@kalsadermaga.com" data-ins="kalsa-pay:email">management@kalsadermaga.com</a>
         </div>
       </div>
     </div>
@@ -275,5 +275,9 @@
   </footer>
 </div>
 <script src="assets/site.js" defer></script>
+<!-- The counter. One line, every page. No cookie, nothing stored on the
+     visitor's device, nothing sent to Google or Meta. It feeds Reach and
+     Leads in the admin dashboard and never holds up the page. -->
+<script src="https://api.kalsadermaga.com/api/insight.js" data-property="website" defer></script>
 </body>
 </html>

@@ -13,4 +13,8 @@
   <url><loc>https://www.kalsadermaga.com/kalsa-pos.html</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://www.kalsadermaga.com/orderje.html</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://www.kalsadermaga.com/gameon.html</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://www.kalsadermaga.com/payments.html</loc><changefreq>yearly</changefreq></url>
+  <url><loc>https://www.kalsadermaga.com/refunds.html</loc><changefreq>yearly</changefreq></url>
+  <url><loc>https://www.kalsadermaga.com/privacy.html</loc><changefreq>yearly</changefreq></url>
+  <url><loc>https://www.kalsadermaga.com/terms.html</loc><changefreq>yearly</changefreq></url>
 </urlset>

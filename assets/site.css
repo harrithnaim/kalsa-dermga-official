@@ -412,6 +412,8 @@ header:not([style*="--color-accent-2"]) .navtoggle{color:var(--color-text);borde
   --v-pos:#c2255c;
   --v-ord:#0ca678;
   --v-gam:#4c6ef5;
+  --v-bkj:#e8590c;
+  --v-kds:#0b7285;
 }
 
 html{scroll-behavior:smooth;scroll-padding-top:96px;-webkit-text-size-adjust:100%}
@@ -1171,3 +1173,53 @@ footer .nav-brand{color:#fff}
 @media (max-width:860px){
   .prodhero .wrapx[style*="grid-template-columns"]{grid-template-columns:1fr!important;gap:30px!important}
 }
+
+/* =====================================================================
+   LEGAL PAGES — privacy, terms, refunds, payments
+   =====================================================================
+   A reading column, not a layout. These are documents somebody has to
+   get through, and the payment gateway has to check, so the only job
+   here is line length and rhythm.
+   ===================================================================== */
+.legal{max-width:760px}
+.legal h2{font-size:clamp(21px,2.2vw,27px);letter-spacing:-.025em;
+  margin:clamp(34px,4vw,52px) 0 12px;padding-top:clamp(20px,2.4vw,30px);
+  border-top:1px solid color-mix(in srgb,var(--ink) 9%,transparent)}
+.legal h2:first-child{margin-top:0;padding-top:0;border-top:0}
+.legal h3{font-size:17.5px;letter-spacing:-.02em;margin:26px 0 8px}
+.legal p{font-size:16.5px;line-height:1.72;margin:0 0 14px;
+  color:color-mix(in srgb,var(--ink) 76%,transparent)}
+.legal ul,.legal ol:not(.method){margin:0 0 16px;padding-left:22px}
+.legal li{font-size:16.5px;line-height:1.7;margin-bottom:9px;
+  color:color-mix(in srgb,var(--ink) 76%,transparent)}
+.legal strong{color:var(--ink)}
+.legal a{color:var(--color-accent-700);text-decoration:underline;
+  text-underline-offset:2px;text-decoration-thickness:1px}
+.legal .method{margin:0 0 18px}
+.legal .method p{font-size:15px;margin:0}
+
+/* the two businesses, side by side, because the difference between them
+   is the whole point of the page */
+.entity{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:0 0 22px}
+@media (max-width:720px){.entity{grid-template-columns:1fr}}
+.ent{padding:22px 24px;border-radius:var(--radius-lg);background:var(--color-surface);
+  border:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+.ent-tag{display:inline-flex;font-size:10.5px;font-weight:700;letter-spacing:.13em;
+  text-transform:uppercase;padding:5px 11px;border-radius:var(--radius-pill);
+  margin-bottom:11px;color:var(--color-accent);
+  background:color-mix(in srgb,var(--color-accent) 12%,transparent)}
+.ent > b{display:block;font-size:18px;letter-spacing:-.02em;margin-bottom:12px}
+.ent dl{margin:0;display:grid;grid-template-columns:auto;gap:9px}
+.ent dt{font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
+  color:color-mix(in srgb,var(--ink) 48%,transparent)}
+.ent dd{margin:2px 0 0;font-size:14.5px;line-height:1.6;
+  color:color-mix(in srgb,var(--ink) 78%,transparent)}
+
+/* the legal strip at the very bottom of every page */
+.legalbar{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline;
+  font-size:12.5px;line-height:1.7}
+.legalbar .ids{opacity:.5;max-width:560px}
+.legalbar nav{display:flex;flex-wrap:wrap;gap:8px 16px;margin-left:auto}
+.legalbar nav a{opacity:.62}
+.legalbar nav a:hover{opacity:1}
+@media (max-width:720px){.legalbar nav{margin-left:0}}

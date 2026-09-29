@@ -1223,3 +1223,59 @@ footer .nav-brand{color:#fff}
 .legalbar nav a{opacity:.62}
 .legalbar nav a:hover{opacity:1}
 @media (max-width:720px){.legalbar nav{margin-left:0}}
+
+/* =====================================================================
+   THE PROMO CLIPS, INSIDE THE PHONE
+   =====================================================================
+   The clips are 1080x1920, composed for a phone held upright, so they go
+   in the frame that is already on these pages rather than into a hero.
+   A vertical film in a landscape hero is either letterboxed down both
+   sides or cropped through the middle of its own caption.
+
+   Never autoplays on load. It starts when it scrolls into view and stops
+   when it leaves, so a visitor who never reaches it never pays for it.
+   The poster is the first thing painted, so nothing shifts.
+   ===================================================================== */
+.phone video{display:block;width:100%;height:auto;border-radius:26px;background:#0f1b2a}
+.phone.crop video{border-radius:26px}
+
+.clip{position:relative}
+.clip .full{position:absolute;right:14px;bottom:14px;z-index:2;
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 13px;border:0;cursor:pointer;
+  font:inherit;font-size:12.5px;font-weight:700;letter-spacing:-.01em;
+  color:#fff;background:rgba(10,20,34,.72);backdrop-filter:blur(6px);
+  border-radius:var(--radius-pill);
+  opacity:0;transform:translateY(4px);
+  transition:opacity .3s var(--ease),transform .3s var(--ease),background .2s}
+.clip:hover .full,.clip:focus-within .full{opacity:1;transform:translateY(0)}
+.clip .full:hover{background:rgba(10,20,34,.92)}
+@media (hover:none){.clip .full{opacity:1;transform:none}}
+
+/* the full clip, opened over the page */
+.vmodal{position:fixed;inset:0;z-index:120;display:none;
+  align-items:center;justify-content:center;padding:24px;
+  background:rgba(6,14,24,.86);backdrop-filter:blur(8px)}
+.vmodal[open],.vmodal.on{display:flex}
+/* The clip is 9:16. Stating that here rather than waiting for the file's
+   metadata stops the element collapsing to the browser's default 300x150
+   for the second before it loads. */
+.vmodal video{aspect-ratio:9/16;height:min(86vh,860px);width:auto;
+  max-width:92vw;background:#0f1b2a;
+  border-radius:20px;box-shadow:0 30px 80px -20px rgba(0,0,0,.6)}
+.vmodal .x{position:absolute;top:18px;right:20px;width:42px;height:42px;
+  display:grid;place-items:center;border:0;cursor:pointer;border-radius:50%;
+  font-size:20px;color:#fff;background:rgba(255,255,255,.14)}
+.vmodal .x:hover{background:rgba(255,255,255,.26)}
+
+/* Motion is the whole point of a clip, so under prefers-reduced-motion it
+   is not slowed down or looped quietly — it simply does not move, and the
+   poster frame stands in for it. */
+/* the still that stands in for the clip; base rule first, so the media
+   query below can actually win */
+.clip .poster-fallback{display:none;width:100%;height:auto;border-radius:26px}
+@media (prefers-reduced-motion:reduce){
+  .clip video{display:none}
+  .clip .poster-fallback{display:block}
+  .clip .full{display:none}
+}

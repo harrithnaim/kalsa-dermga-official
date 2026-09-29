@@ -1067,7 +1067,84 @@
   }
 
   function boot() {
+  /* ---------------------------------------------------------------
+     12. The promo clips
+     A clip plays only while it is on screen. Autoplaying every video
+     on load costs a visitor who never scrolls that far several
+     hundred kilobytes and, on a phone, battery for nothing.
+
+     preload="none" keeps it to the poster until the observer says so.
+     Muted plus playsinline is what makes autoplay legal on iOS; a clip
+     with a soundtrack would simply be blocked, so these have no audio
+     track at all.
+     --------------------------------------------------------------- */
+  function initClips() {
+    var clips = document.querySelectorAll('.clip video');
+    if (!clips.length) return;
+    var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still) return;                      /* the poster stands in for it */
+
+    if (!('IntersectionObserver' in window)) {
+      for (var i = 0; i < clips.length; i++) clips[i].play().catch(function () {});
+      return;
+    }
+    var io = new IntersectionObserver(function (es) {
+      for (var i = 0; i < es.length; i++) {
+        var v = es[i].target;
+        if (es[i].isIntersecting) { v.preload = 'auto'; v.play().catch(function () {}); }
+        else if (!v.paused) v.pause();
+      }
+    }, { threshold: 0.35 });
+    for (var k = 0; k < clips.length; k++) io.observe(clips[k]);
+  }
+
+  /* The full clip, over the page. One element, reused: six copies of a
+     40-second film in the DOM would be six things the browser has to
+     think about on a page nobody has asked to watch anything on yet. */
+  function initFullClips() {
+    var buttons = document.querySelectorAll('.clip .full');
+    if (!buttons.length) return;
+    var modal, video;
+
+    function build() {
+      modal = document.createElement('div');
+      modal.className = 'vmodal';
+      modal.innerHTML = '<button class="x" type="button" aria-label="Close">\u00d7</button>';
+      video = document.createElement('video');
+      video.setAttribute('controls', '');
+      video.setAttribute('playsinline', '');
+      video.muted = true;
+      modal.appendChild(video);
+      document.body.appendChild(modal);
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal || e.target.className === 'x') close();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.classList.contains('on')) close();
+      });
+    }
+    function close() {
+      modal.classList.remove('on');
+      video.pause(); video.removeAttribute('src'); video.load();
+      document.body.style.overflow = '';
+    }
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function () {
+        if (!modal) build();
+        video.src = this.getAttribute('data-full');
+        video.load();                       /* the src changed; without this
+                                               the element keeps the old one */
+        modal.classList.add('on');
+        document.body.style.overflow = 'hidden';
+        video.play().catch(function () {}); /* blocked autoplay just leaves
+                                               the controls for a tap */
+      });
+    }
+  }
+
     initNavHeight();
+    initClips();
+    initFullClips();
     initBanner();
     initFeedbackCopy();
     initVideoFacade();

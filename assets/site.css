@@ -1174,8 +1174,17 @@ footer .nav-brand{color:#fff}
   .prodhero .wrapx[style*="grid-template-columns"]{grid-template-columns:1fr!important;gap:30px!important}
 }
 
+/* ---------- plain bullet rows ----------
+   Several lists on the site are rows of <div>, not a <ul>, because they
+   sit inside a flex column with its own spacing. They used to open with
+   a dash character. A dot drawn in CSS does the same job and keeps the
+   dash out of the copy. */
+.bul{position:relative;padding-left:19px}
+.bul::before{content:"";position:absolute;left:3px;top:.62em;
+  width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.42}
+
 /* =====================================================================
-   LEGAL PAGES — privacy, terms, refunds, payments
+   LEGAL PAGES: privacy, terms, refunds, payments
    =====================================================================
    A reading column, not a layout. These are documents somebody has to
    get through, and the payment gateway has to check, so the only job
@@ -1225,19 +1234,23 @@ footer .nav-brand{color:#fff}
 @media (max-width:720px){.legalbar nav{margin-left:0}}
 
 /* =====================================================================
-   THE PROMO CLIPS, INSIDE THE PHONE
+   THE PROMO CLIPS
    =====================================================================
-   The clips are 1080x1920, composed for a phone held upright, so they go
-   in the frame that is already on these pages rather than into a hero.
-   A vertical film in a landscape hero is either letterboxed down both
-   sides or cropped through the middle of its own caption.
+   The clips are 1080x1920 and they already draw their own phone, with a
+   headline above it and a coloured backdrop behind it. Putting one of
+   those inside the .phone frame gave a phone inside a phone, so a clip
+   gets .film instead: a plain rounded card with a soft shadow, and the
+   film's own backdrop is the card.
 
-   Never autoplays on load. It starts when it scrolls into view and stops
-   when it leaves, so a visitor who never reaches it never pays for it.
-   The poster is the first thing painted, so nothing shifts.
+   It never autoplays on load. It starts when it scrolls into view and
+   stops when it leaves, so a visitor who never reaches it never pays
+   for it. The poster is the first thing painted, so nothing shifts.
    ===================================================================== */
-.phone video{display:block;width:100%;height:auto;border-radius:26px;background:#0f1b2a}
-.phone.crop video{border-radius:26px}
+.film{position:relative;width:min(324px,80vw);margin:0 auto;
+  border-radius:22px;overflow:hidden;
+  box-shadow:0 28px 64px -26px rgba(10,37,64,.44), 0 2px 8px rgba(10,37,64,.08)}
+.film video,.film img{display:block;width:100%;height:auto;
+  border-radius:inherit;background:#0f1b2a}
 
 .clip{position:relative}
 .clip .full{position:absolute;right:14px;bottom:14px;z-index:2;
@@ -1273,9 +1286,108 @@ footer .nav-brand{color:#fff}
    poster frame stands in for it. */
 /* the still that stands in for the clip; base rule first, so the media
    query below can actually win */
-.clip .poster-fallback{display:none;width:100%;height:auto;border-radius:26px}
+.clip .poster-fallback{display:none;width:100%;height:auto;border-radius:inherit}
 @media (prefers-reduced-motion:reduce){
   .clip video{display:none}
   .clip .poster-fallback{display:block}
   .clip .full{display:none}
+}
+
+/* =====================================================================
+   THE MOTION LAYER
+   =====================================================================
+   Everything here is additive. Strip this block out and every page still
+   lays out and reads exactly as it did; it only takes the movement away.
+   It sits on top of the reveal system already above rather than beside
+   it, so there is still one observer and one set of easing curves.
+
+   Each piece earns its place by doing one of two jobs: telling you where
+   you are on a long page, or telling you something has arrived and is
+   worth reading. Nothing here moves for the sake of moving, and all of
+   it stops under prefers-reduced-motion.
+   ===================================================================== */
+
+/* ---------- 1. where you are on the page ----------
+   A hairline across the very top. On a page as long as the product ones
+   it is the only honest answer to "how much more of this is there". */
+.sprog{position:fixed;top:0;left:0;height:3px;width:100%;z-index:90;
+  transform:scaleX(0);transform-origin:0 50%;
+  background:linear-gradient(90deg,var(--color-accent),var(--color-accent-400));
+  box-shadow:0 0 14px color-mix(in srgb,var(--color-accent) 55%,transparent);
+  pointer-events:none;will-change:transform}
+
+/* ---------- 2. a springier arrival for cards ----------
+   The plain .reveal slide is right for a paragraph. A card wants a small
+   overshoot, the way a physical thing settles. */
+.reveal.pop{opacity:0;transform:translateY(24px) scale(.965);
+  transition:opacity .62s var(--ease),
+             transform .72s cubic-bezier(.17,.86,.38,1.07);
+  transition-delay:var(--d,0ms)}
+.reveal.pop.in{opacity:1;transform:none}
+
+/* ---------- 3. the hand-drawn stroke under a word ----------
+   One stroke per section at most. It marks the word the whole section is
+   actually about, and it draws itself left to right as the heading
+   arrives, which is what makes it read as drawn rather than printed. */
+.ink{position:relative;display:inline-block;white-space:nowrap}
+.ink::after{content:"";position:absolute;left:-2%;right:-2%;bottom:-.14em;height:.34em;
+  background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M2 10.5C34 4.6 76 2.4 116 3.2c28 .6 54 2.6 82 6.4' fill='none' stroke='%230088b0' stroke-width='4.4' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-size:100% 100%;
+  clip-path:inset(0 100% 0 0);
+  transition:clip-path .85s cubic-bezier(.3,.8,.3,1) .22s}
+.ink.in::after,.in .ink::after,.rise .ink::after{clip-path:inset(0 0 0 0)}
+/* on a dark panel the stroke has to be light or it disappears */
+.onink .ink::after,.hero .ink::after{
+  background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M2 10.5C34 4.6 76 2.4 116 3.2c28 .6 54 2.6 82 6.4' fill='none' stroke='%2362c5ee' stroke-width='4.4' stroke-linecap='round'/%3E%3C/svg%3E")}
+
+/* ---------- 4. the air in a section ----------
+   Two or three very soft shapes drifting behind the content. They are
+   blurred past the point of being a shape, so they read as light moving
+   rather than as decoration, and they never sit over text. */
+.airy{position:relative;overflow:hidden;isolation:isolate}
+.airy > *{position:relative;z-index:1}
+.orbs{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(46px);opacity:.42;
+  background:radial-gradient(circle at 34% 34%,
+    color-mix(in srgb,var(--oc,var(--color-accent)) 78%,transparent), transparent 68%);
+  animation:orbdrift var(--od,26s) ease-in-out infinite alternate;
+  animation-delay:var(--ol,0s);will-change:transform}
+@keyframes orbdrift{
+  from{transform:translate3d(0,0,0) scale(1)}
+  to{transform:translate3d(var(--ox,34px),var(--oy,-30px),0) scale(var(--os,1.14))}
+}
+
+/* ---------- 5. media that lags the scroll ----------
+   A few pixels, not a theme-park ride. Enough that the picture and the
+   words beside it do not feel glued to the same sheet of paper. */
+[data-par]{will-change:transform}
+
+/* ---------- 6. a card that notices the pointer ----------
+   Desktop only, and tiny. Touch gets nothing, which is correct: there is
+   no pointer to follow. */
+@media (hover:hover) and (pointer:fine){
+  .tilt{transform:perspective(900px)
+    rotateX(calc(var(--ty,0) * -3.2deg)) rotateY(calc(var(--tx,0) * 3.2deg))
+    translateY(var(--tz,0px));
+    transition:transform .5s var(--ease)}
+  .tilt.live{transition:transform .14s linear}
+}
+
+/* ---------- 7. the small one-line answer ----------
+   A row of three short statements with a tick, for the places where the
+   page needs to say what something is before it explains how it works. */
+.gist{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:12px;margin:22px 0 0}
+.gist div{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;
+  line-height:1.55;color:color-mix(in srgb,var(--ink) 70%,transparent)}
+.gist svg{flex:none;margin-top:3px;color:var(--vc,var(--color-accent))}
+
+/* ---------- 8. nothing moves if you asked for nothing to move ---------- */
+@media (prefers-reduced-motion:reduce){
+  .sprog{display:none}
+  .reveal.pop{opacity:1!important;transform:none!important;transition:none!important}
+  .ink::after{clip-path:inset(0 0 0 0)!important;transition:none!important}
+  .orbs{display:none}
+  [data-par]{transform:none!important}
+  .tilt{transform:none!important;transition:none!important}
 }

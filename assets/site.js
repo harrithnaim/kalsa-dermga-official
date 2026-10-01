@@ -179,7 +179,16 @@
           el.classList.contains('reveal-r') || el.classList.contains('reveal-s')) continue;
       if (el.closest('.card') && el.classList.contains('card-title')) continue;
       el.classList.add('reveal');
+      /* A card is an object and should arrive like one, with a little
+         overshoot. A paragraph is not, and the plain slide suits it. */
+      if (el.classList.contains('card') || el.classList.contains('vcard') ||
+          el.classList.contains('newscard') || el.tagName === 'FIGURE') {
+        el.classList.add('pop');
+      }
     }
+    /* the same for the cards that were already marked by hand */
+    var hand = document.querySelectorAll('.vcard.reveal, .card.reveal, .newscard.reveal, .win.reveal, .stat.reveal');
+    for (var h = 0; h < hand.length; h++) hand[h].classList.add('pop');
     // stagger siblings inside each grid
     var grids = document.querySelectorAll('section div[style*="grid-template-columns"]');
     for (var g = 0; g < grids.length; g++) {
@@ -945,12 +954,12 @@
 
             var msg = 'Hi LMS team, I just enrolled ' + (childName || 'my child') +
               (totals.children >= 2 ? ' and ' + (totals.children - 1) + ' sibling(s)' : '') +
-              ' — ' + summaryText + ' (Total: RM ' + totals.total +
+              ': ' + summaryText + ' (Total: RM ' + totals.total +
               (totals.discount > 0 ? ', after RM' + totals.discount + ' sibling discount' : '') + '). ' +
               'I have a few questions before I complete payment.';
             var waUrl = 'https://wa.me/' + LMS_WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
 
-            setStatus('Enrolment received — opening WhatsApp so you can chat with our team before paying.', 'ok');
+            setStatus('Enrolment received. Opening WhatsApp so you can chat with our team before paying.', 'ok');
             window.open(waUrl, '_blank', 'noopener');
             payLaterBtn.textContent = 'Enrolment sent ✓';
           })
@@ -975,12 +984,12 @@
         postWeb3Forms(form)
           .then(function () {
             notifyAdminDashboard(form, {
-              'Payment path': 'Enrolled only — no payment yet',
+              'Payment path': 'Enrolled only, no payment yet',
               'Children enrolling': totals.children,
               'Sibling discount': totals.discount,
               'Modules total': totals.total
             });
-            setStatus('Enrolment received — our team will contact you about payment before the session.', 'ok');
+            setStatus('Enrolment received. Our team will contact you about payment before the session.', 'ok');
             enrolOnlyBtn.textContent = 'Enrolment sent ✓';
           })
           .catch(function () {
@@ -1039,7 +1048,7 @@
     }
 
     if (result === 'success') {
-      show('Payment received — thank you! A confirmation has been sent to your email. Our team will be in touch with session details.', 'ok');
+      show('Payment received, thank you! A confirmation has been sent to your email. Our team will be in touch with session details.', 'ok');
     } else if (result === 'failed') {
       show('Your payment did not go through. No charge was made. You can try again above, or enrol now and pay later via WhatsApp.', 'err');
     }
@@ -1050,11 +1059,11 @@
         .then(function (data) {
           if (!data || !data.status) return;
           if (data.status === 'paid') {
-            show('Payment confirmed — thank you! A confirmation has been sent to your email. Our team will be in touch with session details.', 'ok');
+            show('Payment confirmed, thank you! A confirmation has been sent to your email. Our team will be in touch with session details.', 'ok');
           } else if (data.status === 'failed') {
             show('Payment was not successful. No charge was made. You can try again above, or enrol now and pay later via WhatsApp.', 'err');
           } else if (data.status === 'pending') {
-            show('Payment is still being confirmed — this can take a minute. Refresh this page shortly, or contact us if it does not update.', '');
+            show('Payment is still being confirmed. This can take a minute. Refresh this page shortly, or contact us if it does not update.', '');
           }
         })
         .catch(function () { /* keep the URL-based message; the backend webhook is still the source of truth */ });
@@ -1142,6 +1151,162 @@
     }
   }
 
+  /* ===============================================================
+     THE MOTION LAYER
+     ===============================================================
+     Four small things, one shared scroll handler between them. They
+     are deliberately separate from the reveal observer above, because
+     that one fires once per element and these three have to keep
+     running. Under prefers-reduced-motion none of them start at all.
+     =============================================================== */
+
+  /* --- the hairline at the top of the page ----------------------
+     Long product pages give no sense of their own length. This is
+     the cheapest honest answer to "how much more is there". */
+  function initProgress() {
+    if (reduced) return;
+    if (document.body.scrollHeight < window.innerHeight * 1.8) return;
+    var bar = document.createElement('div');
+    bar.className = 'sprog';
+    bar.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(bar);
+    var ticking = false;
+    function paint() {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      var p = h > 0 ? Math.min(window.scrollY / h, 1) : 0;
+      bar.style.transform = 'scaleX(' + p + ')';
+      ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { window.requestAnimationFrame(paint); ticking = true; }
+    }, { passive: true });
+    window.addEventListener('resize', paint, { passive: true });
+    paint();
+  }
+
+  /* --- the soft shapes behind a section -------------------------
+     Written in rather than typed into every page, because they are
+     decoration and have no business in the markup. Anything with
+     .airy gets three, seeded off its own position so two sections
+     never drift in step. */
+  function initOrbs() {
+    if (reduced) return;
+    var secs = document.querySelectorAll('.airy');
+    for (var i = 0; i < secs.length; i++) {
+      if (secs[i].querySelector(':scope > .orbs')) continue;
+      var wrap = document.createElement('div');
+      wrap.className = 'orbs';
+      wrap.setAttribute('aria-hidden', 'true');
+      var tint = secs[i].getAttribute('data-orb') || '';
+      /* three is enough to feel like weather and few enough to stay
+         cheap; the numbers are fixed per index so the layout is the
+         same on every load rather than jumping about */
+      var plan = [
+        { x: '-6%', y: '-12%', s: 420, ox: '46px', oy: '34px', d: 29, l: 0 },
+        { x: '68%', y: '42%', s: 340, ox: '-38px', oy: '-30px', d: 23, l: -7 },
+        { x: '26%', y: '72%', s: 280, ox: '26px', oy: '-40px', d: 34, l: -14 }
+      ];
+      for (var k = 0; k < plan.length; k++) {
+        var o = document.createElement('span');
+        o.className = 'orb';
+        o.style.left = plan[k].x;
+        o.style.top = plan[k].y;
+        o.style.width = plan[k].s + 'px';
+        o.style.height = plan[k].s + 'px';
+        o.style.setProperty('--ox', plan[k].ox);
+        o.style.setProperty('--oy', plan[k].oy);
+        o.style.setProperty('--od', plan[k].d + 's');
+        o.style.setProperty('--ol', plan[k].l + 's');
+        o.style.setProperty('--os', k === 1 ? '1.2' : '1.1');
+        if (tint) o.style.setProperty('--oc', tint);
+        wrap.appendChild(o);
+      }
+      secs[i].insertBefore(wrap, secs[i].firstChild);
+    }
+  }
+
+  /* --- media that lags the scroll by a few pixels ---------------
+     data-par="0.06" means "move at six per cent of the scroll, the
+     other way". Anything above about 0.1 starts to look like a
+     mistake, so the value is clamped. */
+  function initParallax() {
+    if (reduced) return;
+    var els = document.querySelectorAll('[data-par]');
+    if (!els.length) return;
+    var list = [];
+    for (var i = 0; i < els.length; i++) {
+      var f = parseFloat(els[i].getAttribute('data-par'));
+      if (isNaN(f)) f = 0.06;
+      list.push({ el: els[i], f: Math.max(-0.1, Math.min(0.1, f)) });
+    }
+    var ticking = false;
+    function paint() {
+      var mid = window.innerHeight / 2;
+      for (var i = 0; i < list.length; i++) {
+        var r = list[i].el.getBoundingClientRect();
+        if (r.bottom < -200 || r.top > window.innerHeight + 200) continue;
+        var off = (r.top + r.height / 2 - mid) * list[i].f;
+        list[i].el.style.transform = 'translate3d(0,' + off.toFixed(1) + 'px,0)';
+      }
+      ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { window.requestAnimationFrame(paint); ticking = true; }
+    }, { passive: true });
+    window.addEventListener('resize', paint, { passive: true });
+    paint();
+  }
+
+  /* --- the card that notices the pointer ------------------------
+     Three degrees at the very corner, nothing at the centre. It is
+     meant to be felt rather than seen. Pointer only: a finger has no
+     hover state, and faking one on touch makes cards feel broken. */
+  function initTilt() {
+    if (reduced) return;
+    if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    var cards = document.querySelectorAll('.vcard, .ent, .win');
+    for (var i = 0; i < cards.length; i++) {
+      var c = cards[i];
+      c.classList.add('tilt');
+      c.addEventListener('pointermove', function (e) {
+        var r = this.getBoundingClientRect();
+        this.classList.add('live');
+        this.style.setProperty('--tx', ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+        this.style.setProperty('--ty', ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+        this.style.setProperty('--tz', '-3px');
+      });
+      c.addEventListener('pointerleave', function () {
+        this.classList.remove('live');
+        this.style.setProperty('--tx', 0);
+        this.style.setProperty('--ty', 0);
+        this.style.setProperty('--tz', '0px');
+      });
+    }
+  }
+
+  /* --- the drawn stroke under a word ----------------------------
+     Usually the .ink sits inside something that is already revealed,
+     and the CSS picks it up from the parent's .in. This catches the
+     ones that are not: a heading nobody marked, or one inside a
+     container that was revealed before the stroke scrolled into
+     view. */
+  function initInk() {
+    var inks = document.querySelectorAll('.ink');
+    if (!inks.length) return;
+    if (reduced || !('IntersectionObserver' in window)) {
+      for (var i = 0; i < inks.length; i++) inks[i].classList.add('in');
+      return;
+    }
+    var obs = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('in');
+        obs.unobserve(e.target);
+      });
+    }, { threshold: 0.9 });
+    for (var k = 0; k < inks.length; k++) obs.observe(inks[k]);
+  }
+
     initNavHeight();
     initClips();
     initFullClips();
@@ -1160,6 +1325,13 @@
     initEnrolSubmit();
     initEmailMirror();
     initPaymentResult();
+    /* the motion layer goes last: initOrbs and initParallax both read
+       layout, and everything above has finished changing it by now */
+    initInk();
+    initOrbs();
+    initParallax();
+    initTilt();
+    initProgress();
   }
 
   if (document.readyState === 'loading') {

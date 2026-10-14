@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://www.kalsadermaga.com/</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/heningan-group.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/our-sports-club.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/el-medina-spa.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/little-marine-scientists.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/kalsa-pay.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/kalsa-pay-signup.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/ejasplis.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/app.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/platforms.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/kalsa-pos.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/orderje.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/gameon.html</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/payments.html</loc><changefreq>yearly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/refunds.html</loc><changefreq>yearly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/privacy.html</loc><changefreq>yearly</changefreq></url>
-  <url><loc>https://www.kalsadermaga.com/terms.html</loc><changefreq>yearly</changefreq></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url><loc>https://www.kalsadermaga.com/</loc><lastmod>2026-10-14</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://www.kalsadermaga.com/platforms.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.9</priority><image:image><image:loc>https://www.kalsadermaga.com/assets/shot-bookje-dash.jpg</image:loc></image:image><image:image><image:loc>https://www.kalsadermaga.com/assets/shot-kdserve-dash.jpg</image:loc></image:image></url>
+  <url><loc>https://www.kalsadermaga.com/kalsa-pay-companies.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.9</priority><image:image><image:loc>https://www.kalsadermaga.com/assets/shot-co-staff.jpg</image:loc></image:image><image:image><image:loc>https://www.kalsadermaga.com/assets/shot-co-payroll.jpg</image:loc></image:image><image:image><image:loc>https://www.kalsadermaga.com/assets/shot-co-till.jpg</image:loc></image:image></url>
+  <url><loc>https://www.kalsadermaga.com/kalsa-pos.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority><image:image><image:loc>https://www.kalsadermaga.com/assets/shot-pos-till.jpg</image:loc></image:image><image:image><image:loc>https://www.kalsadermaga.com/assets/shot-pos-queue.jpg</image:loc></image:image><image:image><image:loc>https://www.kalsadermaga.com/assets/shot-receipt.jpg</image:loc></image:image></url>
+  <url><loc>https://www.kalsadermaga.com/orderje.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority><image:image><image:loc>https://www.kalsadermaga.com/assets/shot-oj-menu.jpg</image:loc></image:image><image:image><image:loc>https://www.kalsadermaga.com/assets/shot-oj-stall.jpg</image:loc></image:image></url>
+  <url><loc>https://www.kalsadermaga.com/gameon.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority><image:image><image:loc>https://www.kalsadermaga.com/assets/shot-go-dash.jpg</image:loc></image:image><image:image><image:loc>https://www.kalsadermaga.com/assets/shot-go-pitch.jpg</image:loc></image:image></url>
+  <url><loc>https://www.kalsadermaga.com/kalsa-pay.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.kalsadermaga.com/kalsa-pay-signup.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.kalsadermaga.com/ejasplis.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.kalsadermaga.com/heningan-group.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.kalsadermaga.com/our-sports-club.html</loc><lastmod>2026-10-14</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.kalsadermaga.com/el-medina-spa.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.kalsadermaga.com/little-marine-scientists.html</loc><lastmod>2026-10-14</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kalsadermaga.com/app.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://www.kalsadermaga.com/payments.html</loc><lastmod>2026-10-14</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://www.kalsadermaga.com/refunds.html</loc><lastmod>2026-10-14</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://www.kalsadermaga.com/privacy.html</loc><lastmod>2026-10-14</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://www.kalsadermaga.com/terms.html</loc><lastmod>2026-10-14</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

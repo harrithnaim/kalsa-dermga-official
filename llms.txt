@@ -1,0 +1,33 @@
+# Kalsa Dermaga
+
+> Kalsa Dermaga Sdn. Bhd. is a Malaysian company based in Kuantan, Pahang, with a branch in Shah Alam, Selangor. It runs its own brands and builds business software that runs in a web browser: point of sale, QR ordering for food courts, venue booking, appointment booking, sports team management, cashless school canteens and staff canteen meal cards. The platforms are available to businesses in Malaysia and in other countries.
+
+Contact: management@kalsadermaga.com, +60 12 345 4520 (phone and WhatsApp). Office hours are Monday to Saturday, 8am to 6pm Malaysia time.
+
+## Platforms
+
+* [Kalsa Pay for Companies](https://www.kalsadermaga.com/kalsa-pay-companies.html): staff meal cards for factory and office canteens. Printed NFC staff cards, a daily or monthly meal allowance, salary deduction, monthly top up from salary, an HR portal and a payroll list in Excel. The counter is an Android phone with NFC. The company keeps all money; Kalsa Dermaga never holds it.
+* [Kalsa Pay](https://www.kalsadermaga.com/kalsa-pay.html): cashless school canteens and bookstores. Children pay with an NFC wristband; parents top up, set limits and see every purchase.
+* [Kalsa POS](https://www.kalsadermaga.com/kalsa-pos.html): point of sale for stalls, cafes and small kitchens. Kitchen queue, stock and recipes, profit per dish, cash drawer, bank statement check, customer phone buzzer and e-receipts with LHDN e-invoice requests.
+* [ORDERje](https://www.kalsadermaga.com/orderje.html): QR ordering for food courts and bazaars. One QR code for every stall, one payment, and the customer's phone buzzes when food is ready.
+* [Pre-Match GameOn](https://www.kalsadermaga.com/gameon.html): team management for amateur sports. Sign up by link, waiting list, positions on a pitch, payments, cost splitting, club stats and man of the match voting.
+* [BookJe](https://www.kalsadermaga.com/platforms.html#bookje): online booking for futsal courts, halls, chalets and boat trips, with deposits and a calendar that prevents double booking.
+* [KDserve](https://www.kalsadermaga.com/platforms.html#kdserve): appointments and sales for spas, barbershops and salons, with staff calendars, packages and commission.
+* [All platforms](https://www.kalsadermaga.com/platforms.html)
+
+## Brands
+
+* [eJasPlis](https://www.kalsadermaga.com/ejasplis.html): community parcel and errand marketplace in Malaysia.
+* [Heningan Group](https://www.kalsadermaga.com/heningan-group.html): food brands, starting with Heningan Pizza.
+* [El Medina Spa and Recovery](https://www.kalsadermaga.com/el-medina-spa.html): cupping, traditional massage and sports massage in Seksyen 7, Shah Alam.
+* [Our Sports Club](https://www.kalsadermaga.com/our-sports-club.html): social futsal, badminton and running sessions.
+* [Little Marine Scientists](https://www.kalsadermaga.com/little-marine-scientists.html): shoreline marine education sessions for children in Pahang and Selangor.
+
+## Policies
+
+* [Who you are paying](https://www.kalsadermaga.com/payments.html)
+* [Refunds](https://www.kalsadermaga.com/refunds.html)
+* [Privacy](https://www.kalsadermaga.com/privacy.html)
+* [Terms](https://www.kalsadermaga.com/terms.html)
+
+Pricing is quoted per business and is not published on the website.

@@ -78,7 +78,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: var(--font-headi
   position:relative;width:fit-content;line-height:0.9;
   font-feature-settings:"pnum" 1;
   background:var(--cmyk-num-ground);padding:0.12em;margin:-0.12em}
-.cmyk-num .paper{color:var(--color-bg); 
+.cmyk-num .paper{color:var(--color-bg);
   text-shadow:0.036em 0.025em 0 var(--color-bg),-0.031em -0.023em 0 var(--color-bg)}
 .cmyk-num .plate{position:absolute;inset:0.12em;mix-blend-mode:multiply;
   text-box:trim-both cap alphabetic }
@@ -114,7 +114,7 @@ h6 { font-size: 13px; }
 h6 { letter-spacing: 0.08em; text-transform: uppercase; }
 p { margin: 0 0 var(--space-3); }
 a { color: var(--color-accent); text-underline-offset: 3px; }
-img { display: block; max-width: 100%; }
+img { display: block; max-width: 100%; height: auto; }
 figure { margin: 0; }
 figcaption {
   font-size: 11px; margin-top: var(--space-1);
@@ -132,7 +132,7 @@ figcaption {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   cursor: pointer; text-decoration: none;
   font-family: var(--font-heading); font-weight: var(--font-heading-weight);
-  font-size: 14px; line-height: 1.2; color: var(--color-text); 
+  font-size: 14px; line-height: 1.2; color: var(--color-text);
   background: transparent; border: 1px solid transparent;
   padding: var(--space-2) calc(var(--space-3) * 1.2);
   border-radius: var(--radius-md);
@@ -281,7 +281,7 @@ textarea.input { min-height: 90px; resize: vertical; }
   --color-accent-2-900: #061424;
 }
     @media (max-width: 900px) { .resp-grid-2col { grid-template-columns: 1fr !important; } }
-/* ---- static rebuild additions ---- */
+
 .img-slot{width:100%;height:100%;min-height:180px;display:flex;align-items:center;justify-content:center;
   background:repeating-linear-gradient(45deg,var(--color-neutral-200),var(--color-neutral-200) 10px,var(--color-neutral-100) 10px,var(--color-neutral-100) 20px);
   border:1px solid var(--color-divider);color:color-mix(in srgb,var(--color-text) 45%,transparent);
@@ -317,7 +317,6 @@ header[style*="--color-accent-2"] .navtoggle{color:#fff;border-color:rgba(255,25
 header:not([style*="--color-accent-2"]) .navtoggle{color:var(--color-text);border-color:var(--color-divider)}
 .mobilenav a{display:block;padding:6px 0;font-size:15px}
 
-/* ---- card grids collapse on small screens (all pages) ---- */
 @media (max-width:1000px){
   section div[style*="repeat(4,1fr)"]{grid-template-columns:1fr 1fr!important}
 }
@@ -333,53 +332,45 @@ header:not([style*="--color-accent-2"]) .navtoggle{color:var(--color-text);borde
   section div[style*="repeat(3,auto)"]{grid-template-columns:1fr 1fr!important;gap:var(--space-4)!important}
 }
 
-/* ================= navigation fit + mobile comfort (added) ================= */
-/* desktop: tighten nav gap so all items fit comfortably as the menu grows */
 .navlinks{gap:var(--space-4)!important;flex-wrap:wrap;row-gap:6px}
 
 @media (max-width:768px){
-  body{font-size:16px}                                   /* comfortable base, stops phones zooming */
+  body{font-size:16px}
   h1{font-size:30px!important;line-height:1.18}
   h2{font-size:23px!important}
   h3{font-size:19px}
-  /* everything single-column on a phone */
+
   section[style*="grid-template-columns"]{grid-template-columns:1fr!important}
   section div[style*="grid-template-columns"]{grid-template-columns:1fr!important}
   .grid2{grid-template-columns:1fr!important}
   section div[style*="repeat(3,auto)"]{grid-template-columns:1fr 1fr!important;gap:var(--space-4)!important}
-  /* a little less vertical air so pages don't feel endless */
+
   section{padding-top:30px!important;padding-bottom:30px!important}
-  /* comfortable, tappable buttons */
+
   .btn{min-height:46px;font-size:15px;padding:12px 18px}
-  /* bigger, clearer mobile menu */
+
   header .nav{padding-top:14px!important;padding-bottom:14px!important}
   .navtoggle{min-height:44px;font-size:15px}
   .mobilenav{padding:8px 0 16px}
   .mobilenav a{display:block;padding:13px 4px!important;font-size:17px!important;
     border-bottom:1px solid var(--color-divider);text-decoration:none}
-  /* forms comfortable, no zoom-jump on focus */
+
   .input{font-size:16px;min-height:46px}
-  /* footer stacks cleanly */
+
   footer div[style*="grid-template-columns"]{grid-template-columns:1fr!important;gap:var(--space-4)!important}
-  /* homepage top "group companies" rail: wrap and left-align instead of squashing */
+
   header div[style*="justify-content:flex-end"]{justify-content:flex-start!important;gap:12px 14px!important;flex-wrap:wrap}
-  /* cards a touch more inner room */
+
   .card{padding:var(--space-4)}
 }
 @media (max-width:480px){
   h1{font-size:26px!important}
   h2{font-size:21px!important}
   section div[style*="repeat(3,auto)"]{grid-template-columns:1fr!important}
-  /* full-width buttons are easiest to tap one-handed — but never the Menu toggle */
+
   .btn:not(.navtoggle){width:100%;justify-content:center}
   .navtoggle{width:auto}
 }
-
-/* ==========================================================================
-   MODERN LAYER — 2026 refresh
-   Typography, motion, rounded surfaces, venture cards.
-   Appended last so it wins over the legacy rules above.
-   ========================================================================== */
 
 :root{
   --font-heading:"Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -398,7 +389,6 @@ header:not([style*="--color-accent-2"]) .navtoggle{color:var(--color-text);borde
   --ink:#0a2540;
   --ease:cubic-bezier(.22,.9,.31,1);
 
-  /* one accent per venture */
   --v-pay:#0e9aa3;
   --v-jas:#e8770a;
   --v-hen:#d64545;
@@ -407,8 +397,6 @@ header:not([style*="--color-accent-2"]) .navtoggle{color:var(--color-text);borde
   --v-lms:#1c7ed6;
   --v-shp:#0a2540;
 
-  /* the platforms we sell. A separate family from the brands above,
-     so they take their own hues rather than borrowing a brand's. */
   --v-pos:#c2255c;
   --v-ord:#0ca678;
   --v-gam:#4c6ef5;
@@ -425,7 +413,6 @@ h2{font-size:clamp(28px,3.6vw,44px);font-weight:700}
 h3{font-size:clamp(20px,2vw,26px);font-weight:700}
 h6{letter-spacing:.14em;font-weight:700}
 
-/* ---------- shared layout helpers ---------- */
 .wrapx{max-width:1200px;margin:0 auto;padding-left:24px;padding-right:24px}
 .sec{padding:clamp(56px,8vw,110px) 0}
 .sec-tight{padding:clamp(40px,5vw,72px) 0}
@@ -434,7 +421,6 @@ h6{letter-spacing:.14em;font-weight:700}
 .eyebrow::before{content:"";width:22px;height:2px;border-radius:2px;background:currentColor;opacity:.55}
 .lede{font-size:clamp(16px,1.35vw,19px);line-height:1.65;color:color-mix(in srgb,var(--ink) 66%,transparent)}
 
-/* ---------- motion: reveal on scroll ---------- */
 .reveal{opacity:0;transform:translateY(26px);
   transition:opacity .8s var(--ease), transform .8s var(--ease);
   transition-delay:var(--d,0ms);will-change:opacity,transform}
@@ -460,7 +446,6 @@ h6{letter-spacing:.14em;font-weight:700}
   *{transition-duration:.01ms!important}
 }
 
-/* ---------- sticky nav ---------- */
 .stickynav{position:sticky;top:0;z-index:60;
   background:color-mix(in srgb,var(--ink) 96%,transparent);
   backdrop-filter:saturate(160%) blur(14px);-webkit-backdrop-filter:saturate(160%) blur(14px);
@@ -468,17 +453,6 @@ h6{letter-spacing:.14em;font-weight:700}
              box-shadow .35s var(--ease), padding .35s var(--ease)}
 .stickynav.scrolled{box-shadow:0 8px 30px rgba(10,37,64,.22)}
 
-/* ---------- transparent nav over a hero ----------------------------------
-   Only on pages that actually have a hero directly behind the header, and
-   only until the page scrolls. On a page with no hero the bar keeps its
-   solid background, because white links on white content are unreadable.
-
-   The bar goes transparent but NOT bare: a soft top-down veil rides with
-   it. Fully clear looked good on the calm part of the sky and became
-   illegible the moment the moon or a bright star drifted behind a link.
-   The veil is dark at the very top and gone by the bottom edge, so the
-   scene still reads through it.
-   ------------------------------------------------------------------------ */
 body:has(.hero) .stickynav:not(.scrolled){
   background:transparent;
   backdrop-filter:none;-webkit-backdrop-filter:none}
@@ -489,11 +463,7 @@ body:has(.hero) .stickynav::before{
              rgba(4,12,24,0) 100%)}
 body:has(.hero) .stickynav.scrolled::before{opacity:0}
 body:has(.hero) .stickynav:not(.scrolled) .grouprail{border-bottom-color:rgba(255,255,255,.18)}
-/* Pull the hero up under the bar, then give it back the same space as
-   padding. The scene therefore extends behind the nav while the headline
-   sits exactly where it did — no reflow, nothing hidden under the links.
-   --kd-navh is measured and set by site.js; the 0px fallback means a page
-   with JS off simply keeps the old, correct layout. */
+
 body:has(.hero) .hero{
   margin-top:calc(-1 * var(--kd-navh,0px));
   padding-top:var(--kd-navh,0px)}
@@ -506,7 +476,6 @@ body:has(.hero) .hero{
 .grouprail a{opacity:.72;transition:opacity .25s var(--ease)}
 .grouprail a:hover{opacity:1;text-decoration:none!important}
 
-/* ---------- buttons ---------- */
 .btn{border-radius:var(--radius-pill);font-weight:600;letter-spacing:-.01em;
   padding:12px 22px;transition:transform .25s var(--ease), box-shadow .25s var(--ease),
   background-color .25s var(--ease), color .25s var(--ease)}
@@ -522,7 +491,6 @@ body:has(.hero) .hero{
 .btn-outline-light{border:1px solid rgba(255,255,255,.42);color:#fff}
 .btn-outline-light:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}
 
-/* ---------- cards ---------- */
 .card{border-radius:var(--radius-md);border:1px solid color-mix(in srgb,var(--ink) 8%,transparent);
   background:#fff;padding:26px;
   transition:transform .4s var(--ease), box-shadow .4s var(--ease), border-color .4s var(--ease)}
@@ -532,7 +500,6 @@ body:has(.hero) .hero{
 .card-title{font-size:19px;font-weight:700;letter-spacing:-.02em}
 .card-body{font-size:14.5px;opacity:.72;line-height:1.6}
 
-/* ---------- venture cards ---------- */
 .vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px}
 .vcard{position:relative;display:flex;flex-direction:column;gap:12px;
   padding:30px 26px 26px;border-radius:var(--radius-lg);background:#fff;
@@ -569,7 +536,6 @@ body:has(.hero) .hero{
 .vcard.soon .vtag{color:color-mix(in srgb,var(--ink) 55%,transparent);
   background:color-mix(in srgb,var(--ink) 7%,transparent)}
 
-/* ---------- hero ---------- */
 .hero{position:relative;overflow:hidden;background:var(--ink);color:#fff;isolation:isolate}
 .hero::before{content:"";position:absolute;inset:-30% -10% auto -20%;height:120%;z-index:-2;
   background:
@@ -597,7 +563,6 @@ body:has(.hero) .hero{
   box-shadow:0 0 0 0 rgba(74,222,128,.7);animation:ping 2.2s infinite}
 @keyframes ping{70%{box-shadow:0 0 0 9px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
 
-/* ---------- stats ---------- */
 .statrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:28px}
 .stat .n{font-family:var(--font-heading);font-weight:800;font-size:clamp(32px,3.6vw,46px);
   letter-spacing:-.045em;line-height:1;background:linear-gradient(180deg,#fff,rgba(255,255,255,.62));
@@ -607,7 +572,6 @@ body:has(.hero) .hero{
   -webkit-background-clip:text;background-clip:text;color:transparent}
 .statrow.on-light .l{color:color-mix(in srgb,var(--ink) 55%,transparent)}
 
-/* ---------- marquee ---------- */
 .marquee{overflow:hidden;position:relative;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
   mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
@@ -618,7 +582,6 @@ body:has(.hero) .hero{
   letter-spacing:-.02em;white-space:nowrap;color:color-mix(in srgb,var(--ink) 44%,transparent)}
 .marquee-item i{width:8px;height:8px;border-radius:50%;background:var(--vc,var(--color-accent));flex:none}
 
-/* ---------- photo carousel ---------- */
 .carousel{position:relative}
 .crail{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;
   scroll-behavior:smooth;padding:4px 4px 18px;
@@ -641,7 +604,6 @@ body:has(.hero) .hero{
   transition:transform .25s var(--ease), background-color .25s var(--ease), color .25s var(--ease)}
 .cbtn:hover{background:var(--color-accent);color:#fff;border-color:var(--color-accent);transform:scale(1.07)}
 
-/* ---------- misc surfaces ---------- */
 .softsec{background:linear-gradient(180deg,var(--color-surface),transparent)}
 .input{border-radius:var(--radius-sm);background:#fff;min-height:46px;
   border-color:color-mix(in srgb,var(--ink) 14%,transparent);
@@ -667,7 +629,6 @@ footer a:hover{color:#fff!important}
 footer h6{color:rgba(255,255,255,.42)}
 footer .nav-brand{color:#fff}
 
-/* ---------- mobile ---------- */
 @media (max-width:768px){
   h1{font-size:clamp(32px,8.5vw,42px)!important;line-height:1.08}
   h2{font-size:clamp(25px,6.2vw,32px)!important}
@@ -682,7 +643,6 @@ footer .nav-brand{color:#fff}
   .btn:not(.navtoggle){width:100%;justify-content:center}
 }
 
-/* ---------- reconciliation with the legacy rules above ---------- */
 .stickynav .mobilenav a{border-bottom-color:rgba(255,255,255,.12)!important;color:#fff}
 .stickynav a:hover{text-decoration:none!important}
 .stickynav .navtoggle{border-radius:var(--radius-pill)}
@@ -692,7 +652,6 @@ footer .nav-brand{color:#fff}
 .cbtn:disabled:hover{background:#fff;color:var(--ink);
   border-color:color-mix(in srgb,var(--ink) 14%,transparent);transform:none}
 
-/* two-column blocks collapse a little earlier than the legacy 768px break */
 @media (max-width:980px){
   #about > .wrapx,
   #contact > .wrapx{grid-template-columns:1fr!important;gap:36px!important}
@@ -702,7 +661,6 @@ footer .nav-brand{color:#fff}
   .grouprail{justify-content:flex-start!important;gap:10px 14px!important;font-size:11.5px}
 }
 
-/* ---------- wide venture card (the legacy shipping business) ---------- */
 .vcard.wide{grid-column:1/-1;display:grid;grid-template-columns:0.85fr 1.15fr;
   gap:clamp(20px,3vw,48px);align-items:center;
   background:linear-gradient(120deg,color-mix(in srgb,var(--ink) 4%,#fff),#fff)}
@@ -713,26 +671,21 @@ footer .nav-brand{color:#fff}
   .vcard.wide{grid-template-columns:1fr;gap:16px}
 }
 
-/* ---------- mobile: the brand rail duplicates the menu, so hide it ---------- */
 @media (max-width:920px){
   .stickynav .grouprail{display:none!important}
 }
 
-/* ---------- retire the old newspaper print texture ---------- */
 .halftone{filter:none}
 .halftone::after,.cmyk::after{display:none!important}
 .halftone,.cmyk,.cmyk .print{border-radius:var(--radius-lg);overflow:hidden}
 .cmyk{box-shadow:var(--shadow-md)}
 
-/* ---------- hero 3D backdrop ---------- */
 .hero-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .hero-canvas canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-/* The sea/sky layer is now a complete scene rather than a wash over the
-   CSS gradient, so it runs at full opacity and the ::after scrim below
-   does the work of keeping the headline readable. */
+
 #heroWaves{opacity:1}
 #heroNodes{opacity:1}
-/* keep the headline legible over the moving backdrop */
+
 .hero .wrapx::before{content:"";position:absolute;inset:-10% -20% -10% -30%;z-index:-1;
   background:radial-gradient(ellipse 46% 66% at 22% 48%, rgba(4,16,30,.66), transparent 76%);
   pointer-events:none}
@@ -741,26 +694,17 @@ footer .nav-brand{color:#fff}
   #heroNodes{opacity:.9}
 }
 
-/* keep hero copy readable over the moving backdrop */
-/* The bottom stop is heavy because the plate has leaping dolphins low in
-   the frame and the stats row sits right on top of them. Deepening it
-   keeps the silhouettes visible while the numbers stay clean. */
 .hero-canvas::after{content:"";position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(180deg,rgba(10,37,64,.46) 0%,rgba(10,37,64,.08) 38%,
              rgba(6,20,36,.30) 68%,rgba(6,20,36,.80) 100%)}
 @media (max-width:900px){
   #heroNodes{opacity:.85}
-  /* the top stop covers sky, not text, so it can be lighter now that
-     there is a sunset up there worth seeing; the middle and bottom
-     stops sit under the body copy and are left alone */
+
   .hero-canvas::after{background:linear-gradient(180deg,rgba(10,37,64,.56) 0%,
     rgba(10,37,64,.42) 38%,rgba(10,37,64,.50) 70%,rgba(10,37,64,.72) 100%)}
   .hero .wrapx::before{display:none}
 }
 
-/* ==========================================================================
-   PROGRAMME RECAP — session write-up, video and photo gallery
-   ========================================================================== */
 .recap{background:linear-gradient(180deg,var(--color-surface),transparent)}
 .recap-head{display:flex;justify-content:space-between;align-items:flex-end;
   gap:24px;flex-wrap:wrap;margin-bottom:clamp(24px,3vw,40px)}
@@ -779,13 +723,11 @@ footer .nav-brand{color:#fff}
 .recap-stats .rs span{display:block;font-size:12.5px;margin-top:8px;
   color:color-mix(in srgb,var(--ink) 58%,transparent)}
 
-/* video */
 .vplayer{position:relative;border-radius:var(--radius-lg);overflow:hidden;
   background:#04121f;box-shadow:var(--shadow-lg);aspect-ratio:16/9}
 .vplayer video{width:100%;height:100%;display:block;object-fit:cover;background:#04121f}
 .vnote{font-size:12.5px;color:color-mix(in srgb,var(--ink) 52%,transparent);margin-top:12px}
 
-/* photo grid */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
 .pgrid button{padding:0;border:0;background:none;cursor:zoom-in;border-radius:var(--radius-md);
   overflow:hidden;display:block;position:relative;
@@ -798,7 +740,6 @@ footer .nav-brand{color:#fff}
   font-size:12.5px;color:#fff;text-align:left;
   background:linear-gradient(180deg,transparent,rgba(4,18,31,.82))}
 
-/* lightbox */
 .lbox{position:fixed;inset:0;z-index:200;display:none;place-items:center;
   background:rgba(4,14,26,.94);padding:24px;
   -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
@@ -819,7 +760,6 @@ footer .nav-brand{color:#fff}
   .lbox img{max-height:70vh}
 }
 
-/* ---------- click-to-play video facade (YouTube or Google Drive) ---------- */
 .vfacade{position:relative;cursor:pointer;background:#04121f}
 .vfacade .vposter{width:100%;height:100%;object-fit:cover;display:block}
 .vfacade .vplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
@@ -836,7 +776,6 @@ footer .nav-brand{color:#fff}
 .vfacade.playing .vposter,.vfacade.playing .vplay{display:none}
 @media (max-width:640px){.vfacade .vplay{width:64px;height:64px}}
 
-/* ---------- feedback: rating control + published quotes ---------- */
 .seg{flex-wrap:wrap;border-radius:var(--radius-pill);overflow:hidden}
 .seg-opt{padding:10px 18px;font-weight:600;font-size:14px}
 .seg.rating .seg-opt{min-width:64px;justify-content:center}
@@ -862,7 +801,6 @@ footer .nav-brand{color:#fff}
   .seg.rating .seg-opt{flex:1;min-width:0;padding:10px 6px}
 }
 
-/* ---------- app promotion ---------- */
 .applist{list-style:none;padding:0;margin:0;display:grid;gap:11px;max-width:520px}
 .applist li{display:flex;gap:11px;font-size:15.5px;color:rgba(255,255,255,.82);line-height:1.5}
 .applist li::before{content:"";flex:none;width:19px;height:19px;margin-top:2px;border-radius:50%;
@@ -892,7 +830,6 @@ footer .nav-brand{color:#fff}
   border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent);
   color:color-mix(in srgb,var(--ink) 58%,transparent)}
 
-/* homepage app band */
 .appband{background:var(--ink);color:#fff;position:relative;overflow:hidden;isolation:isolate}
 .appband::before{content:"";position:absolute;inset:-40% -10% auto -10%;height:150%;z-index:-1;
   background:radial-gradient(closest-side at 78% 40%, rgba(14,154,163,.34), transparent 70%),
@@ -908,7 +845,6 @@ footer .nav-brand{color:#fff}
   .qrbox{margin:0 auto}
 }
 
-/* ---------- site-wide announcement banner ---------- */
 .kdbanner{position:relative;z-index:70;display:flex;align-items:center;gap:14px;
   padding:11px 20px;font-size:14.5px;line-height:1.45;color:#fff;
   background:var(--color-accent-700)}
@@ -922,14 +858,6 @@ footer .nav-brand{color:#fff}
 .kdbanner button:hover{background:rgba(255,255,255,.3)}
 @media (max-width:640px){.kdbanner{font-size:13.5px;padding:10px 14px;gap:10px}}
 
-/* ==========================================================================
-   ENROLMENT — "will you stay?" conditional note
-   ==========================================================================
-   The note only concerns people who picked "Decide later". It is wrapped in
-   @supports so that on a browser without :has() the note simply stays
-   visible rather than becoming unreachable — it is informative text, so
-   showing it to everyone is the safe failure, not hiding it.
-   ========================================================================== */
 .staynote{margin-top:10px;border-left:3px solid var(--color-accent);
   padding:10px 0 10px 14px;background:transparent}
 @supports selector(:has(*)){
@@ -937,14 +865,6 @@ footer .nav-brand{color:#fff}
   .stayfield:has(input[value^="Deciding later"]:checked) + .staynote{display:block}
 }
 
-/* ==========================================================================
-   MOVING PHOTO GALLERY
-   ==========================================================================
-   Reuses the text marquee's machinery — site.js clones the track and the
-   keyframe slides it by exactly -50%, which is why the loop is seamless
-   only when the content is duplicated. Slower than the text version:
-   photographs carry more to look at, and at 34s they blur past.
-   ========================================================================== */
 .pmarq-sec{padding-top:0}
 .pmarquee .marquee-track{
   gap:16px;align-items:center;animation-duration:52s}
@@ -956,44 +876,18 @@ footer .nav-brand{color:#fff}
   transition:transform .6s var(--ease)}
 .pmarquee figure:hover img{transform:scale(1.04)}
 @media (prefers-reduced-motion:reduce){
-  /* the shared rule already stops the slide; stop the zoom too */
+
   .pmarquee img{transition:none}
 }
-/* Belt and braces for the above: if anything inside a marquee ever picks
-   up a reveal class from elsewhere, it must still be visible. */
+
 .marquee .reveal,.marquee .reveal-l,.marquee .reveal-r,.marquee .reveal-s{
   opacity:1!important;transform:none!important}
 
-/* ==========================================================================
-   DRIFTING PLANKTON
-   ==========================================================================
-   Decoration for the Secret Drifter of The Sea session. "Plankton" is Greek
-   for drifter — organisms that cannot swim against a current and go where
-   the water takes them — so the one honest thing this ornament can do is
-   drift. The shapes are real forms the children looked at: a triangular
-   diatom, a chain diatom, a copepod, a dinoflagellate.
-
-   THREE NESTED ELEMENTS, and that is not an accident. Rise, sway and spin
-   are three transforms, and three animations on ONE element silently fight
-   over `transform` — the last declared simply wins and the other two never
-   happen. One box per axis is the fix.
-
-   CSS only: no JavaScript, nothing to schedule, nothing to pause. It cannot
-   jank because the compositor owns it.
-   ========================================================================== */
-/* The block that owns a drift field. Everything inside it that is not the
-   field itself is lifted above the drifters, so the plankton always pass
-   BEHIND the words no matter how the block is later re-ordered. */
 .sessionblock{position:relative;overflow:hidden}
 .sessionblock > *:not(.driftfield){position:relative;z-index:1}
 
 .driftfield{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 
-/* Rise is animated on `top`, not on translateY. A transform in vh covers a
-   fixed distance, so in a block taller than the viewport every drifter ends
-   up bunched at the bottom — which is exactly what the first render showed.
-   A percentage `top` resolves against the field, so they spread across it
-   however tall it turns out to be. */
 .pk{position:absolute;left:var(--x);top:108%;
   animation:pk-rise var(--dy,44s) linear infinite;
   animation-delay:var(--d,0s)}
@@ -1003,7 +897,7 @@ footer .nav-brand{color:#fff}
   animation-delay:var(--d,0s)}
 .pk svg{display:block;width:calc(var(--s,1) * 46px);height:auto;
   color:var(--color-accent);opacity:var(--o,.17)}
-/* the same drifter reads much larger against a 390px column */
+
 @media (max-width:560px){ .pk svg{width:calc(var(--s,1) * 32px)} }
 
 @keyframes pk-rise{from{top:108%} to{top:-24%}}
@@ -1011,12 +905,10 @@ footer .nav-brand{color:#fff}
 @keyframes pk-spin{from{transform:rotate(0)}       to{transform:rotate(360deg)}}
 
 @media (prefers-reduced-motion:reduce){
-  /* Hidden rather than frozen. Held still they are just specks scattered
-     over the text, and they were only ever there to move. */
+
   .driftfield{display:none}
 }
 
-/* ---------- how the session ran ---------- */
 .method{list-style:none;margin:0;padding:0;counter-reset:step;
   display:grid;gap:clamp(14px,1.6vw,20px)}
 .method li{counter-increment:step;position:relative;
@@ -1040,12 +932,6 @@ footer .nav-brand{color:#fff}
   .method li::before{width:32px;height:32px;font-size:14px}
 }
 
-/* ===================================================================
-   MODULE PRICING & ENROLMENT PAYMENT
-   Per-module prices inside the "Programme preferences" fieldset, the
-   running total, and the two enrol/pay buttons at the bottom of the
-   enrolment form.
-   =================================================================== */
 .modgrid .check{align-items:flex-start}
 .modcheck span{display:flex;flex-direction:column;gap:2px}
 .modprice{
@@ -1092,20 +978,6 @@ footer .nav-brand{color:#fff}
 .paystatus.err{color:var(--color-accent-2-700)}
 .paystatus.ok{color:var(--color-accent-700)}
 
-
-/* =====================================================================
-   PRODUCT SCREENS
-   =====================================================================
-   The platform pages were walls of prose. These are for showing the
-   thing instead of describing it: a real screenshot in a frame, one
-   short claim beside it.
-
-   The frames are drawn in CSS rather than baked into the images, so the
-   same screenshot works on any background and the picture stays sharp
-   on a phone.
-   ===================================================================== */
-
-/* ---------- a browser window ---------- */
 .browser{border-radius:14px;overflow:hidden;background:#fff;
   border:1px solid color-mix(in srgb,var(--ink) 12%,transparent);
   box-shadow:0 24px 60px -24px rgba(10,37,64,.32), 0 3px 10px rgba(10,37,64,.07)}
@@ -1121,19 +993,16 @@ footer .nav-brand{color:#fff}
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
 .browser img{display:block;width:100%;height:auto}
 
-/* ---------- a phone ---------- */
 .phone{position:relative;width:min(280px,72vw);margin:0 auto;
   border-radius:34px;padding:9px;background:#0f1b2a;
   box-shadow:0 26px 60px -22px rgba(10,37,64,.45), 0 3px 10px rgba(10,37,64,.10)}
 .phone::before{content:"";position:absolute;top:15px;left:50%;transform:translateX(-50%);
   width:74px;height:5px;border-radius:3px;background:rgba(255,255,255,.22);z-index:2}
 .phone img{display:block;width:100%;height:auto;border-radius:26px}
-/* a fixed window on a tall screenshot, so a phone shot never runs away
-   down the page — the top of the screen is the part that sells it */
+
 .phone.crop{overflow:hidden}
 .phone.crop span{display:block;border-radius:26px;overflow:hidden;max-height:460px}
 
-/* ---------- one claim, one picture ---------- */
 .feat{display:grid;grid-template-columns:0.92fr 1.08fr;gap:clamp(28px,4.5vw,64px);
   align-items:center;padding:clamp(34px,4.6vw,68px) 0}
 .feat + .feat{border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent)}
@@ -1151,7 +1020,6 @@ footer .nav-brand{color:#fff}
   .feat:nth-child(even) .feat-media{order:0}
 }
 
-/* ---------- the short version: what you actually get ---------- */
 .wins{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px}
 .win{display:flex;gap:12px;align-items:flex-start;padding:17px 19px;
   border-radius:var(--radius-lg);background:var(--color-surface);
@@ -1161,7 +1029,6 @@ footer .nav-brand{color:#fff}
 .win span{font-size:14px;line-height:1.55;
   color:color-mix(in srgb,var(--ink) 62%,transparent)}
 
-/* ---------- honest limits, kept short ---------- */
 .limits{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
 .limit{padding:19px 21px;border-radius:var(--radius-lg);
   border:1px dashed color-mix(in srgb,var(--ink) 20%,transparent)}
@@ -1169,27 +1036,14 @@ footer .nav-brand{color:#fff}
 .limit span{font-size:14px;line-height:1.6;
   color:color-mix(in srgb,var(--ink) 62%,transparent)}
 
-/* the product hero: copy and the phone side by side, stacked on a phone */
 @media (max-width:860px){
   .prodhero .wrapx[style*="grid-template-columns"]{grid-template-columns:1fr!important;gap:30px!important}
 }
 
-/* ---------- plain bullet rows ----------
-   Several lists on the site are rows of <div>, not a <ul>, because they
-   sit inside a flex column with its own spacing. They used to open with
-   a dash character. A dot drawn in CSS does the same job and keeps the
-   dash out of the copy. */
 .bul{position:relative;padding-left:19px}
 .bul::before{content:"";position:absolute;left:3px;top:.62em;
   width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.42}
 
-/* =====================================================================
-   LEGAL PAGES: privacy, terms, refunds, payments
-   =====================================================================
-   A reading column, not a layout. These are documents somebody has to
-   get through, and the payment gateway has to check, so the only job
-   here is line length and rhythm.
-   ===================================================================== */
 .legal{max-width:760px}
 .legal h2{font-size:clamp(21px,2.2vw,27px);letter-spacing:-.025em;
   margin:clamp(34px,4vw,52px) 0 12px;padding-top:clamp(20px,2.4vw,30px);
@@ -1207,8 +1061,6 @@ footer .nav-brand{color:#fff}
 .legal .method{margin:0 0 18px}
 .legal .method p{font-size:15px;margin:0}
 
-/* the two businesses, side by side, because the difference between them
-   is the whole point of the page */
 .entity{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:0 0 22px}
 @media (max-width:720px){.entity{grid-template-columns:1fr}}
 .ent{padding:22px 24px;border-radius:var(--radius-lg);background:var(--color-surface);
@@ -1224,7 +1076,6 @@ footer .nav-brand{color:#fff}
 .ent dd{margin:2px 0 0;font-size:14.5px;line-height:1.6;
   color:color-mix(in srgb,var(--ink) 78%,transparent)}
 
-/* the legal strip at the very bottom of every page */
 .legalbar{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline;
   font-size:12.5px;line-height:1.7}
 .legalbar .ids{opacity:.5;max-width:560px}
@@ -1233,19 +1084,6 @@ footer .nav-brand{color:#fff}
 .legalbar nav a:hover{opacity:1}
 @media (max-width:720px){.legalbar nav{margin-left:0}}
 
-/* =====================================================================
-   THE PROMO CLIPS
-   =====================================================================
-   The clips are 1080x1920 and they already draw their own phone, with a
-   headline above it and a coloured backdrop behind it. Putting one of
-   those inside the .phone frame gave a phone inside a phone, so a clip
-   gets .film instead: a plain rounded card with a soft shadow, and the
-   film's own backdrop is the card.
-
-   It never autoplays on load. It starts when it scrolls into view and
-   stops when it leaves, so a visitor who never reaches it never pays
-   for it. The poster is the first thing painted, so nothing shifts.
-   ===================================================================== */
 .film{position:relative;width:min(324px,80vw);margin:0 auto;
   border-radius:22px;overflow:hidden;
   box-shadow:0 28px 64px -26px rgba(10,37,64,.44), 0 2px 8px rgba(10,37,64,.08)}
@@ -1265,14 +1103,11 @@ footer .nav-brand{color:#fff}
 .clip .full:hover{background:rgba(10,20,34,.92)}
 @media (hover:none){.clip .full{opacity:1;transform:none}}
 
-/* the full clip, opened over the page */
 .vmodal{position:fixed;inset:0;z-index:120;display:none;
   align-items:center;justify-content:center;padding:24px;
   background:rgba(6,14,24,.86);backdrop-filter:blur(8px)}
 .vmodal[open],.vmodal.on{display:flex}
-/* The clip is 9:16. Stating that here rather than waiting for the file's
-   metadata stops the element collapsing to the browser's default 300x150
-   for the second before it loads. */
+
 .vmodal video{aspect-ratio:9/16;height:min(86vh,860px);width:auto;
   max-width:92vw;background:#0f1b2a;
   border-radius:20px;box-shadow:0 30px 80px -20px rgba(0,0,0,.6)}
@@ -1281,11 +1116,6 @@ footer .nav-brand{color:#fff}
   font-size:20px;color:#fff;background:rgba(255,255,255,.14)}
 .vmodal .x:hover{background:rgba(255,255,255,.26)}
 
-/* Motion is the whole point of a clip, so under prefers-reduced-motion it
-   is not slowed down or looped quietly — it simply does not move, and the
-   poster frame stands in for it. */
-/* the still that stands in for the clip; base rule first, so the media
-   query below can actually win */
 .clip .poster-fallback{display:none;width:100%;height:auto;border-radius:inherit}
 @media (prefers-reduced-motion:reduce){
   .clip video{display:none}
@@ -1293,42 +1123,18 @@ footer .nav-brand{color:#fff}
   .clip .full{display:none}
 }
 
-/* =====================================================================
-   THE MOTION LAYER
-   =====================================================================
-   Everything here is additive. Strip this block out and every page still
-   lays out and reads exactly as it did; it only takes the movement away.
-   It sits on top of the reveal system already above rather than beside
-   it, so there is still one observer and one set of easing curves.
-
-   Each piece earns its place by doing one of two jobs: telling you where
-   you are on a long page, or telling you something has arrived and is
-   worth reading. Nothing here moves for the sake of moving, and all of
-   it stops under prefers-reduced-motion.
-   ===================================================================== */
-
-/* ---------- 1. where you are on the page ----------
-   A hairline across the very top. On a page as long as the product ones
-   it is the only honest answer to "how much more of this is there". */
 .sprog{position:fixed;top:0;left:0;height:3px;width:100%;z-index:90;
   transform:scaleX(0);transform-origin:0 50%;
   background:linear-gradient(90deg,var(--color-accent),var(--color-accent-400));
   box-shadow:0 0 14px color-mix(in srgb,var(--color-accent) 55%,transparent);
   pointer-events:none;will-change:transform}
 
-/* ---------- 2. a springier arrival for cards ----------
-   The plain .reveal slide is right for a paragraph. A card wants a small
-   overshoot, the way a physical thing settles. */
 .reveal.pop{opacity:0;transform:translateY(24px) scale(.965);
   transition:opacity .62s var(--ease),
              transform .72s cubic-bezier(.17,.86,.38,1.07);
   transition-delay:var(--d,0ms)}
 .reveal.pop.in{opacity:1;transform:none}
 
-/* ---------- 3. the hand-drawn stroke under a word ----------
-   One stroke per section at most. It marks the word the whole section is
-   actually about, and it draws itself left to right as the heading
-   arrives, which is what makes it read as drawn rather than printed. */
 .ink{position:relative;display:inline-block;white-space:nowrap}
 .ink::after{content:"";position:absolute;left:-2%;right:-2%;bottom:-.14em;height:.34em;
   background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M2 10.5C34 4.6 76 2.4 116 3.2c28 .6 54 2.6 82 6.4' fill='none' stroke='%230088b0' stroke-width='4.4' stroke-linecap='round'/%3E%3C/svg%3E");
@@ -1336,14 +1142,10 @@ footer .nav-brand{color:#fff}
   clip-path:inset(0 100% 0 0);
   transition:clip-path .85s cubic-bezier(.3,.8,.3,1) .22s}
 .ink.in::after,.in .ink::after,.rise .ink::after{clip-path:inset(0 0 0 0)}
-/* on a dark panel the stroke has to be light or it disappears */
+
 .onink .ink::after,.hero .ink::after{
   background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M2 10.5C34 4.6 76 2.4 116 3.2c28 .6 54 2.6 82 6.4' fill='none' stroke='%2362c5ee' stroke-width='4.4' stroke-linecap='round'/%3E%3C/svg%3E")}
 
-/* ---------- 4. the air in a section ----------
-   Two or three very soft shapes drifting behind the content. They are
-   blurred past the point of being a shape, so they read as light moving
-   rather than as decoration, and they never sit over text. */
 .airy{position:relative;overflow:hidden;isolation:isolate}
 .airy > *{position:relative;z-index:1}
 .orbs{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
@@ -1357,14 +1159,8 @@ footer .nav-brand{color:#fff}
   to{transform:translate3d(var(--ox,34px),var(--oy,-30px),0) scale(var(--os,1.14))}
 }
 
-/* ---------- 5. media that lags the scroll ----------
-   A few pixels, not a theme-park ride. Enough that the picture and the
-   words beside it do not feel glued to the same sheet of paper. */
 [data-par]{will-change:transform}
 
-/* ---------- 6. a card that notices the pointer ----------
-   Desktop only, and tiny. Touch gets nothing, which is correct: there is
-   no pointer to follow. */
 @media (hover:hover) and (pointer:fine){
   .tilt{transform:perspective(900px)
     rotateX(calc(var(--ty,0) * -3.2deg)) rotateY(calc(var(--tx,0) * 3.2deg))
@@ -1373,16 +1169,12 @@ footer .nav-brand{color:#fff}
   .tilt.live{transition:transform .14s linear}
 }
 
-/* ---------- 7. the small one-line answer ----------
-   A row of three short statements with a tick, for the places where the
-   page needs to say what something is before it explains how it works. */
 .gist{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
   gap:12px;margin:22px 0 0}
 .gist div{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;
   line-height:1.55;color:color-mix(in srgb,var(--ink) 70%,transparent)}
 .gist svg{flex:none;margin-top:3px;color:var(--vc,var(--color-accent))}
 
-/* ---------- 8. nothing moves if you asked for nothing to move ---------- */
 @media (prefers-reduced-motion:reduce){
   .sprog{display:none}
   .reveal.pop{opacity:1!important;transform:none!important;transition:none!important}
@@ -1391,3 +1183,38 @@ footer .nav-brand{color:#fff}
   [data-par]{transform:none!important}
   .tilt{transform:none!important;transition:none!important}
 }
+
+.faq{max-width:820px;display:grid;gap:10px}
+.faq details{border-radius:var(--radius-lg);background:var(--color-surface);
+  border:1px solid color-mix(in srgb,var(--ink) 9%,transparent);padding:0 20px;
+  transition:box-shadow .3s var(--ease),border-color .3s var(--ease)}
+.faq details[open]{box-shadow:var(--shadow-md);border-color:color-mix(in srgb,var(--color-accent) 30%,transparent)}
+.faq summary{cursor:pointer;list-style:none;padding:17px 34px 17px 0;font-weight:700;
+  font-size:16px;letter-spacing:-.01em;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:2px;top:50%;transform:translateY(-50%);
+  font-size:24px;font-weight:500;line-height:1;color:var(--color-accent);transition:transform .3s var(--ease)}
+.faq details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
+.faq details p{margin:0 0 18px;font-size:15.5px;line-height:1.65;
+  color:color-mix(in srgb,var(--ink) 72%,transparent)}
+
+.xband{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center}
+@media (max-width:680px){.xband{grid-template-columns:1fr;gap:12px}}
+
+.sessiongrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.sessioncard{padding:20px 22px;border-radius:var(--radius-lg);background:var(--color-surface);
+  border:1px solid color-mix(in srgb,var(--ink) 9%,transparent);
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.sessioncard:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.sessioncard .btn{margin-top:4px}
+
+.wafab{position:fixed;right:18px;bottom:18px;z-index:80;display:inline-flex;align-items:center;gap:10px;
+  padding:12px 18px 12px 14px;border-radius:999px;background:#1fa855;color:#fff;text-decoration:none;
+  font-weight:700;font-size:14.5px;letter-spacing:-.01em;
+  box-shadow:0 14px 30px -10px rgba(10,60,30,.55),0 2px 6px rgba(0,0,0,.12);
+  opacity:0;transform:translateY(14px) scale(.96);transition:opacity .45s var(--ease),transform .45s var(--ease),background .2s}
+.wafab.on{opacity:1;transform:none}
+.wafab:hover{background:#178f47;color:#fff}
+.wafab svg{flex:none}
+@media (max-width:640px){.wafab{padding:13px;right:14px;bottom:14px}.wafab span{display:none}}
+@media (prefers-reduced-motion:reduce){.wafab{transition:none}}

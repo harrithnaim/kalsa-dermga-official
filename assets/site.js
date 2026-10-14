@@ -1,57 +1,36 @@
-/* Kalsa Dermaga — interactions
-   Progressive enhancement only: everything below degrades to a working
-   static page if JS is off or the browser is old. */
-(function () {
+(function() {
   'use strict';
-
-  var reduced = window.matchMedia &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* ---------------------------------------------------------------
-     1. Reveal on scroll
-     Elements marked .reveal / .reveal-l / .reveal-r / .reveal-s fade
-     in once as they enter the viewport. Staggered per group via
-     data-stagger on the parent.
-     --------------------------------------------------------------- */
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function initReveal() {
     var items = document.querySelectorAll('.reveal, .reveal-l, .reveal-r, .reveal-s');
     if (!items.length) return;
-
     if (reduced || !('IntersectionObserver' in window)) {
       for (var i = 0; i < items.length; i++) items[i].classList.add('in');
       return;
     }
-
-    // stagger children of any [data-stagger] container
     var groups = document.querySelectorAll('[data-stagger]');
     for (var g = 0; g < groups.length; g++) {
       var step = parseInt(groups[g].getAttribute('data-stagger'), 10) || 90;
       var kids = groups[g].children;
       for (var k = 0; k < kids.length; k++) {
-        if (kids[k].classList.contains('reveal') ||
-            kids[k].classList.contains('reveal-l') ||
-            kids[k].classList.contains('reveal-r') ||
-            kids[k].classList.contains('reveal-s')) {
-          kids[k].style.setProperty('--d', (k * step) + 'ms');
+        if (kids[k].classList.contains('reveal') || kids[k].classList.contains('reveal-l') || kids[k].classList.contains('reveal-r') || kids[k].classList.contains('reveal-s')) {
+          kids[k].style.setProperty('--d', k * step + 'ms');
         }
       }
     }
-
-    var obs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
         if (e.isIntersecting) {
           e.target.classList.add('in');
           obs.unobserve(e.target);
         }
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-
+    }, {
+      rootMargin: '0px 0px -8% 0px',
+      threshold: .08
+    });
     for (var n = 0; n < items.length; n++) obs.observe(items[n]);
   }
-
-  /* ---------------------------------------------------------------
-     2. Sticky nav shadow once the page has scrolled
-     --------------------------------------------------------------- */
   function initNav() {
     var nav = document.querySelector('.stickynav');
     if (!nav) return;
@@ -60,24 +39,22 @@
       nav.classList.toggle('scrolled', window.scrollY > 12);
       ticking = false;
     }
-    window.addEventListener('scroll', function () {
-      if (!ticking) { window.requestAnimationFrame(update); ticking = true; }
-    }, { passive: true });
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, {
+      passive: true
+    });
     update();
   }
-
-  /* ---------------------------------------------------------------
-     3. Count-up stats
-     <span data-count="7" data-suffix="+">7+</span>
-     --------------------------------------------------------------- */
   function initCounters() {
     var nums = document.querySelectorAll('[data-count]');
     if (!nums.length) return;
-
-    if (reduced || !('IntersectionObserver' in window)) return; // leave static text
-
-    var obs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
+    if (reduced || !('IntersectionObserver' in window)) return;
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
         if (!e.isIntersecting) return;
         obs.unobserve(e.target);
         var el = e.target;
@@ -95,45 +72,46 @@
         }
         window.requestAnimationFrame(frame);
       });
-    }, { threshold: 0.5 });
-
+    }, {
+      threshold: .5
+    });
     for (var i = 0; i < nums.length; i++) obs.observe(nums[i]);
   }
-
-  /* ---------------------------------------------------------------
-     4. Carousel arrows — scrolls the rail by roughly one card
-     --------------------------------------------------------------- */
   function initCarousels() {
     var cars = document.querySelectorAll('.carousel');
     for (var i = 0; i < cars.length; i++) {
-      (function (car) {
+      (function(car) {
         var rail = car.querySelector('.crail');
         if (!rail) return;
         var prev = car.querySelector('[data-car="prev"]');
         var next = car.querySelector('[data-car="next"]');
         function step(dir) {
           var slide = rail.querySelector('.cslide');
-          var w = slide ? slide.getBoundingClientRect().width + 16 : rail.clientWidth * 0.8;
-          rail.scrollBy({ left: dir * w, behavior: reduced ? 'auto' : 'smooth' });
+          var w = slide ? slide.getBoundingClientRect().width + 16 : rail.clientWidth * .8;
+          rail.scrollBy({
+            left: dir * w,
+            behavior: reduced ? 'auto' : 'smooth'
+          });
         }
-        if (prev) prev.addEventListener('click', function () { step(-1); });
-        if (next) next.addEventListener('click', function () { step(1); });
-
+        if (prev) prev.addEventListener('click', function() {
+          step(-1);
+        });
+        if (next) next.addEventListener('click', function() {
+          step(1);
+        });
         function sync() {
           var max = rail.scrollWidth - rail.clientWidth - 2;
           if (prev) prev.disabled = rail.scrollLeft <= 2;
           if (next) next.disabled = rail.scrollLeft >= max;
         }
-        rail.addEventListener('scroll', sync, { passive: true });
+        rail.addEventListener('scroll', sync, {
+          passive: true
+        });
         window.addEventListener('resize', sync);
         sync();
       })(cars[i]);
     }
   }
-
-  /* ---------------------------------------------------------------
-     5. Duplicate marquee content so the loop is seamless
-     --------------------------------------------------------------- */
   function initMarquee() {
     var tracks = document.querySelectorAll('.marquee-track');
     for (var i = 0; i < tracks.length; i++) {
@@ -143,109 +121,80 @@
       tracks[i].setAttribute('aria-hidden', 'true');
     }
   }
-
-  /* ---------------------------------------------------------------
-     6. Close the mobile menu after tapping a link
-     --------------------------------------------------------------- */
   function initMobileNav() {
     var check = document.getElementById('navcheck');
     var menu = document.querySelector('.mobilenav');
     if (!check || !menu) return;
-    menu.addEventListener('click', function (e) {
+    menu.addEventListener('click', function(e) {
       if (e.target.tagName === 'A') check.checked = false;
     });
   }
-
-  /* ---------------------------------------------------------------
-     7. Auto-reveal for pages that opt in with <body data-autoreveal>
-     Tags up headings, cards and figures so the venture pages get the
-     same scroll motion without hand-editing every section.
-     --------------------------------------------------------------- */
   function initAutoReveal() {
     if (!document.body.hasAttribute('data-autoreveal')) return;
-    var sel = 'section h2, section h3.card-title, section .card, section figure, ' +
-              'section .lede, section > div > p, .vcard, .newscard';
+    var sel = 'section h2, section h3.card-title, section .card, section figure, ' + 'section .lede, section > div > p, .vcard, .newscard';
     var els = document.querySelectorAll(sel);
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
       if (el.closest('header') || el.closest('footer')) continue;
-      /* Never auto-reveal anything inside a marquee. initMarquee runs
-         AFTER this and duplicates the track's innerHTML, so the clones
-         carry the reveal class but were never handed to the observer —
-         they stay at opacity 0 forever and half the strip is invisible.
-         A marquee is decorative and already moving; it needs no reveal. */
       if (el.closest('.marquee')) continue;
-      if (el.classList.contains('reveal') || el.classList.contains('reveal-l') ||
-          el.classList.contains('reveal-r') || el.classList.contains('reveal-s')) continue;
+      if (el.classList.contains('reveal') || el.classList.contains('reveal-l') || el.classList.contains('reveal-r') || el.classList.contains('reveal-s')) continue;
       if (el.closest('.card') && el.classList.contains('card-title')) continue;
       el.classList.add('reveal');
-      /* A card is an object and should arrive like one, with a little
-         overshoot. A paragraph is not, and the plain slide suits it. */
-      if (el.classList.contains('card') || el.classList.contains('vcard') ||
-          el.classList.contains('newscard') || el.tagName === 'FIGURE') {
+      if (el.classList.contains('card') || el.classList.contains('vcard') || el.classList.contains('newscard') || el.tagName === 'FIGURE') {
         el.classList.add('pop');
       }
     }
-    /* the same for the cards that were already marked by hand */
     var hand = document.querySelectorAll('.vcard.reveal, .card.reveal, .newscard.reveal, .win.reveal, .stat.reveal');
     for (var h = 0; h < hand.length; h++) hand[h].classList.add('pop');
-    // stagger siblings inside each grid
     var grids = document.querySelectorAll('section div[style*="grid-template-columns"]');
     for (var g = 0; g < grids.length; g++) {
       var kids = grids[g].children, c = 0;
       for (var k = 0; k < kids.length; k++) {
         if (kids[k].classList.contains('reveal')) {
-          kids[k].style.setProperty('--d', (c * 80) + 'ms');
+          kids[k].style.setProperty('--d', c * 80 + 'ms');
           c++;
         }
       }
     }
   }
-
-  /* ---------------------------------------------------------------
-     8. Photo lightbox
-     Any .pgrid button opens its image full-size. Arrow keys and the
-     on-screen arrows move between photos; Esc or a backdrop click
-     closes. Focus returns to the thumbnail that opened it.
-     --------------------------------------------------------------- */
   function initLightbox() {
     var grids = document.querySelectorAll('.pgrid');
     if (!grids.length) return;
-
     var box = document.createElement('div');
     box.className = 'lbox';
     box.setAttribute('role', 'dialog');
     box.setAttribute('aria-modal', 'true');
     box.setAttribute('aria-label', 'Photo viewer');
-    box.innerHTML =
-      '<button class="lclose" type="button" aria-label="Close">✕</button>' +
-      '<button class="lprev" type="button" aria-label="Previous photo">‹</button>' +
-      '<button class="lnext" type="button" aria-label="Next photo">›</button>' +
-      '<div><img alt=""><div class="lcap"></div></div>';
+    box.innerHTML = '<button class="lclose" type="button" aria-label="Close">✕</button>' + '<button class="lprev" type="button" aria-label="Previous photo">‹</button>' + '<button class="lnext" type="button" aria-label="Next photo">›</button>' + '<div><img alt=""><div class="lcap"></div></div>';
     document.body.appendChild(box);
-
     var img = box.querySelector('img');
     var cap = box.querySelector('.lcap');
     var shots = [], idx = 0, opener = null;
-
     for (var g = 0; g < grids.length; g++) {
       var btns = grids[g].querySelectorAll('button');
       for (var i = 0; i < btns.length; i++) {
-        (function (btn) {
+        (function(btn) {
           var im = btn.querySelector('img');
           if (!im) return;
           var c = btn.querySelector('figcaption');
-          var rec = { src: im.getAttribute('data-full') || im.src,
-                      alt: im.alt || '',
-                      cap: c ? c.textContent.trim() : '' };
+          var rec = {
+            src: im.getAttribute('data-full') || im.src,
+            alt: im.alt || '',
+            cap: c ? c.textContent.trim() : ''
+          };
           shots.push(rec);
           var myIndex = shots.length - 1;
-          btn.addEventListener('click', function () { opener = btn; show(myIndex); });
+          btn.addEventListener('click', function() {
+            opener = btn;
+            show(myIndex);
+          });
         })(btns[i]);
       }
     }
-    if (!shots.length) { box.parentNode.removeChild(box); return; }
-
+    if (!shots.length) {
+      box.parentNode.removeChild(box);
+      return;
+    }
     function show(n) {
       idx = (n + shots.length) % shots.length;
       img.src = shots[idx].src;
@@ -259,97 +208,67 @@
       box.classList.remove('open');
       document.body.style.overflow = '';
       img.src = '';
-      if (opener) { opener.focus(); opener = null; }
+      if (opener) {
+        opener.focus();
+        opener = null;
+      }
     }
-
     box.querySelector('.lclose').addEventListener('click', close);
-    box.querySelector('.lprev').addEventListener('click', function (e) {
-      e.stopPropagation(); show(idx - 1);
+    box.querySelector('.lprev').addEventListener('click', function(e) {
+      e.stopPropagation();
+      show(idx - 1);
     });
-    box.querySelector('.lnext').addEventListener('click', function (e) {
-      e.stopPropagation(); show(idx + 1);
+    box.querySelector('.lnext').addEventListener('click', function(e) {
+      e.stopPropagation();
+      show(idx + 1);
     });
-    box.addEventListener('click', function (e) { if (e.target === box) close(); });
-    document.addEventListener('keydown', function (e) {
+    box.addEventListener('click', function(e) {
+      if (e.target === box) close();
+    });
+    document.addEventListener('keydown', function(e) {
       if (!box.classList.contains('open')) return;
-      if (e.key === 'Escape') close();
-      else if (e.key === 'ArrowLeft') show(idx - 1);
-      else if (e.key === 'ArrowRight') show(idx + 1);
+      if (e.key === 'Escape') close(); else if (e.key === 'ArrowLeft') show(idx - 1); else if (e.key === 'ArrowRight') show(idx + 1);
     });
   }
-
-  /* ---------------------------------------------------------------
-     9. Click-to-play video facade
-     Shows a poster until pressed, then swaps in the real player.
-     Supports YouTube (data-yt) and Google Drive (data-drive). Nothing
-     is requested from either service until someone actually presses
-     play — which keeps the page fast, avoids third-party tracking of
-     visitors who never watch, and with Drive avoids spending the
-     file's daily bandwidth quota on people who just scroll past.
-     --------------------------------------------------------------- */
-  /* ---------------------------------------------------------------
-     Publish the header height as --kd-navh
-     The transparent-over-hero nav needs the hero to start behind the
-     bar. CSS cannot measure the bar, so it is published here and the
-     stylesheet pulls the hero up by exactly that much and pads it back
-     down again. Falls back to 0px, which is the old layout, so a page
-     with this script blocked still looks right rather than broken.
-     --------------------------------------------------------------- */
   function initNavHeight() {
     var head = document.querySelector('.stickynav');
     if (!head) return;
-    var apply = function () {
-      document.documentElement.style.setProperty(
-        '--kd-navh', Math.round(head.getBoundingClientRect().height) + 'px');
+    var apply = function() {
+      document.documentElement.style.setProperty('--kd-navh', Math.round(head.getBoundingClientRect().height) + 'px');
     };
     apply();
     if (window.ResizeObserver) new ResizeObserver(apply).observe(head);
     var rt;
-    window.addEventListener('resize', function () {
-      clearTimeout(rt); rt = setTimeout(apply, 120);
-    }, { passive: true });
+    window.addEventListener('resize', function() {
+      clearTimeout(rt);
+      rt = setTimeout(apply, 120);
+    }, {
+      passive: true
+    });
     window.addEventListener('load', apply);
   }
-
   function initVideoFacade() {
     var wraps = document.querySelectorAll('.vfacade');
     for (var i = 0; i < wraps.length; i++) {
-      (function (w) {
+      (function(w) {
         var yt = w.getAttribute('data-yt');
         var list = w.getAttribute('data-yt-list');
         var dr = w.getAttribute('data-drive');
         var btn = w.querySelector('.vplay');
         if (!btn) return;
-
-        // no id filled in yet — hide the play button rather than
-        // giving the visitor a control that does nothing
-        var unset = function (v) { return !v || v.indexOf('PASTE_') === 0; };
-        if (unset(yt) && unset(list) && unset(dr)) { btn.style.display = 'none'; return; }
-
+        var unset = function(v) {
+          return !v || v.indexOf('PASTE_') === 0;
+        };
+        if (unset(yt) && unset(list) && unset(dr)) {
+          btn.style.display = 'none';
+          return;
+        }
         function play() {
           if (w.classList.contains('playing')) return;
           var src, allow;
           if (!unset(yt) || !unset(list)) {
-            /* Three shapes, and which one you get depends only on the
-               attributes:
-
-                 data-yt only          that one film
-                 data-yt + data-yt-list  that film first, with the rest of
-                                       the playlist queued behind it
-                 data-yt-list only     "videoseries", which plays the
-                                       NEWEST item first — so pointing it
-                                       at a channel's uploads playlist
-                                       (swap the UC of a channel id for
-                                       UU) means new films appear here on
-                                       their own, with no edit at all.
-
-               rel=0 keeps YouTube's end-screen suggestions inside the
-               same channel rather than sending a parent off to whatever
-               the algorithm fancies, which matters on a children's
-               programme page. */
             var base = unset(yt) ? 'videoseries' : encodeURIComponent(yt);
-            src = 'https://www.youtube-nocookie.com/embed/' + base +
-                  '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+            src = 'https://www.youtube-nocookie.com/embed/' + base + '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
             if (!unset(list)) src += '&list=' + encodeURIComponent(list);
             allow = 'accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen';
           } else {
@@ -367,164 +286,120 @@
           w.appendChild(f);
           f.focus();
         }
-
-        /* Point any "watch on YouTube" link at the same video, so the
-           id lives in exactly one place. Two copies of it in the markup
-           is a trap: somebody swaps the film, updates the player, misses
-           the link, and it quietly sends people to a deleted video. */
         var note = w.nextElementSibling;
         var out = note && note.querySelector && note.querySelector('a.ytlink');
         if (out) {
           if (!unset(yt)) {
-            out.setAttribute('href', 'https://www.youtube.com/watch?v=' + encodeURIComponent(yt) +
-              (unset(list) ? '' : '&list=' + encodeURIComponent(list)));
+            out.setAttribute('href', 'https://www.youtube.com/watch?v=' + encodeURIComponent(yt) + (unset(list) ? '' : '&list=' + encodeURIComponent(list)));
           } else if (!unset(list)) {
             out.setAttribute('href', 'https://www.youtube.com/playlist?list=' + encodeURIComponent(list));
           }
         }
-
         btn.addEventListener('click', play);
-        w.addEventListener('click', function (e) {
+        w.addEventListener('click', function(e) {
           if (e.target === btn || btn.contains(e.target)) return;
           play();
         });
       })(wraps[i]);
     }
   }
-
-  /* ---------------------------------------------------------------
-     10. Copy the feedback form to our own server as well as email
-     The form posts to Web3Forms exactly as before — that is still the
-     thing that must not fail, and it keeps working if our server is
-     off. This additionally sends a copy to the admin console so an
-     approved reply can become a published quote in one click, instead
-     of someone retyping it out of an inbox.
-
-     Deliberately fire-and-forget: sendBeacon cannot delay or block the
-     real submit, and every failure is swallowed. If our server is
-     asleep the parent notices nothing and the email still arrives.
-     --------------------------------------------------------------- */
   var FEEDBACK_SINK = 'https://apps.kalsadermaga.com/api/superapp/site/feedback';
-
   function initFeedbackCopy() {
     var form = document.querySelector('#feedback form');
     if (!form || !navigator.sendBeacon) return;
-    form.addEventListener('submit', function () {
+    form.addEventListener('submit', function() {
       try {
         var out = {};
         var els = form.querySelectorAll('input[name],select[name],textarea[name]');
         for (var i = 0; i < els.length; i++) {
           var el = els[i];
-          if (['access_key', 'subject', 'from_name', 'redirect', 'botcheck'].indexOf(el.name) > -1) continue;
+          if ([ 'access_key', 'subject', 'from_name', 'redirect', 'botcheck' ].indexOf(el.name) > -1) continue;
           if (el.type === 'radio' && !el.checked) continue;
-          if (el.type === 'checkbox') { out[el.name] = el.checked ? el.value || 'yes' : ''; continue; }
+          if (el.type === 'checkbox') {
+            out[el.name] = el.checked ? el.value || 'yes' : '';
+            continue;
+          }
           out[el.name] = el.value;
         }
-        var blob = new Blob([JSON.stringify(out)], { type: 'application/json' });
+        var blob = new Blob([ JSON.stringify(out) ], {
+          type: 'application/json'
+        });
         navigator.sendBeacon(FEEDBACK_SINK, blob);
-      } catch (e) { /* never let this affect the real submit */ }
+      } catch (e) {}
     });
   }
-
-  /* ---------------------------------------------------------------
-     11. Site-wide announcement banner
-     Read from assets/announcement.json rather than baked into every
-     page: one small file to publish, and the banner then appears on
-     all eleven pages instead of needing a marker in each of them.
-     A banner is not search-engine content, so rendering it with JS
-     costs nothing that matters.
-
-     Dismissal is remembered per announcement id, so a new notice
-     shows again even to someone who closed the last one.
-     --------------------------------------------------------------- */
   function initBanner() {
     if (!window.fetch) return;
-    fetch('assets/announcement.json', { cache: 'no-cache' })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (a) {
-        if (!a || !a.active || !a.text) return;
-        try { if (localStorage.getItem('kd_ann_' + a.id) === '1') return; } catch (e) {}
-
-        var bar = document.createElement('div');
-        bar.className = 'kdbanner' + (a.tone === 'warn' ? ' warn' : (a.tone === 'good' ? ' good' : ''));
-        bar.setAttribute('role', 'status');
-
-        var t = document.createElement('span');
-        t.className = 'kdb-t';
-        t.textContent = a.text;                    // textContent, never innerHTML
-        bar.appendChild(t);
-
-        if (a.linkText && a.linkHref) {
-          var link = document.createElement('a');
-          link.href = a.linkHref;
-          link.textContent = a.linkText;
-          bar.appendChild(link);
-        }
-
-        var x = document.createElement('button');
-        x.type = 'button';
-        x.setAttribute('aria-label', 'Dismiss this announcement');
-        x.textContent = '✕';
-        x.onclick = function () {
-          bar.remove();
-          try { localStorage.setItem('kd_ann_' + a.id, '1'); } catch (e) {}
-        };
-        bar.appendChild(x);
-
-        document.body.insertBefore(bar, document.body.firstChild);
-      })
-      .catch(function () { /* no banner is a fine outcome */ });
+    fetch('assets/announcement.json', {
+      cache: 'no-cache'
+    }).then(function(r) {
+      return r.ok ? r.json() : null;
+    }).then(function(a) {
+      if (!a || !a.active || !a.text) return;
+      try {
+        if (localStorage.getItem('kd_ann_' + a.id) === '1') return;
+      } catch (e) {}
+      var bar = document.createElement('div');
+      bar.className = 'kdbanner' + (a.tone === 'warn' ? ' warn' : a.tone === 'good' ? ' good' : '');
+      bar.setAttribute('role', 'status');
+      var t = document.createElement('span');
+      t.className = 'kdb-t';
+      t.textContent = a.text;
+      bar.appendChild(t);
+      if (a.linkText && a.linkHref) {
+        var link = document.createElement('a');
+        link.href = a.linkHref;
+        link.textContent = a.linkText;
+        bar.appendChild(link);
+      }
+      var x = document.createElement('button');
+      x.type = 'button';
+      x.setAttribute('aria-label', 'Dismiss this announcement');
+      x.textContent = '✕';
+      x.onclick = function() {
+        bar.remove();
+        try {
+          localStorage.setItem('kd_ann_' + a.id, '1');
+        } catch (e) {}
+      };
+      bar.appendChild(x);
+      document.body.insertBefore(bar, document.body.firstChild);
+    }).catch(function() {});
   }
-
-  /* ---------------------------------------------------------------
-     12. Enrolment: module pricing + pay-now / pay-later-on-WhatsApp
-     The enrolment form on little-marine-scientists.html has per-module
-     checkboxes (data-mod-price) that build a running total, and two
-     buttons instead of one plain submit:
-
-       #btn-pay-now   → validate, send to web3forms + admin dashboard,
-                        then create a CHIP checkout session and redirect.
-       #btn-pay-later → validate, send to web3forms + admin dashboard,
-                        then open WhatsApp with a pre-filled summary so
-                        the parent can ask questions before paying.
-
-     Both paths always reach web3forms (lmsteam@kalsadermaga.com) and
-     the admin dashboard (ENROL_SINK) — payment is the only thing that
-     differs between them. This section only runs on pages that have
-     the enrolment form; it does nothing on pages without it.
-     --------------------------------------------------------------- */
   var ENROL_SINK = 'https://apps.kalsadermaga.com/api/superapp/site/enrolment';
-  var LMS_WHATSAPP_NUMBER = '60123454520'; // 012-3454520 in international format
-
-  /* Single source of truth for module names/prices/availability — edit
-     here only. Every child's picker (renderChildModules) is generated
-     from this list, so adding, renaming, repricing, or activating a
-     module never needs an HTML edit. */
-  var LMS_MODULES = [
-    { name: 'Secret Life of Low Tide', price: 60, available: true },
-    { name: 'The Sick Sea Shells', price: 50, available: true },
-    { name: 'Secret Drifters of The Sea', price: 60, available: true },
-    { name: 'Upcoming module 4', price: 0, available: false },
-    { name: 'Upcoming module 5', price: 0, available: false },
-    { name: 'Upcoming module 6', price: 0, available: false }
-  ];
-
-  /* Builds one module-picker block per child inside #childmodules, based
-     on "Number of children enrolling together". Each child gets their
-     own checkboxes (siblings can pick different modules), and children
-     2+ get their own Name/Age fields (child 1's are already in the
-     "Child's details" fieldset above). Re-run whenever the sibling
-     count changes; preserves already-made selections and typed
-     name/age values where a child index still exists after rebuild. */
+  var LMS_WHATSAPP_NUMBER = '60123454520';
+  var LMS_MODULES = [ {
+    name: 'Secret Life of Low Tide',
+    price: 60,
+    available: true
+  }, {
+    name: 'The Sick Sea Shells',
+    price: 50,
+    available: true
+  }, {
+    name: 'Secret Drifters of The Sea',
+    price: 60,
+    available: true
+  }, {
+    name: 'Upcoming module 4',
+    price: 0,
+    available: false
+  }, {
+    name: 'Upcoming module 5',
+    price: 0,
+    available: false
+  }, {
+    name: 'Upcoming module 6',
+    price: 0,
+    available: false
+  } ];
   function renderChildModules(form) {
     var container = document.getElementById('childmodules');
     var countInput = document.getElementById('c-siblingcount');
     if (!container || !countInput) return;
-
     var count = parseInt(countInput.value, 10) || 1;
     if (count < 1) count = 1;
     if (count > 10) count = 10;
-
     var preserved = {};
     var existingBlocks = container.querySelectorAll('.childmodule-block');
     for (var b = 0; b < existingBlocks.length; b++) {
@@ -546,24 +421,19 @@
         medical: medicalInput ? medicalInput.value : ''
       };
     }
-
     container.innerHTML = '';
-
     for (var i = 1; i <= count; i++) {
       var block = document.createElement('div');
       block.className = 'childmodule-block';
       block.setAttribute('data-child', i);
-
       var heading = document.createElement('div');
       heading.className = 'childmodule-heading';
       heading.textContent = 'Child ' + i;
       block.appendChild(heading);
-
       if (i >= 2) {
         var row = document.createElement('div');
         row.className = 'grid2';
         row.style.marginBottom = '10px';
-
         var nameField = document.createElement('div');
         nameField.className = 'field';
         var nameLabel = document.createElement('label');
@@ -573,10 +443,9 @@
         nameInputEl.type = 'text';
         nameInputEl.name = 'Child ' + i + ' name';
         nameInputEl.required = true;
-        nameInputEl.value = (preserved[i] && preserved[i].name) || '';
+        nameInputEl.value = preserved[i] && preserved[i].name || '';
         nameField.appendChild(nameLabel);
         nameField.appendChild(nameInputEl);
-
         var ageField = document.createElement('div');
         ageField.className = 'field';
         var ageLabel = document.createElement('label');
@@ -588,18 +457,15 @@
         ageInputEl.min = '4';
         ageInputEl.max = '17';
         ageInputEl.required = true;
-        ageInputEl.value = (preserved[i] && preserved[i].age) || '';
+        ageInputEl.value = preserved[i] && preserved[i].age || '';
         ageField.appendChild(ageLabel);
         ageField.appendChild(ageInputEl);
-
         row.appendChild(nameField);
         row.appendChild(ageField);
         block.appendChild(row);
-
         var row2 = document.createElement('div');
         row2.className = 'grid2';
         row2.style.marginBottom = '10px';
-
         var schoolField = document.createElement('div');
         schoolField.className = 'field';
         var schoolLabel = document.createElement('label');
@@ -610,10 +476,9 @@
         schoolInputEl.name = 'Child ' + i + ' school';
         schoolInputEl.placeholder = 'e.g. SK Beserah';
         schoolInputEl.required = true;
-        schoolInputEl.value = (preserved[i] && preserved[i].school) || '';
+        schoolInputEl.value = preserved[i] && preserved[i].school || '';
         schoolField.appendChild(schoolLabel);
         schoolField.appendChild(schoolInputEl);
-
         var swimField = document.createElement('div');
         swimField.className = 'field';
         var swimLabel = document.createElement('label');
@@ -622,7 +487,7 @@
         swimSelectEl.className = 'input childswim-input';
         swimSelectEl.name = 'Child ' + i + ' swim';
         swimSelectEl.required = true;
-        var swimOptions = ['', 'Yes, confidently', 'A little, needs supervision', 'No, cannot swim'];
+        var swimOptions = [ '', 'Yes, confidently', 'A little, needs supervision', 'No, cannot swim' ];
         for (var so = 0; so < swimOptions.length; so++) {
           var opt = document.createElement('option');
           opt.value = swimOptions[so];
@@ -632,11 +497,9 @@
         }
         swimField.appendChild(swimLabel);
         swimField.appendChild(swimSelectEl);
-
         row2.appendChild(schoolField);
         row2.appendChild(swimField);
         block.appendChild(row2);
-
         var medicalField = document.createElement('div');
         medicalField.className = 'field';
         medicalField.style.marginBottom = '10px';
@@ -647,20 +510,17 @@
         medicalTextEl.name = 'Child ' + i + ' medical';
         medicalTextEl.rows = 2;
         medicalTextEl.placeholder = 'Leave blank if none.';
-        medicalTextEl.value = (preserved[i] && preserved[i].medical) || '';
+        medicalTextEl.value = preserved[i] && preserved[i].medical || '';
         medicalField.appendChild(medicalLabel);
         medicalField.appendChild(medicalTextEl);
         block.appendChild(medicalField);
       }
-
       var modGrid = document.createElement('div');
       modGrid.className = 'grid2 modgrid';
-
       for (var m = 0; m < LMS_MODULES.length; m++) {
         var mod = LMS_MODULES[m];
         var label = document.createElement('label');
         label.className = 'check modcheck' + (mod.available ? '' : ' is-upcoming');
-
         var input = document.createElement('input');
         input.type = 'checkbox';
         input.name = 'Modules (Child ' + i + ')';
@@ -668,34 +528,27 @@
         input.setAttribute('data-mod-price', mod.price);
         if (!mod.available) input.disabled = true;
         if (preserved[i] && preserved[i].checked.indexOf(mod.name) > -1) input.checked = true;
-
         var span = document.createElement('span');
         span.appendChild(document.createTextNode(mod.name + ' '));
         var priceB = document.createElement('b');
         priceB.className = 'modprice' + (mod.available ? '' : ' modprice-soon');
-        priceB.textContent = mod.available ? ('RM ' + mod.price) : 'Coming soon';
+        priceB.textContent = mod.available ? 'RM ' + mod.price : 'Coming soon';
         span.appendChild(priceB);
-
         label.appendChild(input);
         label.appendChild(span);
         modGrid.appendChild(label);
       }
-
       block.appendChild(modGrid);
-
       var subEl = document.createElement('div');
       subEl.className = 'childsubtotal';
       subEl.innerHTML = 'Subtotal: <b class="childsubtotal-amount">RM 0</b>';
       block.appendChild(subEl);
-
       container.appendChild(block);
     }
   }
-
   function initModulePricing() {
     var form = document.querySelector('#enrol form');
     if (!form) return;
-
     var countInput = document.getElementById('c-siblingcount');
     var subtotalEl = document.getElementById('modtotal-subtotal');
     var discountRowEl = document.getElementById('modtotal-discount-row');
@@ -704,18 +557,16 @@
     var totalEl = document.getElementById('modtotal-amount');
     var payNowAmountEl = document.getElementById('paynow-amount');
     if (!countInput || !totalEl) return;
-
     function recalc() {
       var t = computeTotals(form);
       if (subtotalEl) subtotalEl.textContent = 'RM ' + t.subtotal;
       if (childrenEl) childrenEl.textContent = t.children;
       if (discountRowEl) discountRowEl.style.display = t.discount > 0 ? '' : 'none';
-      if (discountEl) discountEl.textContent = '\u2212RM ' + t.discount;
+      if (discountEl) discountEl.textContent = '−RM ' + t.discount;
       totalEl.textContent = 'RM ' + t.total;
       if (payNowAmountEl) payNowAmountEl.textContent = 'RM ' + t.total;
       return t;
     }
-
     function rebuild() {
       renderChildModules(form);
       var allChecks = document.querySelectorAll('#childmodules input[type="checkbox"]');
@@ -724,16 +575,9 @@
       }
       recalc();
     }
-
     countInput.addEventListener('input', rebuild);
     rebuild();
   }
-
-  /* Single source of truth for pricing — used by the live total display
-     (initModulePricing) and by both submit buttons, so what a parent
-     sees is always exactly what gets charged. RM5/child discount kicks
-     in automatically once 2 or more children are enrolling together.
-     Also updates each child block's own subtotal line as a side effect. */
   function computeTotals(form) {
     var blocks = form.querySelectorAll('.childmodule-block');
     var children = blocks.length || 1;
@@ -751,12 +595,13 @@
     var discountPerChild = children >= 2 ? 5 : 0;
     var discount = discountPerChild * children;
     var total = Math.max(subtotal - discount, 0);
-    return { children: children, subtotal: subtotal, discount: discount, total: total };
+    return {
+      children: children,
+      subtotal: subtotal,
+      discount: discount,
+      total: total
+    };
   }
-
-  /* Returns every selected module across all children, each tagged with
-     which child it belongs to (by name if typed, else "Child N") — used
-     to build the CHIP checkout line items and the WhatsApp summary. */
   function getSelectedModules(form) {
     var out = [];
     var blocks = form.querySelectorAll('.childmodule-block');
@@ -765,10 +610,10 @@
       var label;
       if (idx === '1') {
         var c1 = form.querySelector('#c-name');
-        label = (c1 && c1.value) || 'Child 1';
+        label = c1 && c1.value || 'Child 1';
       } else {
         var ni = blocks[b].querySelector('.childname-input');
-        label = (ni && ni.value) || ('Child ' + idx);
+        label = ni && ni.value || 'Child ' + idx;
       }
       var checks = blocks[b].querySelectorAll('input[type="checkbox"]:checked');
       for (var c = 0; c < checks.length; c++) {
@@ -781,63 +626,80 @@
     }
     return out;
   }
-
   function collectFormData(form) {
     var out = {};
     var els = form.querySelectorAll('input[name],select[name],textarea[name]');
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (['access_key', 'subject', 'from_name', 'redirect', 'botcheck'].indexOf(el.name) > -1) continue;
+      if ([ 'access_key', 'subject', 'from_name', 'redirect', 'botcheck' ].indexOf(el.name) > -1) continue;
       if (el.type === 'checkbox') {
-        if (el.name.indexOf('Modules (') === 0) { if (el.checked) { out[el.name] = out[el.name] ? out[el.name] + ', ' + el.value : el.value; } continue; }
-        out[el.name] = el.checked ? (el.value || 'Yes') : '';
+        if (el.name.indexOf('Modules (') === 0) {
+          if (el.checked) {
+            out[el.name] = out[el.name] ? out[el.name] + ', ' + el.value : el.value;
+          }
+          continue;
+        }
+        out[el.name] = el.checked ? el.value || 'Yes' : '';
         continue;
       }
-      if (el.type === 'radio') { if (!el.checked) continue; }
+      if (el.type === 'radio') {
+        if (!el.checked) continue;
+      }
       out[el.name] = el.value;
     }
     return out;
   }
-
   function postWeb3Forms(form) {
     var payload = collectFormData(form);
     payload.access_key = form.querySelector('input[name="access_key"]').value;
     payload.subject = form.querySelector('input[name="subject"]').value;
     payload.from_name = form.querySelector('input[name="from_name"]').value;
-
     return fetch('https://api.web3forms.com/submit', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
       body: JSON.stringify(payload)
-    }).then(function (r) { return r.json(); });
+    }).then(function(r) {
+      return r.json();
+    });
   }
-
   function notifyAdminDashboard(form, extra) {
     try {
       var payload = collectFormData(form);
-      for (var k in extra) { if (extra.hasOwnProperty(k)) payload[k] = extra[k]; }
+      for (var k in extra) {
+        if (extra.hasOwnProperty(k)) payload[k] = extra[k];
+      }
       if (navigator.sendBeacon) {
-        var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+        var blob = new Blob([ JSON.stringify(payload) ], {
+          type: 'application/json'
+        });
         navigator.sendBeacon(ENROL_SINK, blob);
       } else if (window.fetch) {
         fetch(ENROL_SINK, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload), keepalive: true
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload),
+          keepalive: true
         });
       }
-    } catch (e) { /* dashboard notification is best-effort, never blocks the parent */ }
+    } catch (e) {}
   }
-
-  /* Turns the flat getSelectedModules() list into a readable per-child
-     summary, e.g. "Child 1: Secret Life of Low Tide (RM70); Aisyah:
-     The Sick Sea Shells, Secret Drifters of The Sea (RM180)" — used in
-     the WhatsApp pay-later message so the team sees who picked what. */
   function summarizeModulesByChild(modules) {
     var byChild = {};
     var order = [];
     for (var i = 0; i < modules.length; i++) {
       var m = modules[i];
-      if (!byChild[m.child]) { byChild[m.child] = { names: [], total: 0 }; order.push(m.child); }
+      if (!byChild[m.child]) {
+        byChild[m.child] = {
+          names: [],
+          total: 0
+        };
+        order.push(m.child);
+      }
       byChild[m.child].names.push(m.name);
       byChild[m.child].total += m.price;
     }
@@ -848,28 +710,23 @@
     }
     return lines.join('; ');
   }
-
   function initEnrolSubmit() {
     var form = document.querySelector('#enrol form');
     if (!form || !window.fetch) return;
-
     var payNowBtn = document.getElementById('btn-pay-now');
     var payLaterBtn = document.getElementById('btn-pay-later');
     var enrolOnlyBtn = document.getElementById('btn-enrol-only');
     var statusEl = document.getElementById('enrol-status');
-
     function setStatus(msg, cls) {
       if (!statusEl) return;
       statusEl.textContent = msg || '';
       statusEl.className = 'paystatus' + (cls ? ' ' + cls : '');
     }
-
     function disableAll(disabled) {
       if (payNowBtn) payNowBtn.disabled = disabled;
       if (payLaterBtn) payLaterBtn.disabled = disabled;
       if (enrolOnlyBtn) enrolOnlyBtn.disabled = disabled;
     }
-
     function validateCommon() {
       if (!form.reportValidity()) return false;
       var modules = getSelectedModules(form);
@@ -879,434 +736,368 @@
       }
       return true;
     }
-
     if (payNowBtn) {
-      payNowBtn.addEventListener('click', function () {
+      payNowBtn.addEventListener('click', function() {
         if (!validateCommon()) return;
         var modules = getSelectedModules(form);
         var totals = computeTotals(form);
-
         var originalLabel = payNowBtn.textContent;
         disableAll(true);
         payNowBtn.textContent = 'Submitting…';
         setStatus('');
-
-        postWeb3Forms(form)
-          .then(function () {
-            notifyAdminDashboard(form, {
-              'Payment path': 'Pay now',
-              'Children enrolling': totals.children,
-              'Sibling discount': totals.discount,
-              'Modules total': totals.total
-            });
-            payNowBtn.textContent = 'Redirecting to payment…';
-            return fetch(CHECKOUT_ENDPOINT, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                items: modules,
-                children: totals.children,
-                discount: totals.discount,
-                total: totals.total,
-                source: 'little-marine-scientists.html',
-                child: form.querySelector('[name="Child name"]').value,
-                email: form.querySelector('[name="Parent email"]').value
-              })
-            });
-          })
-          .then(function (r) {
-            if (!r.ok) throw new Error('Checkout request failed (' + r.status + ')');
-            return r.json();
-          })
-          .then(function (data) {
-            if (!data || !data.checkout_url) throw new Error('No checkout URL returned');
-            window.location.href = data.checkout_url;
-          })
-          .catch(function () {
-            setStatus('We received your enrolment, but could not start payment just now. Please call 011-39822811 to complete payment, or try again in a moment.', 'err');
-            disableAll(false);
-            payNowBtn.textContent = originalLabel;
+        postWeb3Forms(form).then(function() {
+          notifyAdminDashboard(form, {
+            'Payment path': 'Pay now',
+            'Children enrolling': totals.children,
+            'Sibling discount': totals.discount,
+            'Modules total': totals.total
           });
+          payNowBtn.textContent = 'Redirecting to payment…';
+          return fetch(CHECKOUT_ENDPOINT, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              items: modules,
+              children: totals.children,
+              discount: totals.discount,
+              total: totals.total,
+              source: 'little-marine-scientists.html',
+              child: form.querySelector('[name="Child name"]').value,
+              email: form.querySelector('[name="Parent email"]').value
+            })
+          });
+        }).then(function(r) {
+          if (!r.ok) throw new Error('Checkout request failed (' + r.status + ')');
+          return r.json();
+        }).then(function(data) {
+          if (!data || !data.checkout_url) throw new Error('No checkout URL returned');
+          window.location.href = data.checkout_url;
+        }).catch(function() {
+          setStatus('We received your enrolment, but could not start payment just now. Please call 011-39822811 to complete payment, or try again in a moment.', 'err');
+          disableAll(false);
+          payNowBtn.textContent = originalLabel;
+        });
       });
     }
-
     if (payLaterBtn) {
-      payLaterBtn.addEventListener('click', function () {
+      payLaterBtn.addEventListener('click', function() {
         if (!validateCommon()) return;
         var modules = getSelectedModules(form);
         var totals = computeTotals(form);
         var childName = form.querySelector('[name="Child name"]').value;
         var summaryText = summarizeModulesByChild(modules);
-
         var originalLabel = payLaterBtn.textContent;
         disableAll(true);
         payLaterBtn.textContent = 'Submitting…';
         setStatus('');
-
-        postWeb3Forms(form)
-          .then(function () {
-            notifyAdminDashboard(form, {
-              'Payment path': 'Pay later via WhatsApp',
-              'Children enrolling': totals.children,
-              'Sibling discount': totals.discount,
-              'Modules total': totals.total
-            });
-
-            var msg = 'Hi LMS team, I just enrolled ' + (childName || 'my child') +
-              (totals.children >= 2 ? ' and ' + (totals.children - 1) + ' sibling(s)' : '') +
-              ': ' + summaryText + ' (Total: RM ' + totals.total +
-              (totals.discount > 0 ? ', after RM' + totals.discount + ' sibling discount' : '') + '). ' +
-              'I have a few questions before I complete payment.';
-            var waUrl = 'https://wa.me/' + LMS_WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
-
-            setStatus('Enrolment received. Opening WhatsApp so you can chat with our team before paying.', 'ok');
-            window.open(waUrl, '_blank', 'noopener');
-            payLaterBtn.textContent = 'Enrolment sent ✓';
-          })
-          .catch(function () {
-            setStatus('Sorry, something went wrong sending your enrolment. Please try again, or call 011-39822811.', 'err');
-            disableAll(false);
-            payLaterBtn.textContent = originalLabel;
+        postWeb3Forms(form).then(function() {
+          notifyAdminDashboard(form, {
+            'Payment path': 'Pay later via WhatsApp',
+            'Children enrolling': totals.children,
+            'Sibling discount': totals.discount,
+            'Modules total': totals.total
           });
+          var msg = 'Hi LMS team, I just enrolled ' + (childName || 'my child') + (totals.children >= 2 ? ' and ' + (totals.children - 1) + ' sibling(s)' : '') + ': ' + summaryText + ' (Total: RM ' + totals.total + (totals.discount > 0 ? ', after RM' + totals.discount + ' sibling discount' : '') + '). ' + 'I have a few questions before I complete payment.';
+          var waUrl = 'https://wa.me/' + LMS_WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
+          setStatus('Enrolment received. Opening WhatsApp so you can chat with our team before paying.', 'ok');
+          window.open(waUrl, '_blank', 'noopener');
+          payLaterBtn.textContent = 'Enrolment sent ✓';
+        }).catch(function() {
+          setStatus('Sorry, something went wrong sending your enrolment. Please try again, or call 011-39822811.', 'err');
+          disableAll(false);
+          payLaterBtn.textContent = originalLabel;
+        });
       });
     }
-
     if (enrolOnlyBtn) {
-      enrolOnlyBtn.addEventListener('click', function () {
+      enrolOnlyBtn.addEventListener('click', function() {
         if (!validateCommon()) return;
         var totals = computeTotals(form);
-
         var originalLabel = enrolOnlyBtn.textContent;
         disableAll(true);
         enrolOnlyBtn.textContent = 'Submitting…';
         setStatus('');
-
-        postWeb3Forms(form)
-          .then(function () {
-            notifyAdminDashboard(form, {
-              'Payment path': 'Enrolled only, no payment yet',
-              'Children enrolling': totals.children,
-              'Sibling discount': totals.discount,
-              'Modules total': totals.total
-            });
-            setStatus('Enrolment received. Our team will contact you about payment before the session.', 'ok');
-            enrolOnlyBtn.textContent = 'Enrolment sent ✓';
-          })
-          .catch(function () {
-            setStatus('Sorry, something went wrong sending your enrolment. Please try again, or call 011-39822811.', 'err');
-            disableAll(false);
-            enrolOnlyBtn.textContent = originalLabel;
+        postWeb3Forms(form).then(function() {
+          notifyAdminDashboard(form, {
+            'Payment path': 'Enrolled only, no payment yet',
+            'Children enrolling': totals.children,
+            'Sibling discount': totals.discount,
+            'Modules total': totals.total
           });
+          setStatus('Enrolment received. Our team will contact you about payment before the session.', 'ok');
+          enrolOnlyBtn.textContent = 'Enrolment sent ✓';
+        }).catch(function() {
+          setStatus('Sorry, something went wrong sending your enrolment. Please try again, or call 011-39822811.', 'err');
+          disableAll(false);
+          enrolOnlyBtn.textContent = originalLabel;
+        });
       });
     }
   }
-
-  /* Keeps the hidden "email" field in sync with the visible "Parent
-     email" field. Web3Forms' Autoresponder (Pro feature — confirms an
-     enrolment straight to the parent's inbox) only fires on a field
-     literally named "email"; this lets that work without renaming
-     "Parent email" and breaking the admin dashboard's existing field
-     mapping. Requires enabling Autoresponder on the Web3Forms
-     dashboard for this access key — see note in the HTML above the
-     hidden field. */
   function initEmailMirror() {
     var source = document.getElementById('p-email');
     var mirror = document.getElementById('p-email-mirror');
     if (!source || !mirror) return;
-    source.addEventListener('input', function () { mirror.value = source.value; });
+    source.addEventListener('input', function() {
+      mirror.value = source.value;
+    });
   }
-
   var CHECKOUT_ENDPOINT = 'https://apps.kalsadermaga.com/api/superapp/site/checkout';
   var CHECKOUT_STATUS_ENDPOINT = 'https://apps.kalsadermaga.com/api/superapp/site/checkout-status';
-
-  /* Handles a parent landing back on this page after CHIP checkout.
-     The backend sets success_redirect_url / failure_redirect_url (see
-     checkout-route-example.js) to send them back here with
-     ?enrol_ref=<order id>&result=success|failed — that gives an
-     IMMEDIATE message without waiting on anything.
-
-     That URL result is UX only, not proof of payment — a parent could
-     land on the "success" URL and then have the payment fail a moment
-     later, or vice versa. The one authoritative answer is whatever the
-     backend recorded from CHIP's webhook, so this also asks the
-     backend for the real status and corrects the message if it
-     disagrees. If that check fails (e.g. webhook hasn't landed yet),
-     the original URL-based message is left standing rather than
-     blocking the parent with an error. */
   function initPaymentResult() {
     var statusEl = document.getElementById('enrol-status');
     if (!statusEl) return;
-
     var params = new URLSearchParams(window.location.search);
     var ref = params.get('enrol_ref');
     var result = params.get('result');
-    if (!ref && !result) return; // not a return-from-payment visit
-
+    if (!ref && !result) return;
     function show(msg, cls) {
       statusEl.textContent = msg;
       statusEl.className = 'paystatus' + (cls ? ' ' + cls : '');
     }
-
     if (result === 'success') {
       show('Payment received, thank you! A confirmation has been sent to your email. Our team will be in touch with session details.', 'ok');
     } else if (result === 'failed') {
       show('Your payment did not go through. No charge was made. You can try again above, or enrol now and pay later via WhatsApp.', 'err');
     }
-
     if (ref && window.fetch) {
-      fetch(CHECKOUT_STATUS_ENDPOINT + '?ref=' + encodeURIComponent(ref))
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (data) {
-          if (!data || !data.status) return;
-          if (data.status === 'paid') {
-            show('Payment confirmed, thank you! A confirmation has been sent to your email. Our team will be in touch with session details.', 'ok');
-          } else if (data.status === 'failed') {
-            show('Payment was not successful. No charge was made. You can try again above, or enrol now and pay later via WhatsApp.', 'err');
-          } else if (data.status === 'pending') {
-            show('Payment is still being confirmed. This can take a minute. Refresh this page shortly, or contact us if it does not update.', '');
-          }
-        })
-        .catch(function () { /* keep the URL-based message; the backend webhook is still the source of truth */ });
+      fetch(CHECKOUT_STATUS_ENDPOINT + '?ref=' + encodeURIComponent(ref)).then(function(r) {
+        return r.ok ? r.json() : null;
+      }).then(function(data) {
+        if (!data || !data.status) return;
+        if (data.status === 'paid') {
+          show('Payment confirmed, thank you! A confirmation has been sent to your email. Our team will be in touch with session details.', 'ok');
+        } else if (data.status === 'failed') {
+          show('Payment was not successful. No charge was made. You can try again above, or enrol now and pay later via WhatsApp.', 'err');
+        } else if (data.status === 'pending') {
+          show('Payment is still being confirmed. This can take a minute. Refresh this page shortly, or contact us if it does not update.', '');
+        }
+      }).catch(function() {});
     }
-
-    // Clean the query string so a page refresh doesn't re-show a stale message.
     if (window.history && window.history.replaceState) {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }
-
   function boot() {
-  /* ---------------------------------------------------------------
-     12. The promo clips
-     A clip plays only while it is on screen. Autoplaying every video
-     on load costs a visitor who never scrolls that far several
-     hundred kilobytes and, on a phone, battery for nothing.
-
-     preload="none" keeps it to the poster until the observer says so.
-     Muted plus playsinline is what makes autoplay legal on iOS; a clip
-     with a soundtrack would simply be blocked, so these have no audio
-     track at all.
-     --------------------------------------------------------------- */
-  function initClips() {
-    var clips = document.querySelectorAll('.clip video');
-    if (!clips.length) return;
-    var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (still) return;                      /* the poster stands in for it */
-
-    if (!('IntersectionObserver' in window)) {
-      for (var i = 0; i < clips.length; i++) clips[i].play().catch(function () {});
-      return;
-    }
-    var io = new IntersectionObserver(function (es) {
-      for (var i = 0; i < es.length; i++) {
-        var v = es[i].target;
-        if (es[i].isIntersecting) { v.preload = 'auto'; v.play().catch(function () {}); }
-        else if (!v.paused) v.pause();
+    function initClips() {
+      var clips = document.querySelectorAll('.clip video');
+      if (!clips.length) return;
+      var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (still) return;
+      if (!('IntersectionObserver' in window)) {
+        for (var i = 0; i < clips.length; i++) clips[i].play().catch(function() {});
+        return;
       }
-    }, { threshold: 0.35 });
-    for (var k = 0; k < clips.length; k++) io.observe(clips[k]);
-  }
-
-  /* The full clip, over the page. One element, reused: six copies of a
-     40-second film in the DOM would be six things the browser has to
-     think about on a page nobody has asked to watch anything on yet. */
-  function initFullClips() {
-    var buttons = document.querySelectorAll('.clip .full');
-    if (!buttons.length) return;
-    var modal, video;
-
-    function build() {
-      modal = document.createElement('div');
-      modal.className = 'vmodal';
-      modal.innerHTML = '<button class="x" type="button" aria-label="Close">\u00d7</button>';
-      video = document.createElement('video');
-      video.setAttribute('controls', '');
-      video.setAttribute('playsinline', '');
-      video.muted = true;
-      modal.appendChild(video);
-      document.body.appendChild(modal);
-      modal.addEventListener('click', function (e) {
-        if (e.target === modal || e.target.className === 'x') close();
+      var io = new IntersectionObserver(function(es) {
+        for (var i = 0; i < es.length; i++) {
+          var v = es[i].target;
+          if (es[i].isIntersecting) {
+            v.preload = 'auto';
+            v.play().catch(function() {});
+          } else if (!v.paused) v.pause();
+        }
+      }, {
+        threshold: .35
       });
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && modal.classList.contains('on')) close();
-      });
+      for (var k = 0; k < clips.length; k++) io.observe(clips[k]);
     }
-    function close() {
-      modal.classList.remove('on');
-      video.pause(); video.removeAttribute('src'); video.load();
-      document.body.style.overflow = '';
-    }
-    for (var i = 0; i < buttons.length; i++) {
-      buttons[i].addEventListener('click', function () {
-        if (!modal) build();
-        video.src = this.getAttribute('data-full');
-        video.load();                       /* the src changed; without this
-                                               the element keeps the old one */
-        modal.classList.add('on');
-        document.body.style.overflow = 'hidden';
-        video.play().catch(function () {}); /* blocked autoplay just leaves
-                                               the controls for a tap */
-      });
-    }
-  }
-
-  /* ===============================================================
-     THE MOTION LAYER
-     ===============================================================
-     Four small things, one shared scroll handler between them. They
-     are deliberately separate from the reveal observer above, because
-     that one fires once per element and these three have to keep
-     running. Under prefers-reduced-motion none of them start at all.
-     =============================================================== */
-
-  /* --- the hairline at the top of the page ----------------------
-     Long product pages give no sense of their own length. This is
-     the cheapest honest answer to "how much more is there". */
-  function initProgress() {
-    if (reduced) return;
-    if (document.body.scrollHeight < window.innerHeight * 1.8) return;
-    var bar = document.createElement('div');
-    bar.className = 'sprog';
-    bar.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(bar);
-    var ticking = false;
-    function paint() {
-      var h = document.documentElement.scrollHeight - window.innerHeight;
-      var p = h > 0 ? Math.min(window.scrollY / h, 1) : 0;
-      bar.style.transform = 'scaleX(' + p + ')';
-      ticking = false;
-    }
-    window.addEventListener('scroll', function () {
-      if (!ticking) { window.requestAnimationFrame(paint); ticking = true; }
-    }, { passive: true });
-    window.addEventListener('resize', paint, { passive: true });
-    paint();
-  }
-
-  /* --- the soft shapes behind a section -------------------------
-     Written in rather than typed into every page, because they are
-     decoration and have no business in the markup. Anything with
-     .airy gets three, seeded off its own position so two sections
-     never drift in step. */
-  function initOrbs() {
-    if (reduced) return;
-    var secs = document.querySelectorAll('.airy');
-    for (var i = 0; i < secs.length; i++) {
-      if (secs[i].querySelector(':scope > .orbs')) continue;
-      var wrap = document.createElement('div');
-      wrap.className = 'orbs';
-      wrap.setAttribute('aria-hidden', 'true');
-      var tint = secs[i].getAttribute('data-orb') || '';
-      /* three is enough to feel like weather and few enough to stay
-         cheap; the numbers are fixed per index so the layout is the
-         same on every load rather than jumping about */
-      var plan = [
-        { x: '-6%', y: '-12%', s: 420, ox: '46px', oy: '34px', d: 29, l: 0 },
-        { x: '68%', y: '42%', s: 340, ox: '-38px', oy: '-30px', d: 23, l: -7 },
-        { x: '26%', y: '72%', s: 280, ox: '26px', oy: '-40px', d: 34, l: -14 }
-      ];
-      for (var k = 0; k < plan.length; k++) {
-        var o = document.createElement('span');
-        o.className = 'orb';
-        o.style.left = plan[k].x;
-        o.style.top = plan[k].y;
-        o.style.width = plan[k].s + 'px';
-        o.style.height = plan[k].s + 'px';
-        o.style.setProperty('--ox', plan[k].ox);
-        o.style.setProperty('--oy', plan[k].oy);
-        o.style.setProperty('--od', plan[k].d + 's');
-        o.style.setProperty('--ol', plan[k].l + 's');
-        o.style.setProperty('--os', k === 1 ? '1.2' : '1.1');
-        if (tint) o.style.setProperty('--oc', tint);
-        wrap.appendChild(o);
+    function initFullClips() {
+      var buttons = document.querySelectorAll('.clip .full');
+      if (!buttons.length) return;
+      var modal, video;
+      function build() {
+        modal = document.createElement('div');
+        modal.className = 'vmodal';
+        modal.innerHTML = '<button class="x" type="button" aria-label="Close">×</button>';
+        video = document.createElement('video');
+        video.setAttribute('controls', '');
+        video.setAttribute('playsinline', '');
+        video.muted = true;
+        modal.appendChild(video);
+        document.body.appendChild(modal);
+        modal.addEventListener('click', function(e) {
+          if (e.target === modal || e.target.className === 'x') close();
+        });
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && modal.classList.contains('on')) close();
+        });
       }
-      secs[i].insertBefore(wrap, secs[i].firstChild);
-    }
-  }
-
-  /* --- media that lags the scroll by a few pixels ---------------
-     data-par="0.06" means "move at six per cent of the scroll, the
-     other way". Anything above about 0.1 starts to look like a
-     mistake, so the value is clamped. */
-  function initParallax() {
-    if (reduced) return;
-    var els = document.querySelectorAll('[data-par]');
-    if (!els.length) return;
-    var list = [];
-    for (var i = 0; i < els.length; i++) {
-      var f = parseFloat(els[i].getAttribute('data-par'));
-      if (isNaN(f)) f = 0.06;
-      list.push({ el: els[i], f: Math.max(-0.1, Math.min(0.1, f)) });
-    }
-    var ticking = false;
-    function paint() {
-      var mid = window.innerHeight / 2;
-      for (var i = 0; i < list.length; i++) {
-        var r = list[i].el.getBoundingClientRect();
-        if (r.bottom < -200 || r.top > window.innerHeight + 200) continue;
-        var off = (r.top + r.height / 2 - mid) * list[i].f;
-        list[i].el.style.transform = 'translate3d(0,' + off.toFixed(1) + 'px,0)';
+      function close() {
+        modal.classList.remove('on');
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+        document.body.style.overflow = '';
       }
-      ticking = false;
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].addEventListener('click', function() {
+          if (!modal) build();
+          video.src = this.getAttribute('data-full');
+          video.load();
+          modal.classList.add('on');
+          document.body.style.overflow = 'hidden';
+          video.play().catch(function() {});
+        });
+      }
     }
-    window.addEventListener('scroll', function () {
-      if (!ticking) { window.requestAnimationFrame(paint); ticking = true; }
-    }, { passive: true });
-    window.addEventListener('resize', paint, { passive: true });
-    paint();
-  }
-
-  /* --- the card that notices the pointer ------------------------
-     Three degrees at the very corner, nothing at the centre. It is
-     meant to be felt rather than seen. Pointer only: a finger has no
-     hover state, and faking one on touch makes cards feel broken. */
-  function initTilt() {
-    if (reduced) return;
-    if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    var cards = document.querySelectorAll('.vcard, .ent, .win');
-    for (var i = 0; i < cards.length; i++) {
-      var c = cards[i];
-      c.classList.add('tilt');
-      c.addEventListener('pointermove', function (e) {
-        var r = this.getBoundingClientRect();
-        this.classList.add('live');
-        this.style.setProperty('--tx', ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
-        this.style.setProperty('--ty', ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
-        this.style.setProperty('--tz', '-3px');
+    function initProgress() {
+      if (reduced) return;
+      if (document.body.scrollHeight < window.innerHeight * 1.8) return;
+      var bar = document.createElement('div');
+      bar.className = 'sprog';
+      bar.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(bar);
+      var ticking = false;
+      function paint() {
+        var h = document.documentElement.scrollHeight - window.innerHeight;
+        var p = h > 0 ? Math.min(window.scrollY / h, 1) : 0;
+        bar.style.transform = 'scaleX(' + p + ')';
+        ticking = false;
+      }
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          window.requestAnimationFrame(paint);
+          ticking = true;
+        }
+      }, {
+        passive: true
       });
-      c.addEventListener('pointerleave', function () {
-        this.classList.remove('live');
-        this.style.setProperty('--tx', 0);
-        this.style.setProperty('--ty', 0);
-        this.style.setProperty('--tz', '0px');
+      window.addEventListener('resize', paint, {
+        passive: true
       });
+      paint();
     }
-  }
-
-  /* --- the drawn stroke under a word ----------------------------
-     Usually the .ink sits inside something that is already revealed,
-     and the CSS picks it up from the parent's .in. This catches the
-     ones that are not: a heading nobody marked, or one inside a
-     container that was revealed before the stroke scrolled into
-     view. */
-  function initInk() {
-    var inks = document.querySelectorAll('.ink');
-    if (!inks.length) return;
-    if (reduced || !('IntersectionObserver' in window)) {
-      for (var i = 0; i < inks.length; i++) inks[i].classList.add('in');
-      return;
+    function initOrbs() {
+      if (reduced) return;
+      var secs = document.querySelectorAll('.airy');
+      for (var i = 0; i < secs.length; i++) {
+        if (secs[i].querySelector(':scope > .orbs')) continue;
+        var wrap = document.createElement('div');
+        wrap.className = 'orbs';
+        wrap.setAttribute('aria-hidden', 'true');
+        var tint = secs[i].getAttribute('data-orb') || '';
+        var plan = [ {
+          x: '-6%',
+          y: '-12%',
+          s: 420,
+          ox: '46px',
+          oy: '34px',
+          d: 29,
+          l: 0
+        }, {
+          x: '68%',
+          y: '42%',
+          s: 340,
+          ox: '-38px',
+          oy: '-30px',
+          d: 23,
+          l: -7
+        }, {
+          x: '26%',
+          y: '72%',
+          s: 280,
+          ox: '26px',
+          oy: '-40px',
+          d: 34,
+          l: -14
+        } ];
+        for (var k = 0; k < plan.length; k++) {
+          var o = document.createElement('span');
+          o.className = 'orb';
+          o.style.left = plan[k].x;
+          o.style.top = plan[k].y;
+          o.style.width = plan[k].s + 'px';
+          o.style.height = plan[k].s + 'px';
+          o.style.setProperty('--ox', plan[k].ox);
+          o.style.setProperty('--oy', plan[k].oy);
+          o.style.setProperty('--od', plan[k].d + 's');
+          o.style.setProperty('--ol', plan[k].l + 's');
+          o.style.setProperty('--os', k === 1 ? '1.2' : '1.1');
+          if (tint) o.style.setProperty('--oc', tint);
+          wrap.appendChild(o);
+        }
+        secs[i].insertBefore(wrap, secs[i].firstChild);
+      }
     }
-    var obs = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        e.target.classList.add('in');
-        obs.unobserve(e.target);
+    function initParallax() {
+      if (reduced) return;
+      var els = document.querySelectorAll('[data-par]');
+      if (!els.length) return;
+      var list = [];
+      for (var i = 0; i < els.length; i++) {
+        var f = parseFloat(els[i].getAttribute('data-par'));
+        if (isNaN(f)) f = .06;
+        list.push({
+          el: els[i],
+          f: Math.max(-.1, Math.min(.1, f))
+        });
+      }
+      var ticking = false;
+      function paint() {
+        var mid = window.innerHeight / 2;
+        for (var i = 0; i < list.length; i++) {
+          var r = list[i].el.getBoundingClientRect();
+          if (r.bottom < -200 || r.top > window.innerHeight + 200) continue;
+          var off = (r.top + r.height / 2 - mid) * list[i].f;
+          list[i].el.style.transform = 'translate3d(0,' + off.toFixed(1) + 'px,0)';
+        }
+        ticking = false;
+      }
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          window.requestAnimationFrame(paint);
+          ticking = true;
+        }
+      }, {
+        passive: true
       });
-    }, { threshold: 0.9 });
-    for (var k = 0; k < inks.length; k++) obs.observe(inks[k]);
-  }
-
+      window.addEventListener('resize', paint, {
+        passive: true
+      });
+      paint();
+    }
+    function initTilt() {
+      if (reduced) return;
+      if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+      var cards = document.querySelectorAll('.vcard, .ent, .win');
+      for (var i = 0; i < cards.length; i++) {
+        var c = cards[i];
+        c.classList.add('tilt');
+        c.addEventListener('pointermove', function(e) {
+          var r = this.getBoundingClientRect();
+          this.classList.add('live');
+          this.style.setProperty('--tx', ((e.clientX - r.left) / r.width - .5).toFixed(3));
+          this.style.setProperty('--ty', ((e.clientY - r.top) / r.height - .5).toFixed(3));
+          this.style.setProperty('--tz', '-3px');
+        });
+        c.addEventListener('pointerleave', function() {
+          this.classList.remove('live');
+          this.style.setProperty('--tx', 0);
+          this.style.setProperty('--ty', 0);
+          this.style.setProperty('--tz', '0px');
+        });
+      }
+    }
+    function initInk() {
+      var inks = document.querySelectorAll('.ink');
+      if (!inks.length) return;
+      if (reduced || !('IntersectionObserver' in window)) {
+        for (var i = 0; i < inks.length; i++) inks[i].classList.add('in');
+        return;
+      }
+      var obs = new IntersectionObserver(function(es) {
+        es.forEach(function(e) {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('in');
+          obs.unobserve(e.target);
+        });
+      }, {
+        threshold: .9
+      });
+      for (var k = 0; k < inks.length; k++) obs.observe(inks[k]);
+    }
     initNavHeight();
     initClips();
     initFullClips();
@@ -1325,18 +1116,46 @@
     initEnrolSubmit();
     initEmailMirror();
     initPaymentResult();
-    /* the motion layer goes last: initOrbs and initParallax both read
-       layout, and everything above has finished changing it by now */
     initInk();
     initOrbs();
     initParallax();
     initTilt();
     initProgress();
   }
-
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);
   } else {
     boot();
   }
+})();
+
+(function () {
+  "use strict";
+  var page = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  if (/^(el-medina-spa|our-sports-club|404|thank-you)\.html$/.test(page)) return;
+  var topic = {
+    "kalsa-pay-companies.html": "a demo of Kalsa Pay for Companies for our staff canteen",
+    "kalsa-pay.html": "Kalsa Pay for our school",
+    "kalsa-pay-signup.html": "starting Kalsa Pay at our school",
+    "kalsa-pos.html": "Kalsa POS for my business",
+    "orderje.html": "ORDERje for our food court",
+    "gameon.html": "setting up our club on Pre-Match GameOn",
+    "platforms.html": "your platforms",
+    "little-marine-scientists.html": "Little Marine Scientists",
+    "ejasplis.html": "eJasPlis",
+    "heningan-group.html": "Heningan Group",
+    "app.html": "the Kalsa Dermaga app"
+  }[page];
+  var text = topic ? "Hi Kalsa Dermaga, I would like to know more about " + topic + "." : "Hi Kalsa Dermaga, I have a question.";
+  var a = document.createElement("a");
+  a.className = "wafab";
+  a.href = "https://wa.me/60123454520?text=" + encodeURIComponent(text);
+  a.target = "_blank";
+  a.rel = "noopener";
+  a.setAttribute("data-ins", "whatsapp:" + page.replace(".html", ""));
+  a.setAttribute("aria-label", "Chat with us on WhatsApp");
+  a.innerHTML = '<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91A9.85 9.85 0 0 0 12.04 2zm5.8 14.06c-.24.68-1.42 1.3-1.95 1.35-.5.05-1.13.07-1.83-.11-.42-.13-.96-.31-1.65-.61-2.9-1.25-4.8-4.17-4.94-4.37-.15-.2-1.18-1.57-1.18-3s.75-2.13 1.02-2.42c.26-.29.58-.36.77-.36h.55c.18 0 .42-.07.66.5.24.58.83 2.01.9 2.15.07.15.12.32.02.51-.1.2-.15.32-.29.49-.15.17-.31.39-.44.52-.15.15-.3.3-.13.6.17.29.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.36 1.46.29.15.46.12.63-.07.17-.2.73-.85.92-1.14.2-.29.39-.24.66-.15.27.1 1.71.81 2 .95.29.15.49.22.56.34.07.12.07.7-.17 1.38z"/></svg><span>Chat with us</span>';
+  function show() { document.body.appendChild(a); requestAnimationFrame(function () { a.classList.add("on"); }); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { setTimeout(show, 1200); });
+  else setTimeout(show, 1200);
 })();

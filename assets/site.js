@@ -1159,3 +1159,17 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { setTimeout(show, 1200); });
   else setTimeout(show, 1200);
 })();
+
+/* Empty news section: hide the Updates links too, so nobody lands on a blank spot.
+   Comes back by itself once the console publishes a news card into KD:NEWS. */
+(function () {
+  function run() {
+    var sec = document.getElementById("updates");
+    if (!sec || sec.querySelector(".newscard")) return;
+    sec.hidden = true;
+    var links = document.querySelectorAll('a[href="#updates"]');
+    for (var i = 0; i < links.length; i++) links[i].style.display = "none";
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run);
+  else run();
+})();

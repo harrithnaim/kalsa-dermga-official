@@ -1218,3 +1218,9 @@ footer .nav-brand{color:#fff}
 .wafab svg{flex:none}
 @media (max-width:640px){.wafab{padding:13px;right:14px;bottom:14px}.wafab span{display:none}}
 @media (prefers-reduced-motion:reduce){.wafab{transition:none}}
+
+/* Hide the "Latest from the group" section until the console publishes a news card */
+#updates:not(:has(.newscard)){display:none}
+
+/* <picture> wrappers around WebP images must not change layout */
+picture{display:contents}

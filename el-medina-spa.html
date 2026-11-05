@@ -15,7 +15,10 @@
 <meta property="og:image" content="https://www.kalsadermaga.com/assets/el-medina-reception.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0a2540">
-<link rel="icon" href="assets/28c564b717.jpg">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
 <link rel="preload" as="font" type="font/woff2" href="assets/pjs-400.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/pjs-700.woff2" crossorigin>
 <link rel="stylesheet" href="assets/site.css">
@@ -70,7 +73,7 @@
     </div>
     <figure class="cmyk" style="margin:0;">
       <div class="print" style="aspect-ratio:4/3;">
-        <img height="2240" width="4032" src="assets/el-medina-reception.jpg" alt="El Medina Spa Bekam reception in Seksyen 7, Shah Alam" style="width:100%;height:100%;object-fit:cover;display:block;">
+        <picture><source srcset="assets/el-medina-reception.webp" type="image/webp"><img height="2240" width="4032" src="assets/el-medina-reception.jpg" alt="El Medina Spa Bekam reception in Seksyen 7, Shah Alam" style="width:100%;height:100%;object-fit:cover;display:block;"></picture>
       </div>
     </figure>
   </section>
@@ -114,20 +117,20 @@
 
       <input type="hidden" name="access_key" value="880bdff0-d86e-4e2b-80a7-0e63870d4ab5"><input type="hidden" name="subject" value="El Medina Spa enquiry from kalsadermaga.com"><input type="hidden" name="from_name" value="kalsadermaga.com"><input type="hidden" name="redirect" value="https://www.kalsadermaga.com/thank-you.html"><input type="checkbox" name="botcheck" style="display:none !important" tabindex="-1" autocomplete="off">
       <div class="field" style="grid-column:1 / -1;">
-        <label>Name</label>
-        <input class="input" type="text" name="name" placeholder="Your name" required="">
+        <label for="q1-name">Name</label>
+        <input id="q1-name" class="input" type="text" name="name" placeholder="Your name" required="">
       </div>
       <div class="field">
-        <label>Email</label>
-        <input class="input" type="email" name="email" placeholder="you@company.com" required="">
+        <label for="q1-email">Email</label>
+        <input id="q1-email" class="input" type="email" name="email" placeholder="you@company.com" required="">
       </div>
       <div class="field">
-        <label>Phone</label>
-        <input class="input" type="tel" name="phone" placeholder="+60 ...">
+        <label for="q1-phone">Phone</label>
+        <input id="q1-phone" class="input" type="tel" name="phone" placeholder="+60 ...">
       </div>
       <div class="field" style="grid-column:1 / -1;">
-        <label>Message</label>
-        <textarea class="input" name="message" rows="4" placeholder="Preferred treatment &amp; time" required=""></textarea>
+        <label for="q1-message">Message</label>
+        <textarea id="q1-message" class="input" name="message" rows="4" placeholder="Preferred treatment &amp; time" required=""></textarea>
       </div>
       <button class="btn btn-primary" type="submit" data-ins="spa:submit" style="grid-column:1 / -1;">Send Booking Request</button>
     </form>
@@ -170,7 +173,7 @@
       <div>
         <h6 style="margin:0 0 14px;">Contact</h6>
         <div style="display:flex;flex-direction:column;gap:9px;font-size:14px;">
-          <span style="opacity:.75;">A13, Level 1, Jalan Kurniajaya 3,<br>25150 Kuantan, Pahang</span>
+          <a href="https://www.google.com/maps/search/?api=1&amp;query=A13%2C+Level+1%2C+Jalan+Kurniajaya+3%2C+25150+Kuantan%2C+Pahang" target="_blank" rel="noopener" title="Open in Google Maps" style="opacity:.75;">A13, Level 1, Jalan Kurniajaya 3,<br>25150 Kuantan, Pahang</a>
           <a href="tel:+60123454520" data-ins="spa:phone">012-3454520</a>
           <a href="mailto:management@kalsadermaga.com" data-ins="spa:email">management@kalsadermaga.com</a>
         </div>

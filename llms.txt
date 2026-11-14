@@ -10,6 +10,7 @@ Contact: management@kalsadermaga.com, +60 12 345 4520 (phone and WhatsApp). Offi
 * [Kalsa Pay](https://www.kalsadermaga.com/kalsa-pay.html): cashless school canteens and bookstores. Children pay with an NFC wristband; parents top up, set limits and see every purchase.
 * [Kalsa POS](https://www.kalsadermaga.com/kalsa-pos.html): point of sale for stalls, cafes and small kitchens. Kitchen queue, stock and recipes, profit per dish, cash drawer, bank statement check, customer phone buzzer and e-receipts with LHDN e-invoice requests.
 * [ORDERje](https://www.kalsadermaga.com/orderje.html): QR ordering for food courts and bazaars. One QR code for every stall, one payment, and the customer's phone buzzes when food is ready.
+* [GameOn launch campaign](https://www.kalsadermaga.com/gameon-launch.html): "Played tonight? Post it like a pro." Stats cards and story stickers for every match, any sport; a campaign to fund the App Store and Google Play release.
 * [Pre-Match GameOn](https://www.kalsadermaga.com/gameon.html): team management for amateur sports. Sign up by link, waiting list, positions on a pitch, payments, cost splitting, club stats and man of the match voting.
 * [BookJe](https://www.kalsadermaga.com/platforms.html#bookje): online booking for futsal courts, halls, chalets and boat trips, with deposits and a calendar that prevents double booking.
 * [KDserve](https://www.kalsadermaga.com/platforms.html#kdserve): appointments and sales for spas, barbershops and salons, with staff calendars, packages and commission.

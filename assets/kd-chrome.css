@@ -1,0 +1,73 @@
+/* =====================================================================
+   Header, menu and footer shared by every page (14 Nov 2026).
+   ===================================================================== */
+.kdh .grouprail{display:none}
+.kdh-bar{position:relative;display:flex;align-items:center;gap:18px;padding:12px 0}
+.kdh-logo{display:block;line-height:0;background:#fff;border-radius:12px;padding:6px 12px;box-shadow:0 4px 18px rgba(0,0,0,.18);flex:none}
+.kdh-logo img{height:46px;width:auto;display:block}
+.kdh-menu{display:flex;align-items:center;gap:4px;list-style:none;margin:0 0 0 auto;padding:0}
+.kdh-menu>li{position:static}
+.kdh-menu>li>a,.kdh-menu>li>button{display:inline-flex;align-items:center;gap:6px;color:inherit;background:none;border:0;
+  font:inherit;font-weight:600;font-size:15px;line-height:1;padding:11px 13px;border-radius:10px;cursor:pointer;text-decoration:none;opacity:.92;
+  transition:background .2s,opacity .2s}
+.kdh-menu>li>a:hover,.kdh-menu>li>button:hover,.kdh-dd.open>button,.kdh-menu>li>a[aria-current="page"]{background:rgba(255,255,255,.12);opacity:1}
+.kdh-menu>li>button svg{transition:transform .25s}
+.kdh-dd.open>button svg{transform:rotate(180deg)}
+.kdh-hot{background:linear-gradient(90deg,#ff7a2f,#e83e8c 55%,#8b5cf6)!important;opacity:1!important;color:#fff!important}
+.kdh-hot:hover{filter:brightness(1.08)}
+.kdh-hot small{font-size:10px;font-weight:800;letter-spacing:.08em;background:rgba(255,255,255,.25);padding:3px 6px;border-radius:99px}
+.kdh-cta{flex:none}
+.kdh-cta .btn{padding:11px 20px;font-size:15px}
+.kdh-panel{position:absolute;right:0;top:calc(100% - 4px);width:min(940px,100%);background:#fff;color:#0a2540;border-radius:20px;
+  box-shadow:0 24px 60px rgba(4,12,24,.28),0 2px 6px rgba(4,12,24,.08);padding:26px;display:grid;gap:26px;
+  opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s,transform .2s,visibility 0s .2s;z-index:80}
+.kdh-panel.what{grid-template-columns:repeat(3,1fr)}
+.kdh-panel.book{grid-template-columns:repeat(2,1fr);width:min(620px,100%)}
+.kdh-dd.open .kdh-panel{opacity:1;visibility:visible;transform:none;transition:opacity .2s,transform .2s}
+.kdh-panel h6{margin:0 0 10px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#0a7880}
+.kdh-panel a{display:block;padding:9px 10px;margin:0 -10px;border-radius:10px;color:#0a2540!important;text-decoration:none!important}
+.kdh-panel a:hover,.kdh-panel a:focus-visible{background:#eef6f8}
+.kdh-panel a b{display:block;font-size:14.5px;font-weight:700}
+.kdh-panel a span{display:block;font-size:12.5px;color:#5b6b7a;margin-top:2px;line-height:1.4}
+.kdh-panel .kdh-all{margin-top:6px;font-size:13px;font-weight:700;color:#0a7880!important}
+.kdh-book{display:flex!important;gap:12px;align-items:flex-start;border:1px solid #e3ebef}
+.kdh-book i{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-style:normal;font-size:18px;background:#eef6f8}
+.kdh-burger{display:none;margin-left:auto;width:46px;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,.32);cursor:pointer;position:relative}
+.kdh-burger span,.kdh-burger span::before,.kdh-burger span::after{position:absolute;left:12px;right:12px;height:2px;background:currentColor;border-radius:2px;content:""}
+.kdh-burger span{top:22px}.kdh-burger span::before{top:-7px;left:0;right:0}.kdh-burger span::after{top:7px;left:0;right:0}
+.kdh-mobile{display:none}
+.kdh-mobile details{border-top:1px solid rgba(255,255,255,.14)}
+.kdh-mobile summary{list-style:none;cursor:pointer;padding:15px 2px;font-weight:700;font-size:17px;display:flex;justify-content:space-between}
+.kdh-mobile summary::-webkit-details-marker{display:none}
+.kdh-mobile summary::after{content:"+";opacity:.7}
+.kdh-mobile details[open] summary::after{content:"–"}
+.kdh-mobile details a{display:block;padding:10px 4px 10px 14px!important;font-size:15.5px!important;opacity:.85}
+.kdh-mobile .kdh-mlink{display:block;border-top:1px solid rgba(255,255,255,.14);padding:15px 2px!important;font-weight:700;font-size:17px!important}
+.kdh-mobile .btn{margin-top:14px;width:100%;display:flex;justify-content:center}
+@media (max-width:1060px){
+  .kdh-menu,.kdh-cta{display:none!important}
+  .kdh-burger{display:block}
+  #navcheck:checked~.kdh-mobile{display:block;padding:0 0 18px;max-height:calc(100vh - 80px);overflow:auto}
+  .kdh-logo img{height:40px}
+}
+
+/* ---------- footer ---------- */
+.kdf{background:var(--ink,#0a2540);color:rgba(255,255,255,.72)}
+.kdf-top{display:grid;grid-template-columns:1.5fr repeat(4,1fr);gap:clamp(24px,3vw,44px);padding:clamp(48px,6vw,72px) 0 clamp(28px,4vw,40px)}
+.kdf-brand .kdh-logo{display:inline-block;margin-bottom:16px}
+.kdf-brand .kdh-logo img{height:52px}
+.kdf-brand p{font-size:14px;line-height:1.65;margin:0 0 16px;max-width:300px}
+.kdf-contact{display:grid;gap:8px;font-size:14px}
+.kdf h6{margin:4px 0 14px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#7fd6dc}
+.kdf ul{list-style:none;margin:0;padding:0;display:grid;gap:9px;font-size:14px}
+.kdf a{color:rgba(255,255,255,.78)!important;text-decoration:none!important}
+.kdf a:hover{color:#fff!important}
+.kdf-bottom{border-top:1px solid rgba(255,255,255,.12);padding:22px 0 30px;display:flex;gap:18px 32px;justify-content:space-between;flex-wrap:wrap;font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.55)}
+.kdf-bottom p{margin:0;max-width:720px}
+.kdf-legal{display:flex;gap:18px;flex-wrap:wrap}
+@media (max-width:980px){.kdf-top{grid-template-columns:1fr 1fr}.kdf-brand{grid-column:1 / -1}}
+@media (max-width:520px){.kdf-top{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.kdh-panel{transition:none}}
+/* open phone menu: solid, so it never mixes with the hero behind it */
+.stickynav.kdh:has(#navcheck:checked){background:var(--ink,#0a2540)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:0 18px 40px rgba(4,12,24,.35)}
+.stickynav.kdh:has(#navcheck:checked)::before{opacity:0!important}

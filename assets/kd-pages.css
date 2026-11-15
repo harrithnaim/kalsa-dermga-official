@@ -1,0 +1,73 @@
+/* =====================================================================
+   Page layouts that use the full width (14 Nov 2026).
+   Shared by land, El Medina, Heningan, trade, maritime and shipping.
+   ===================================================================== */
+.kp{max-width:1200px;margin:0 auto;padding:clamp(36px,4.5vw,64px) 20px}
+.kp.tight{padding-top:clamp(20px,2.5vw,32px)}
+.kp-band{background:#fff}
+.kp-k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent-700,#0a7880);font-weight:700;margin:0 0 10px}
+.kp h1{font-size:clamp(34px,4.4vw,54px);line-height:1.05;letter-spacing:-.03em;margin:0 0 16px}
+.kp h2{font-size:clamp(28px,3.2vw,40px);line-height:1.1;letter-spacing:-.02em;margin:0 0 12px}
+.kp-lede{font-size:17px;line-height:1.65;color:color-mix(in srgb,var(--color-text,#0a2540) 78%,transparent);margin:0 0 22px;max-width:620px}
+.kp-btns{display:flex;gap:12px;flex-wrap:wrap}
+.kp-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:clamp(20px,2.5vw,30px)}
+.kp-head p{margin:0;max-width:520px;color:color-mix(in srgb,var(--color-text,#0a2540) 72%,transparent)}
+
+/* hero: words left, facts or picture right */
+.kp-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(28px,4vw,56px);align-items:center}
+.kp-panel{background:#fff;border:1px solid #e3ebef;border-radius:20px;padding:22px 24px;box-shadow:0 14px 40px rgba(10,37,64,.07)}
+.kp-panel h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent-700,#0a7880);margin:0 0 6px}
+.kp-facts{display:grid;margin:0}
+.kp-facts div{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid #edf2f4;font-size:15px}
+.kp-facts div:last-child{border-bottom:0}
+.kp-facts dt{color:#5b6b7a}.kp-facts dd{margin:0;font-weight:700;text-align:right}
+.kp-fig{margin:0}
+.kp-fig img{width:100%;height:auto;display:block;border-radius:22px;box-shadow:0 24px 60px rgba(10,37,64,.16)}
+
+/* listing: picture beside the details */
+.kp-list{display:grid;grid-template-columns:.95fr 1.05fr;gap:clamp(24px,3.5vw,48px);align-items:center;background:#fff;border:1px solid #e3ebef;border-radius:24px;padding:clamp(18px,2.4vw,28px);box-shadow:0 14px 40px rgba(10,37,64,.06)}
+.kp-list+.kp-list{margin-top:22px}
+.kp-list.flip>.kp-fig{order:2}
+.kp-list h2{font-size:clamp(24px,2.6vw,32px)}
+.kp-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:14px 0}
+.kp-cols h3{font-size:14px;margin:0 0 6px}
+.kp-cols ul{margin:0;padding-left:18px;line-height:1.65;font-size:15px}
+.kp-note{font-size:14.5px;line-height:1.6;color:#4a5a6a;background:#f4f8f9;border-radius:12px;padding:12px 14px;margin:0 0 16px}
+
+/* grids of cards */
+.kp-grid{display:grid;gap:16px}
+.kp-grid.c2{grid-template-columns:repeat(2,1fr)}.kp-grid.c3{grid-template-columns:repeat(3,1fr)}.kp-grid.c4{grid-template-columns:repeat(4,1fr)}
+.kp-card{background:#fff;border:1px solid #e3ebef;border-radius:18px;padding:20px 22px}
+.kp-card b{display:block;font-size:16.5px;margin:0 0 6px}
+.kp-card span,.kp-card p{display:block;margin:0;font-size:14.5px;line-height:1.55;color:#4a5a6a}
+.kp-card small{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--color-accent-700,#0a7880);margin-bottom:8px}
+
+/* numbered steps */
+.kp-steps{display:grid;grid-template-columns:repeat(var(--n,4),1fr);gap:14px;counter-reset:s;list-style:none;padding:0;margin:0}
+.kp-steps li{counter-increment:s;background:#fff;border:1px solid #e3ebef;border-radius:18px;padding:18px 20px;position:relative}
+.kp-steps li::before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--color-accent-700,#0a7880);color:#fff;font-weight:800;margin-bottom:10px}
+.kp-steps b{display:block;font-size:16px;margin-bottom:4px}
+.kp-steps span{display:block;font-size:14.5px;line-height:1.55;color:#4a5a6a}
+
+/* contact: help on the left, form on the right */
+.kp-contact{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(24px,4vw,56px);align-items:start}
+.kp-aside{display:grid;gap:12px;margin-top:18px}
+.kp-aside div{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid #e3ebef;border-radius:14px;padding:13px 15px;font-size:14.5px;line-height:1.5}
+.kp-aside i{flex:none;width:30px;height:30px;border-radius:9px;background:#e7f3f1;display:grid;place-items:center;font-style:normal}
+.kp-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:#fff;border:1px solid #e3ebef;border-radius:22px;padding:clamp(18px,2.4vw,28px);box-shadow:0 14px 40px rgba(10,37,64,.07)}
+.kp-form .full{grid-column:1 / -1}
+
+@media (max-width:980px){
+  .kp-grid.c4{grid-template-columns:repeat(2,1fr)}
+  .kp-steps{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:860px){
+  .kp-hero,.kp-list,.kp-contact{grid-template-columns:1fr}
+  .kp-list.flip>.kp-fig{order:0}
+  .kp-grid.c3{grid-template-columns:1fr 1fr}
+}
+@media (max-width:560px){
+  .kp-grid.c2,.kp-grid.c3,.kp-grid.c4,.kp-steps,.kp-cols,.kp-form{grid-template-columns:1fr}
+}
+@media (max-width:760px){#safety{grid-template-columns:1fr!important}#safety>p{grid-column:auto!important;grid-row:auto!important}}
+.kp-steps[style*="--n:1"] li::before{margin:0;flex:none}
